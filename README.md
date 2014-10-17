@@ -3,7 +3,7 @@
 A javascript mocking library for WebSockets. This library aims to make testing websocket applications as simple and
 painless as possible. Inspired by [fakehr](https://github.com/trek/fakehr).
 
-**Note** This is currently in beta.
+**Note** This is currently in beta and is still a work in progress
 
 ## Installation
 
