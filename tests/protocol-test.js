@@ -1,5 +1,3 @@
-var exampleServer;
-var originalSocketsReference;
 
 module('Protocol Tests', {
 	setup: function() {
@@ -7,7 +5,7 @@ module('Protocol Tests', {
 	}
 });
 
-test('protocol initialization tests', function(){
+test('Initialization is done correctly', function(){
 	equal(MockSocks.PROTOCOL, null, 'mock socks protocol is null by default');
 
 	var protocol = new Protocol();

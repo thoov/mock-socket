@@ -5,6 +5,8 @@ painless as possible. Inspired by [fakehr](https://github.com/trek/fakehr).
 
 **Note** This is currently in beta and is still a work in progress
 
+[![Build Status](https://travis-ci.org/thoov/mock-socks.svg?branch=master)](https://travis-ci.org/thoov/mock-socks)
+
 ## Installation
 
 `npm install mock-socks --save-dev`
@@ -31,8 +33,8 @@ exampleServer.on('connection', function(server) {
 
 **Note:** This should look very familiar if you are using a node framework such as [ws](https://github.com/einaros/ws).
 
-The second main part is another global variable called `MockSocks`. This is a drop in replacement for the standard WebSockets
-global.
+The second main part is another global variable called `MockSocks`. This is a drop in replacement for the standard [WebSockets
+global](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket).
 
 ```js
 
@@ -45,45 +47,34 @@ window.WebSockets = MockSocks;
 
 ```
 
-## Examples
+## Simple Example
 
-Putting both of these parts together we can do something like this in our tests (Qunit):
+Putting both of these parts together we can do something like this in our tests. Below is a very simple example of
+a qunit test:
 
 ```js
-var exampleServer;
-var originalSocketsReference;
-
-module('Simple Test', {
-    setup: function() {
-        originalSocketsReference = window.WebSockets;
-        window.WebSockets = MockSocks;
-
-        exampleServer = new MockSocksServer();
-        exampleServer.on('connection', function(server) {
-            server.on('message', function(data) {
-                server.send('hello');
-            });
-        });
-    },
-
-    teardown: function() {
-        window.WebSockets = originalSocketsReference;
-    }
+window.WebSocket = MockSock;
+// NOTE: you must create a new MockSocksServer before you create a new WebSockets object.
+var exampleServer = new MockSocksServer();
+exampleServer.on('connection', function(server) {
+    server.on('message', function(data) {
+        server.send('hello');
+    });
 });
 
-
+module('Simple Test');
 
 asyncTest('basic test', function(){
-    var exampleSocket = new WebSockets('ws://www.example.com/socketserver');
+    var exampleSocket = new WebSocket('ws://www.example.com/socketserver');
 
-    exampleSocket.onopen(function() {
+    exampleSocket.onopen = function() {
         equal(true, true, 'onopen fires as expected');
-    });
+    };
 
-    exampleSocket.onmessage(function(data) {
+    exampleSocket.onmessage = function(data) {
         equal(true, true, 'onmessage fires as expected');
         start();
-    });
+    };
 
     exampleSocket.send('world');
 });
