@@ -1,9 +1,8 @@
 {
 	"framework": "jasmine2",
-	"before_tests": "jshint *.js",
 	"launch_in_ci": ["PhantomJS"],
 	"src_files": [
-    	"mock-sock.js",
-    	"tests/**/*.js"
+		"lib/**/*.js",
+		"tests/**/*.js"
   	]
 }
