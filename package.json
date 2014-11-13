@@ -1,0 +1,29 @@
+{
+  "name": "mock-socks",
+  "version": "0.0.1",
+  "description": "A mocking library for WebSockets",
+  "main": "mock-sock.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "testem ci"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thoov/mock-socks.git"
+  },
+  "keywords": [
+    "WebSockets"
+  ],
+  "author": "Travis Hoover",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thoov/mock-socks/issues"
+  },
+  "homepage": "https://github.com/thoov/mock-socks",
+  "devDependencies": {
+    "jshint": "^2.5.10",
+    "testem": "^0.6.23"
+  }
+}
