@@ -23,4 +23,4 @@ If you have any feedback, encounter any bugs, or just have a question, please fe
 
 ## FAQ
 
-* **License**: Mock Socks falls under the [MIT license](https://github.com/thoov/ember-mock-socks/blob/master/%20LICENSE.txt)
+* **License**: Mock Socks falls under the [MIT license](https://github.com/thoov/mock-socks/blob/master/LICENSE.txt)
