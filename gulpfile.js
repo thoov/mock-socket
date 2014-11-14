@@ -3,6 +3,10 @@ var gulp = require('gulp');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 
+var vendorScripts = [
+    './node_modules/rsvp/dist/rsvp.min.js'
+];
+
 gulp.task('dist', ['vendor', 'lib', 'clean'], function() {
     return gulp.src(['./build/vendor.min.js', './build/lib.min.js'])
       .pipe(concat('mock-socks.min.js'))
@@ -18,7 +22,7 @@ gulp.task('lib', ['clean'], function() {
 });
 
 gulp.task('vendor', ['clean'], function() {
-    return gulp.src('./vendor/*.js')
+    return gulp.src(vendorScripts)
       .pipe(concat('vendor.min.js'))
       .pipe(uglify())
       .pipe(gulp.dest('./build/'));
