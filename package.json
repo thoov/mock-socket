@@ -25,5 +25,8 @@
   "devDependencies": {
     "jshint": "^2.5.10",
     "testem": "^0.6.23"
+  },
+  "dependencies": {
+    "rsvp": "^3.0.14"
   }
 }

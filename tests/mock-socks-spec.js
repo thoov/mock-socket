@@ -1,25 +1,18 @@
-describe('Mock Socks', function(){
+var protocol = new Protocol();
+var exampleServer = new MockSocksServer(protocol);
+exampleServer.on('connection', function(server) {
 
-	it('should have the correct initial properties', function(){
-		var exampleSocket = new MockSocks("ws://www.example.com/socketserver");
-		expect(exampleSocket.url).toBe("ws://www.example.com/socketserver");
-		expect(exampleSocket.readyState).toBe(MockSocks.CONNECTING);
-	});
+	// server.on('message', function(data) {
+	//
+	// 	server.send('testing');
+	//
+	// });
+});
 
+test('basic test', function(){
+    var exampleSocket = new MockSocks('ws://www.example.com/socketserver', protocol);
 
-	it('should correctly call on connection', function(){
-
-		var exampleSocket = new MockSocks("ws://www.example.com/socketserver");
-		var exampleServer = new MockSocksServer(exampleSocket);
-
-		exampleServer.on('connection', function(server) {
-			expect(exampleServer).toEqual(server);
-			expect(exampleSocket.readyState).toBe(MockSocks.OPEN);
-		});
-
-		exampleSocket.onopen(function() {
-			expect(exampleSocket.readyState).toBe(MockSocks.OPEN);
-		});
-
+	exampleSocket.onopen(function() {
+		equal(true, true, 'onopen fires as expected');
 	});
 });

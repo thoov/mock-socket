@@ -1,5 +1,5 @@
 {
-	"framework": "jasmine2",
+	"framework": "qunit",
 	"launch_in_ci": ["PhantomJS"],
 	"src_files": [
 		"lib/**/*.js",
