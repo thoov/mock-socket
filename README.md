@@ -1,7 +1,7 @@
 # Mock Socks
 
 A javascript mocking library for WebSockets. This library aims to make testing websocket applications as simple and
-painless as possible.
+painless as possible. Inspired by [fakehr](https://github.com/trek/fakehr).
 
 ## Installation
 
