@@ -11,6 +11,13 @@ painless as possible. Inspired by [fakehr](https://github.com/trek/fakehr).
 
 Coming Soon...
 
+## Building from source
+
+* `git clone git@github.com:thoov/mock-socks.git`
+* `cd mock-socks`
+* `npm install`
+* `gulp`
+
 ## Running tests
 
 * `git clone git@github.com:thoov/mock-socks.git`
