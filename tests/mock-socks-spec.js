@@ -1,5 +1,4 @@
-var protocol = new Protocol();
-var exampleServer = new MockSocksServer(protocol);
+var exampleServer = new MockSocksServer();
 exampleServer.on('connection', function(server) {
 
 	server.on('message', function(data) {
@@ -9,7 +8,7 @@ exampleServer.on('connection', function(server) {
 });
 
 asyncTest('basic test', function(){
-    var exampleSocket = new MockSocks('ws://www.example.com/socketserver', protocol);
+    var exampleSocket = new MockSocks('ws://www.example.com/socketserver');
 
 	exampleSocket.onopen(function() {
 		equal(true, true, 'onopen fires as expected');
