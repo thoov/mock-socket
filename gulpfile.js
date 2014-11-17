@@ -7,14 +7,14 @@ var vendorScripts = [
     './node_modules/rsvp/dist/rsvp.min.js'
 ];
 
-gulp.task('dist', ['vendor', 'lib', 'clean'], function() {
+gulp.task('dist', ['lib'], function() {
     return gulp.src(['./build/vendor.min.js', './build/lib.min.js'])
       .pipe(concat('mock-socks.min.js'))
       .pipe(uglify())
       .pipe(gulp.dest('./dist/'));
 });
 
-gulp.task('lib', ['clean'], function() {
+gulp.task('lib', ['vendor'], function() {
     return gulp.src('./lib/*.js')
       .pipe(concat('lib.min.js'))
       .pipe(uglify())
