@@ -33,8 +33,8 @@ exampleServer.on('connection', function(server) {
 
 **Note:** This should look very familiar if you are using a node framework such as [ws](https://github.com/einaros/ws).
 
-The second main part is another global variable called `MockSocks`. This is a drop in replacement for the standard WebSockets
-global.
+The second main part is another global variable called `MockSocks`. This is a drop in replacement for the standard [WebSockets
+global](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket).
 
 ```js
 
@@ -49,9 +49,11 @@ window.WebSockets = MockSocks;
 
 ## Simple Example
 
-Putting both of these parts together we can do something like this in our tests (Qunit):
+Putting both of these parts together we can do something like this in our tests. Below is a very simple example of
+a qunit test:
 
 ```js
+// NOTE: you must create a new MockSocksServer before you create a new WebSockets object.
 var exampleServer = new MockSocksServer();
 exampleServer.on('connection', function(server) {
     server.on('message', function(data) {
