@@ -5,6 +5,8 @@ painless as possible. Inspired by [fakehr](https://github.com/trek/fakehr).
 
 **Note** This is currently in beta.
 
+[![Build Status](https://travis-ci.org/thoov/mock-socks.svg?branch=master)](https://travis-ci.org/thoov/mock-socks)
+
 ## Installation
 
 `npm install mock-socks --save-dev`
