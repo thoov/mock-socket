@@ -1,14 +1,28 @@
-var exampleServer = new MockSocksServer();
-exampleServer.on('connection', function(server) {
+var exampleServer;
+var originalSocketsReference;
 
-	server.on('message', function(data) {
-		server.send('hello');
-	});
+module('Simple Test', {
+    setup: function() {
+		originalSocketsReference = window.WebSockets;
+		window.WebSockets = MockSocks;
 
+    	exampleServer = new MockSocksServer();
+		exampleServer.on('connection', function(server) {
+			server.on('message', function(data) {
+				server.send('hello');
+			});
+		});
+    },
+
+	teardown: function() {
+		window.WebSockets = originalSocketsReference;
+	}
 });
 
+
+
 asyncTest('basic test', function(){
-    var exampleSocket = new MockSocks('ws://www.example.com/socketserver');
+    var exampleSocket = new WebSockets('ws://www.example.com/socketserver');
 
 	exampleSocket.onopen(function() {
 		equal(true, true, 'onopen fires as expected');

@@ -7,14 +7,14 @@ painless as possible. Inspired by [fakehr](https://github.com/trek/fakehr).
 
 `npm install mock-socks --save-dev`
 
-## Simple example of using it in your app
+## Background
 
-MockSocks is comprised of 2 main parts. A mock "server" and a mock "WebSockets" object. In this section
+MockSocks is comprised of 2 main parts. A mock "server" object and a mock "WebSockets" object. In this section
 I will explain both of these parts.
 
 **Mock Sockets Server**
-This library adds a global object called `MockSocksServer` which you can use to create a fake socket server instance.
-Below is an example of this in action:
+This library adds a global object called `MockSocksServer` which you can use to create a fake socket server instance. Here
+is where you would "mock" your server side application logic. Below is an example of this in action:
 
 ```js
 var exampleServer = new MockSocksServer();
@@ -38,8 +38,53 @@ window.WebSockets = MockSocks;
 
 ...
 
-// Anything referencing WebSockets will now use the MockSocks object and will communicate with the MockSocksServer.
+// Anything referencing WebSockets will now use the MockSocks object and
+// will communicate with the MockSocksServer.
 
+```
+
+## Examples
+
+Putting both of these parts together we can do something like this in our tests (Qunit):
+
+```js
+var exampleServer;
+var originalSocketsReference;
+
+module('Simple Test', {
+    setup: function() {
+        originalSocketsReference = window.WebSockets;
+        window.WebSockets = MockSocks;
+
+        exampleServer = new MockSocksServer();
+        exampleServer.on('connection', function(server) {
+            server.on('message', function(data) {
+                server.send('hello');
+            });
+        });
+    },
+
+    teardown: function() {
+        window.WebSockets = originalSocketsReference;
+    }
+});
+
+
+
+asyncTest('basic test', function(){
+    var exampleSocket = new WebSockets('ws://www.example.com/socketserver');
+
+    exampleSocket.onopen(function() {
+        equal(true, true, 'onopen fires as expected');
+    });
+
+    exampleSocket.onmessage(function(data) {
+        equal(true, true, 'onmessage fires as expected');
+        start();
+    });
+
+    exampleSocket.send('world');
+});
 ```
 
 
