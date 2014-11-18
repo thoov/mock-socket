@@ -87,7 +87,6 @@ asyncTest('basic test', function(){
 });
 ```
 
-
 ## Building from source
 
 * `git clone git@github.com:thoov/mock-socks.git`
@@ -104,7 +103,7 @@ asyncTest('basic test', function(){
 
 ## Feedback or issues
 
-If you have any feedback, encounter any bugs, or just have a question, please feel free to create a [github issue](https://github.com/thoov/mock-socks/issues/new) or send me a tweet at @thoov.
+If you have any feedback, encounter any bugs, or just have a question, please feel free to create a [github issue](https://github.com/thoov/mock-socks/issues/new) or send me a tweet at [@thoov](https://twitter.com/thoov).
 
 ## FAQ
 
