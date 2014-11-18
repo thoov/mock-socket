@@ -1,5 +1,3 @@
-var exampleServer;
-var originalSocketsReference;
 
 module('Protocol Tests', {
 	setup: function() {
