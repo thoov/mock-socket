@@ -1,12 +1,12 @@
 var exampleServer;
 var originalSocketsReference;
 
-module('Simple Test', {
+module('Mock Socks Tests', {
     setup: function() {
 		originalSocketsReference = window.WebSockets;
 		window.WebSockets = MockSocks;
 
-    	exampleServer = new MockSocksServer();
+        exampleServer = new MockSocksServer();
 		exampleServer.on('connection', function(server) {
 			server.on('message', function(data) {
 				server.send('hello');
