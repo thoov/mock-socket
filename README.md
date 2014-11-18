@@ -47,33 +47,19 @@ window.WebSockets = MockSocks;
 
 ```
 
-## Examples
+## Simple Example
 
 Putting both of these parts together we can do something like this in our tests (Qunit):
 
 ```js
-var exampleServer;
-var originalSocketsReference;
-
-module('Simple Test', {
-    setup: function() {
-        originalSocketsReference = window.WebSockets;
-        window.WebSockets = MockSocks;
-
-        exampleServer = new MockSocksServer();
-        exampleServer.on('connection', function(server) {
-            server.on('message', function(data) {
-                server.send('hello');
-            });
-        });
-    },
-
-    teardown: function() {
-        window.WebSockets = originalSocketsReference;
-    }
+var exampleServer = new MockSocksServer();
+exampleServer.on('connection', function(server) {
+    server.on('message', function(data) {
+        server.send('hello');
+    });
 });
 
-
+module('Simple Test');
 
 asyncTest('basic test', function(){
     var exampleSocket = new WebSockets('ws://www.example.com/socketserver');
