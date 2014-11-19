@@ -53,6 +53,7 @@ Putting both of these parts together we can do something like this in our tests.
 a qunit test:
 
 ```js
+window.WebSocket = MockSock;
 // NOTE: you must create a new MockSocksServer before you create a new WebSockets object.
 var exampleServer = new MockSocksServer();
 exampleServer.on('connection', function(server) {
@@ -64,7 +65,7 @@ exampleServer.on('connection', function(server) {
 module('Simple Test');
 
 asyncTest('basic test', function(){
-    var exampleSocket = new WebSockets('ws://www.example.com/socketserver');
+    var exampleSocket = new WebSocket('ws://www.example.com/socketserver');
 
     exampleSocket.onopen = function() {
         equal(true, true, 'onopen fires as expected');
