@@ -22,24 +22,19 @@ module('Mock Socks Tests', {
 asyncTest('onopen method fires as expected', function(){
 	var exampleSocket = new WebSockets('ws://www.example.com/socketserver');
 
-	// exampleSocket.onopen(function() {
-	// 	ok(true, 'onopen fires as expected');
-	// 	start();
-	// });
-
 	exampleSocket.onopen = function() {
 		ok(true, 'onopen fires as expected');
 		start();
 	};
 });
 
-// asyncTest('onopen method fires as expected', function(){
-//     var exampleSocket = new WebSockets('ws://www.example.com/socketserver');
-//
-//     exampleSocket.onmessage = function() {
-//         ok(true, 'onmessage fires as expected');
-//         start();
-//     };
-//
-//     exampleSocket.send('testing');
-// });
+asyncTest('onmessage method fires as expected', function(){
+	var exampleSocket = new WebSockets('ws://www.example.com/socketserver');
+
+	exampleSocket.onmessage = function() {
+		ok(true, 'onmessage fires as expected');
+		start();
+	};
+
+	exampleSocket.send('testing');
+});
