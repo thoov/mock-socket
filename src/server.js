@@ -1,12 +1,12 @@
 var webSocketMessage = require('./helpers/websocket-message');
-var Subject = require('./subject');
-var Protocol = require('./protocol');
+//var Subject = require('./subject');
+//var Protocol = require('./protocol');
 
 function WebSocketServer(url) {
   this.url = url;
 
-  var subject = new Subject();
-  var protocol = new Protocol(subject);
+  var subject = new window.Subject();
+  var protocol = new window.Protocol(subject);
 
   window.MockSocket.protocol = protocol; // TODO: Is there a better way of doing this?
   this.protocol = protocol;
