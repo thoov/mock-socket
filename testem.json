@@ -2,8 +2,8 @@
 	"framework": "qunit",
 	"launch_in_ci": ["PhantomJS"],
 	"src_files": [
-		"vendor/**/*.js",
-		"lib/**/*.js",
+		"dist/**/*.js",
 		"tests/**/*.js"
-  	]
+	],
+	"src_files_ignore": "dist/**/*.min.js"
 }
