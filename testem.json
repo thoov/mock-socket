@@ -1,9 +1,10 @@
 {
 	"framework": "qunit",
-	"launch_in_ci": ["Chome"],
+	"launch_in_ci": ["PhantomJS"],
 	"src_files": [
 		"dist/**/*.js",
 		"tests/**/*.js"
 	],
-	"src_files_ignore": "dist/**/*.min.js"
+	"src_files_ignore": "dist/**/*.min.js",
+	"phantomjs_debug_port_disabled": 8007
 }

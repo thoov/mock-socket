@@ -1,16 +1,10 @@
 function webSocketMessage(data, url) {
-  var message = new window.MessageEvent('message');
-
-  Object.defineProperties(message, {
+  var message = {
     currentTarget: {
-      get: function() {
-        return {url: url};
-      }
+      url: url
     },
-    data: {
-      value: data || null
-    }
-  });
+    data: data
+  };
 
   return message;
 };
