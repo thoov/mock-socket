@@ -1,6 +1,6 @@
 {
 	"framework": "qunit",
-	"launch_in_ci": ["PhantomJS"],
+	"launch_in_ci": ["Chome"],
 	"src_files": [
 		"dist/**/*.js",
 		"tests/**/*.js"

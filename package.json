@@ -7,7 +7,7 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "testem ci",
+    "test": "gulp build; testem ci",
     "build": "gulp build"
   },
   "repository": {
