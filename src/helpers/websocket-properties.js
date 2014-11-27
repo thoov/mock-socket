@@ -10,15 +10,7 @@ function webSocketProperties(websocket) {
       get: function() { return websocket._onopen; },
       set: function(callback) {
         websocket._onopen = callback;
-
-        // TODO: look into getting rid of this setTimeout since we are using the one below
-        window.setTimeout(function(context) {
-          // the readystate might be in the error case if the server is not setup
-          // so we need to check that the readystate is open
-          if(context.readyState === MockSocks.OPEN) {
-            callback.call(context, webSocketMessage(null, context.url));
-          }
-        }, 0, websocket);
+        websocket.protocol.subject.observe('clientOnOpen', callback, websocket);
       }
     },
     onmessage: {
@@ -29,6 +21,14 @@ function webSocketProperties(websocket) {
         websocket.protocol.subject.observe('clientOnMessage', callback, websocket);
       }
     },
+    onclose: {
+      enumerable: true,
+      get: function() { return websocket._onclose; },
+      set: function(callback) {
+        websocket._onclose = callback;
+        websocket.protocol.subject.observe('clientHasLeft', callback, websocket);
+      }
+    }
   });
 };
 

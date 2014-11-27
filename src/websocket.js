@@ -3,7 +3,7 @@ var webSocketProperties = require('./helpers/websocket-properties');
 
 function MockSocks(url) {
   this.binaryType = 'blob';
-  this.url = url + '/'; // TODO: need a better solution for this.
+  this.url = url; //+ '/'; // TODO: need a better solution for this.
   this.readyState = MockSocks.CONNECTING;
   this.protocol = MockSocks.protocol;
 
@@ -64,7 +64,7 @@ MockSocks.prototype = {
   * protocol that it is closing the connection.
   */
   close: function() {
-    this.protocol.subject.notify('clientHasLeft');
+    this.protocol.subject.notify('clientHasLeft', webSocketMessage(null, this.url));
   },
 
   /**

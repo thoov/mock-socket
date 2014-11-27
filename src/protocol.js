@@ -1,3 +1,4 @@
+var webSocketMessage = require('./helpers/websocket-message');
 
 function Protocol(subject) {
   this.subject = subject;
@@ -17,6 +18,7 @@ Protocol.prototype = {
 
     this.subject.notify('updateReadyState', MockSocks.OPEN);
     this.subject.notify('clientHasJoined', this.server);
+    this.subject.notify('clientOnOpen', webSocketMessage(null, this.server.url));
   }
 };
 

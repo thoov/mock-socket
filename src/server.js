@@ -1,3 +1,4 @@
+var webSocketMessage = require('./helpers/websocket-message');
 
 function WebSocketServer(url, protocol) {
   this.url = url;
@@ -17,13 +18,16 @@ WebSocketServer.prototype = {
       case 'message':
         observerKey = 'clientHasSentMessage';
         break;
+      case 'close':
+        observerKey = 'clientHasLeft';
+        break;
     }
 
     this.protocol.subject.observe(observerKey, callback, this);
   },
 
   send: function(data) {
-    this.protocol.subject.notify('clientOnMessage', data);
+    this.protocol.subject.notify('clientOnMessage', webSocketMessage(data, this.url));
   }
 }
 
