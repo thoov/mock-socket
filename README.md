@@ -59,7 +59,7 @@ a qunit test:
 
 ```js
 window.WebSocket = MockSocket;
-// NOTE: you must create a new WebSocketServer before you create a new WebSockets object.
+// NOTE: you must create a new WebSocketServer before you create a new WebSocket object.
 var exampleServer = new WebSocketServer();
 exampleServer.on('connection', function(server) {
     server.on('message', function(data) {
