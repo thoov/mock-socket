@@ -1,6 +1,5 @@
 var del = require('del');
 var gulp = require('gulp');
-var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var browserify = require('browserify');
 var streamify = require('gulp-streamify');
@@ -14,11 +13,13 @@ gulp.task('build', ['clean'], function() {
   var bundleStream = browserify('./src/main.js').bundle()
 
   bundleStream
-  .pipe(source('bundle.js'))
+  .pipe(source('mock-socket.js'))
   .pipe(gulp.dest('./dist/'));
 
   bundleStream
-  .pipe(source('bundle.min.js'))
+  .pipe(source('mock-socket.min.js'))
   .pipe(streamify(uglify()))
   .pipe(gulp.dest('./dist/'));
 });
+
+gulp.task('default', ['build']);

@@ -4,15 +4,9 @@ var webSocketServer;
 module('Mock Socks Tests', {
   setup: function() {
     originalWebSocket = window.WebSocket;
-    window.WebSocket = MockSocks;
+    window.WebSocket = MockSocket;
 
-    var subject = new Subject();
-    var protocol = new Protocol(subject);
-
-    // TODO: Is there a better way of doing this?
-    MockSocks.protocol = protocol;
-
-    webSocketServer = new WebSocketServer('ws://localhost:8080', protocol);
+    webSocketServer = new WebSocketServer('ws://localhost:8080');
     webSocketServer.on('connection', function(server) {
       server.send('hello');
     });

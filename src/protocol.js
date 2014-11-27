@@ -11,12 +11,12 @@ Protocol.prototype = {
     // If the server is not ready and the client tries to connect this results in a the onerror method
     // being invoked.
     if(!this.server) {
-      this.subject.notify('updateReadyState', MockSocks.CLOSED);
+      this.subject.notify('updateReadyState', MockSocket.CLOSED);
       this.subject.notify('clientOnError');
       return false;
     }
 
-    this.subject.notify('updateReadyState', MockSocks.OPEN);
+    this.subject.notify('updateReadyState', MockSocket.OPEN);
     this.subject.notify('clientHasJoined', this.server);
     this.subject.notify('clientOnOpen', webSocketMessage(null, this.server.url));
   }

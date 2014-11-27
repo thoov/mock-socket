@@ -1,11 +1,11 @@
 var webSocketMessage = require('./helpers/websocket-message');
 var webSocketProperties = require('./helpers/websocket-properties');
 
-function MockSocks(url) {
+function MockSocket(url) {
   this.binaryType = 'blob';
   this.url = url; //+ '/'; // TODO: need a better solution for this.
-  this.readyState = MockSocks.CONNECTING;
-  this.protocol = MockSocks.protocol;
+  this.readyState = MockSocket.CONNECTING;
+  this.protocol = MockSocket.protocol;
 
   webSocketProperties(this);
 
@@ -22,14 +22,14 @@ function MockSocks(url) {
   }, 0, this);
 }
 
-MockSocks.PROTOCOL = null;
-MockSocks.CONNECTING = 0;
-MockSocks.OPEN = 1;
-MockSocks.CLOSING = 2;
-MockSocks.LOADING = 3;
-MockSocks.CLOSED = 4;
+MockSocket.PROTOCOL = null;
+MockSocket.CONNECTING = 0;
+MockSocket.OPEN = 1;
+MockSocket.CLOSING = 2;
+MockSocket.LOADING = 3;
+MockSocket.CLOSED = 4;
 
-MockSocks.prototype = {
+MockSocket.prototype = {
 
   /*
   * Holds the on*** callback functions. These are really just for the custom
@@ -79,4 +79,4 @@ MockSocks.prototype = {
   }
 };
 
-module.exports = MockSocks;
+module.exports = MockSocket;

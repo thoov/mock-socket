@@ -1,13 +1,16 @@
 {
-  "name": "mock-socks",
+  "name": "mock-socket",
   "version": "0.0.1",
-  "homepage": "https://github.com/thoov/mock-socks",
+  "homepage": "https://github.com/thoov/mock-socket",
   "authors": [
     "Travis Hoover <thoov7@gmail.com>"
   ],
   "description": "A mocking library for WebSockets",
   "keywords": [
-    "WebSockets"
+    "websockets",
+    "mock",
+    "mocksocks",
+    "sockets"
   ],
   "license": "MIT",
   "private": true,
