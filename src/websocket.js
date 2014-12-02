@@ -12,18 +12,18 @@ function MockSocket(url) {
 
   /*
   * Here we let the protocol know that we are both ready to change our ready state and that
-  * this client is connecting to the mock server. It is wrapped inside of a settimeout to allow the invoking
-  * thread finish assigning its on* methods before sending the notificiations. This is purely a timing hack.
+  * this client is connecting to the mock server. It is wrapped inside of a settimeout to allow the thread
+  * to finish assigning its on* methods before sending the notificiations. This is purely a timing hack.
+  * http://geekabyte.blogspot.com/2014/01/javascript-effect-of-setting-settimeout.html
   */
   window.setTimeout(function(context) {
     // create the initial observer for all ready state changes and
     // tell the protocol that the client has been created
     context.protocol.subject.observe('updateReadyState', context._updateReadyState, context);
     context.protocol.subject.notify('clientAttemptingToConnect');
-  }, 0, this);
+  }, 4, this);
 }
 
-MockSocket.PROTOCOL = null;
 MockSocket.CONNECTING = 0;
 MockSocket.OPEN = 1;
 MockSocket.CLOSING = 2;

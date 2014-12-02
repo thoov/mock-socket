@@ -1,6 +1,6 @@
-var webSocketMessage = require('./helpers/websocket-message');
 var Subject = require('./subject');
 var Protocol = require('./protocol');
+var webSocketMessage = require('./helpers/websocket-message');
 
 function WebSocketServer(url) {
   this.url = url;

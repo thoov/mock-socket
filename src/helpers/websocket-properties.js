@@ -1,5 +1,3 @@
-var webSocketMessage = require('./websocket-message');
-
 function webSocketProperties(websocket) {
   /*
   * Defining custom setters for the 4 mocked methods: onopen, onmessage, onerror, and onclose.
@@ -27,6 +25,14 @@ function webSocketProperties(websocket) {
       set: function(callback) {
         websocket._onclose = callback;
         websocket.protocol.subject.observe('clientHasLeft', callback, websocket);
+      }
+    },
+    onerror: {
+      enumerable: true,
+      get: function() { return websocket._onerror; },
+      set: function(callback) {
+        websocket._onerror = callback;
+        websocket.protocol.subject.observe('clientOnError', callback, websocket);
       }
     }
   });
