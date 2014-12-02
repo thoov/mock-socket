@@ -3,6 +3,7 @@
 	"launch_in_ci": ["PhantomJS"],
 	"src_files": [
 		"dist/**/*.js",
+		"src/helpers/url-transform.js",
 		"tests/**/*.js"
 	],
 	"src_files_ignore": "dist/**/*.min.js",

@@ -1,11 +1,12 @@
+var urlTransform = require('./helpers/url-transform');
 var webSocketMessage = require('./helpers/websocket-message');
 var webSocketProperties = require('./helpers/websocket-properties');
 
 function MockSocket(url) {
   this.binaryType = 'blob';
-  this.url = url; //+ '/'; // TODO: need a better solution for this.
+  this.url        = urlTransform(url);
   this.readyState = MockSocket.CONNECTING;
-  this.protocol = MockSocket.protocol;
+  this.protocol   = MockSocket.protocol;
 
   webSocketProperties(this);
 
@@ -33,7 +34,7 @@ MockSocket.prototype = {
 
   /*
   * Holds the on*** callback functions. These are really just for the custom
-  * getters that are defined above. Accessing these properties are not advised.
+  * getters that are defined in the helpers/websocket-properties. Accessing these properties is not advised.
   */
   _onopen: null,
   _onmessage: null,

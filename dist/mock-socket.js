@@ -9,7 +9,28 @@ window.WebSocketServer = server;
 window.Protocol = protocol;
 window.Subject = subject;
 
-},{"./protocol.js":4,"./server.js":5,"./subject.js":6,"./websocket.js":7}],2:[function(require,module,exports){
+},{"./protocol.js":5,"./server.js":6,"./subject.js":7,"./websocket.js":8}],2:[function(require,module,exports){
+/**
+* The native websocket object will transform urls without a pathname to have just a /.
+* As an example: ws://localhost:8080 would actually be ws://localhost:8080/. This function
+* does this transformation to stay inline with the native websocket implementation.
+*
+* @param {url: string} The url to transform.
+*/
+function urlTransform(url) {
+  var a = document.createElement('a');
+  a.href = url;
+
+  if(a.pathname === '/' && url.slice(-1) !== '/') {
+    url += '/';
+  }
+
+  return url;
+}
+
+module.exports = urlTransform;
+
+},{}],3:[function(require,module,exports){
 function webSocketMessage(data, url) {
   var message = {
     currentTarget: {
@@ -23,7 +44,7 @@ function webSocketMessage(data, url) {
 
 module.exports = webSocketMessage;
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 var webSocketMessage = require('./websocket-message');
 
 function webSocketProperties(websocket) {
@@ -60,7 +81,7 @@ function webSocketProperties(websocket) {
 
 module.exports = webSocketProperties;
 
-},{"./websocket-message":2}],4:[function(require,module,exports){
+},{"./websocket-message":3}],5:[function(require,module,exports){
 var webSocketMessage = require('./helpers/websocket-message');
 
 function Protocol(subject) {
@@ -87,7 +108,7 @@ Protocol.prototype = {
 
 module.exports = Protocol;
 
-},{"./helpers/websocket-message":2}],5:[function(require,module,exports){
+},{"./helpers/websocket-message":3}],6:[function(require,module,exports){
 var webSocketMessage = require('./helpers/websocket-message');
 var Subject = require('./subject');
 var Protocol = require('./protocol');
@@ -131,7 +152,7 @@ WebSocketServer.prototype = {
 
 module.exports = WebSocketServer;
 
-},{"./helpers/websocket-message":2,"./protocol":4,"./subject":6}],6:[function(require,module,exports){
+},{"./helpers/websocket-message":3,"./protocol":5,"./subject":7}],7:[function(require,module,exports){
 function Subject() {
   this._list = {};
 }
@@ -193,15 +214,16 @@ Subject.prototype = {
 
 module.exports = Subject;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
+var urlTransform = require('./helpers/url-transform');
 var webSocketMessage = require('./helpers/websocket-message');
 var webSocketProperties = require('./helpers/websocket-properties');
 
 function MockSocket(url) {
   this.binaryType = 'blob';
-  this.url = url; //+ '/'; // TODO: need a better solution for this.
+  this.url        = urlTransform(url);
   this.readyState = MockSocket.CONNECTING;
-  this.protocol = MockSocket.protocol;
+  this.protocol   = MockSocket.protocol;
 
   webSocketProperties(this);
 
@@ -229,7 +251,7 @@ MockSocket.prototype = {
 
   /*
   * Holds the on*** callback functions. These are really just for the custom
-  * getters that are defined above. Accessing these properties are not advised.
+  * getters that are defined in the helpers/websocket-properties. Accessing these properties is not advised.
   */
   _onopen: null,
   _onmessage: null,
@@ -277,4 +299,4 @@ MockSocket.prototype = {
 
 module.exports = MockSocket;
 
-},{"./helpers/websocket-message":2,"./helpers/websocket-properties":3}]},{},[1]);
+},{"./helpers/url-transform":2,"./helpers/websocket-message":3,"./helpers/websocket-properties":4}]},{},[1]);
