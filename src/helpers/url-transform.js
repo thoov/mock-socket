@@ -9,7 +9,8 @@ function urlTransform(url) {
   var a = document.createElement('a');
   a.href = url;
 
-  if(a.pathname === '/' && url.slice(-1) !== '/') {
+  // Note: that the a.pathname === '' is for phantomJS
+  if((a.pathname === '/' || a.pathname === '') && url.slice(-1) !== '/') {
     url += '/';
   }
 
