@@ -46,8 +46,6 @@ function webSocketMessage(data, url) {
 module.exports = webSocketMessage;
 
 },{}],4:[function(require,module,exports){
-var webSocketMessage = require('./websocket-message');
-
 function webSocketProperties(websocket) {
   /*
   * Defining custom setters for the 4 mocked methods: onopen, onmessage, onerror, and onclose.
@@ -76,13 +74,21 @@ function webSocketProperties(websocket) {
         websocket._onclose = callback;
         websocket.protocol.subject.observe('clientHasLeft', callback, websocket);
       }
+    },
+    onerror: {
+      enumerable: true,
+      get: function() { return websocket._onerror; },
+      set: function(callback) {
+        websocket._onerror = callback;
+        websocket.protocol.subject.observe('clientOnError', callback, websocket);
+      }
     }
   });
 };
 
 module.exports = webSocketProperties;
 
-},{"./websocket-message":3}],5:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 var webSocketMessage = require('./helpers/websocket-message');
 
 function Protocol(subject) {
@@ -110,9 +116,9 @@ Protocol.prototype = {
 module.exports = Protocol;
 
 },{"./helpers/websocket-message":3}],6:[function(require,module,exports){
-var webSocketMessage = require('./helpers/websocket-message');
 var Subject = require('./subject');
 var Protocol = require('./protocol');
+var webSocketMessage = require('./helpers/websocket-message');
 
 function WebSocketServer(url) {
   this.url = url;
@@ -230,18 +236,18 @@ function MockSocket(url) {
 
   /*
   * Here we let the protocol know that we are both ready to change our ready state and that
-  * this client is connecting to the mock server. It is wrapped inside of a settimeout to allow the invoking
-  * thread finish assigning its on* methods before sending the notificiations. This is purely a timing hack.
+  * this client is connecting to the mock server. It is wrapped inside of a settimeout to allow the thread
+  * to finish assigning its on* methods before sending the notificiations. This is purely a timing hack.
+  * http://geekabyte.blogspot.com/2014/01/javascript-effect-of-setting-settimeout.html
   */
   window.setTimeout(function(context) {
     // create the initial observer for all ready state changes and
     // tell the protocol that the client has been created
     context.protocol.subject.observe('updateReadyState', context._updateReadyState, context);
     context.protocol.subject.notify('clientAttemptingToConnect');
-  }, 0, this);
+  }, 4, this);
 }
 
-MockSocket.PROTOCOL = null;
 MockSocket.CONNECTING = 0;
 MockSocket.OPEN = 1;
 MockSocket.CLOSING = 2;
