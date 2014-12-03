@@ -1,14 +1,16 @@
 var Subject = require('./subject');
 var Protocol = require('./protocol');
+var urlTransform = require('./helpers/url-transform');
 var webSocketMessage = require('./helpers/websocket-message');
 
 function WebSocketServer(url) {
-  this.url = url;
+  this.url = urlTransform(url);
 
   var subject = new Subject();
   var protocol = new Protocol(subject);
 
-  window.MockSocket.protocol = protocol; // TODO: Is there a better way of doing this?
+  // TODO: Is there a better way of doing this?
+  window.MockSocket.protocol = protocol;
   this.protocol = protocol;
   protocol.server = this;
 }

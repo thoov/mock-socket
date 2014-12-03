@@ -1,25 +1,39 @@
 function Subject() {
-  this._list = {};
+  this.list = {};
 }
 
 Subject.prototype = {
+  
+  /**
+  * Binds a callback to a namespace. If notify is called on a namespace all "observers" will be
+  * fired with the context that is passed in.
+  *
+  * @param {namespace: string}
+  * @param {namespace: function}
+  * @param {namespace: object}
+  */
   observe: function(namespace, callback, context) {
-    if(!this._list[namespace]) {
-      this._list[namespace] = [];
-    }
 
-    if(typeof callback !== 'function') {
-      console.log('The callback which is trying to observe namespace: ' + namespace + ' is not a function.');
+    // Make sure the arguments are of the correct type
+    if( typeof namespace !== 'string' || typeof callback !== 'function' || (context && typeof context !== 'object')) {
       return false;
     }
 
-    this._list[namespace].push({callback: callback, context: context});
+    // If a namespace has not been created before then we need to "initialize" the namespace
+    if(!this.list[namespace]) {
+      this.list[namespace] = [];
+    }
+
+    this.list[namespace].push({callback: callback, context: context});
   },
 
+  /**
+  * TODO: Fix this
+  */
   unobserve: function(namespace, obj) {
-    for (var i = 0, len = this._list[namespace].length; i < len; i++) {
-      if (this._list[namespace][i] === obj) {
-        this._list[namespace].splice(i, 1);
+    for (var i = 0, len = this.list[namespace].length; i < len; i++) {
+      if (this.list[namespace][i] === obj) {
+        this.list[namespace].splice(i, 1);
         return true;
       }
     }
@@ -27,32 +41,37 @@ Subject.prototype = {
     return false;
   },
 
+  /**
+  * Remove all observers from a given namespace.
+  *
+  * @param {namespace: string} The namespace to clear.
+  */
   clearAll: function(namespace) {
 
     if(typeof namespace !== 'string') {
-      console.log('A valid namespace must be passed into clearAll.');
       return false;
     }
 
-    this._list[namespace] = [];
+    this.list[namespace] = [];
   },
 
+  /**
+  * Notify all callbacks that have been bound to the given namespace.
+  *
+  * @param {namespace: string} The namespace to notify observers on.
+  */
   notify: function(namespace) {
-    var args = Array.prototype.slice.call(arguments, 1); // This strips the namespace from the list of args
 
-    if(!this._list[namespace]) {
-      console.log('Trying to notify on namespace: ' + namespace + ' but an observer has never been added to it.');
+    // This strips the namespace from the list of args as we dont want to pass that into the callback.
+    var argumentsForCallback = Array.prototype.slice.call(arguments, 1);
+
+    if(typeof namespace === 'string' || !this.list[namespace]) {
       return false;
     }
 
-    for (var i = 0, len = this._list[namespace].length; i < len; i++) {
-
-      if(typeof this._list[namespace][i].callback !== 'function') {
-        console.log('An observer for the namespace: ' + namespace + ' is not a function.');
-        continue;
-      }
-
-      this._list[namespace][i].callback.apply(this._list[namespace][i].context, args);
+    // Loop over all of the observers and fire the callback function with the context.
+    for(var i = 0, len = this.list[namespace].length; i < len; i++) {
+      this.list[namespace][i].callback.apply(this.list[namespace][i].context, argumentsForCallback);
     }
   }
 };
