@@ -9,11 +9,18 @@ painless as possible. Inspired by [fakehr](https://github.com/trek/fakehr).
 
 ## Installation
 
-`bower install mock-socket --save-dev` or
-`npm install mock-socket --save-dev`
+```shell
+bower install mock-socket --save-dev
+# or
+npm install mock-socket --save-dev
+```
 
 Then include the dist file into your application:
-`bower_components/mock-socket/dist/mock-socket.min.js` or `node_modules/mock-socket/dist/mock-socket.min.js`
+```shell
+bower_components/mock-socket/dist/mock-socket.min.js
+# or
+node_modules/mock-socket/dist/mock-socket.min.js
+```
 
 
 ## Background
