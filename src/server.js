@@ -38,6 +38,12 @@ WebSocketServer.prototype = {
 
   send: function(data) {
     this.protocol.subject.notify('clientOnMessage', webSocketMessage(data, this.url));
+  },
+
+  close: function() {
+    window.setTimeout(function(context) {
+      context.protocol.closeConnection(context);
+    }, 4, this);
   }
 }
 

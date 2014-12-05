@@ -65,7 +65,9 @@ MockSocket.prototype = {
   * protocol that it is closing the connection.
   */
   close: function() {
-    this.protocol.subject.notify('clientHasLeft', webSocketMessage(null, this.url));
+    window.setTimeout(function(context) {
+      context.protocol.closeConnection(context);
+    }, 4, this);
   },
 
   /**

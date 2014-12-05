@@ -19,6 +19,11 @@ Protocol.prototype = {
     this.subject.notify('updateReadyState', MockSocket.OPEN);
     this.subject.notify('clientHasJoined', this.server);
     this.subject.notify('clientOnOpen', webSocketMessage(null, this.server.url));
+  },
+
+  closeConnection: function(initiator) {
+    this.subject.notify('updateReadyState', MockSocket.CLOSED);
+    this.subject.notify('clientHasLeft', webSocketMessage(null, initiator.url));
   }
 };
 

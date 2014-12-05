@@ -110,6 +110,11 @@ Protocol.prototype = {
     this.subject.notify('updateReadyState', MockSocket.OPEN);
     this.subject.notify('clientHasJoined', this.server);
     this.subject.notify('clientOnOpen', webSocketMessage(null, this.server.url));
+  },
+
+  closeConnection: function(initiator) {
+    this.subject.notify('updateReadyState', MockSocket.CLOSED);
+    this.subject.notify('clientHasLeft', webSocketMessage(null, initiator.url));
   }
 };
 
@@ -156,6 +161,12 @@ WebSocketServer.prototype = {
 
   send: function(data) {
     this.protocol.subject.notify('clientOnMessage', webSocketMessage(data, this.url));
+  },
+
+  close: function() {
+    window.setTimeout(function(context) {
+      context.protocol.closeConnection(context);
+    }, 4, this);
   }
 }
 
@@ -310,7 +321,9 @@ MockSocket.prototype = {
   * protocol that it is closing the connection.
   */
   close: function() {
-    this.protocol.subject.notify('clientHasLeft', webSocketMessage(null, this.url));
+    window.setTimeout(function(context) {
+      context.protocol.closeConnection(context);
+    }, 4, this);
   },
 
   /**

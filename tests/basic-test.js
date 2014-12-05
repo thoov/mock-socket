@@ -1,7 +1,6 @@
-var originalWebSocket;
 var webSocketServer;
 
-module('Mock Socks Tests', {
+module('Mock Socket Tests', {
   setup: function() {
     webSocketServer = new WebSocketServer('ws://localhost:8080');
     webSocketServer.on('connection', function(server) {
