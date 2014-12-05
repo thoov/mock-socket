@@ -7,7 +7,7 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "gulp build; testem ci",
+    "test": "testem ci",
     "build": "gulp build"
   },
   "repository": {
@@ -17,7 +17,7 @@
   "keywords": [
     "websockets",
     "mock",
-    "mocksocks",
+    "mocksocket",
     "sockets"
   ],
   "author": "Travis Hoover",

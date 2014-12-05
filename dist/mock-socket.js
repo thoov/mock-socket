@@ -167,7 +167,7 @@ function Subject() {
 }
 
 Subject.prototype = {
-  
+
   /**
   * Binds a callback to a namespace. If notify is called on a namespace all "observers" will be
   * fired with the context that is passed in.
@@ -229,7 +229,7 @@ Subject.prototype = {
     // This strips the namespace from the list of args as we dont want to pass that into the callback.
     var argumentsForCallback = Array.prototype.slice.call(arguments, 1);
 
-    if(typeof namespace === 'string' || !this.list[namespace]) {
+    if(typeof namespace !== 'string' || !this.list[namespace]) {
       return false;
     }
 

@@ -1,7 +1,6 @@
 {
 	"framework": "qunit",
 	"launch_in_ci": ["PhantomJS"],
-	"launch_in_dev": ["Chrome", "Firefox", "Safari", "PhantomJS"],
 	"src_files": [
 		"dist/**/*.js",
 		"src/helpers/url-transform.js",

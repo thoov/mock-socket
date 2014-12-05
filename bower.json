@@ -9,7 +9,7 @@
   "keywords": [
     "websockets",
     "mock",
-    "mocksocks",
+    "mocksocket",
     "sockets"
   ],
   "license": "MIT",
