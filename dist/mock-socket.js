@@ -9,11 +9,29 @@ window.WebSocketServer = server;
 window.Protocol = protocol;
 window.Subject = subject;
 
-},{"./protocol.js":5,"./server.js":6,"./subject.js":7,"./websocket.js":8}],2:[function(require,module,exports){
+},{"./protocol.js":6,"./server.js":7,"./subject.js":8,"./websocket.js":9}],2:[function(require,module,exports){
+/**
+* This delay allows the thread to finish assigning its on* methods
+* before invoking the delay callback. This is purely a timing hack.
+* http://geekabyte.blogspot.com/2014/01/javascript-effect-of-setting-settimeout.html
+*
+* @method
+* @param {callback: function} the callback which will be invoked after the timeout
+* @parma {context: object} the context in which to invoke the function
+*/
+function delay(callback, context) {
+  window.setTimeout(function(context) {
+    callback.call(context);
+  }, 4, context);
+}
+
+module.exports = delay;
+
+},{}],3:[function(require,module,exports){
 /**
 * The native websocket object will transform urls without a pathname to have just a /.
-* As an example: ws://localhost:8080 would actually be ws://localhost:8080/. This function
-* does this transformation to stay inline with the native websocket implementation.
+* As an example: ws://localhost:8080 would actually be ws://localhost:8080/ but ws://example.com/foo would not
+* change. This function does this transformation to stay inline with the native websocket implementation.
 *
 * @param {url: string} The url to transform.
 */
@@ -31,7 +49,16 @@ function urlTransform(url) {
 
 module.exports = urlTransform;
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
+/**
+* This is a mock websocket event message that is passed into the onopen, opmessage, ...
+* functions.
+*
+* TODO: Fill out this object to be more inline with the actual event object.
+*
+* @param {data: *} The data to send.
+* @param {url: string} The url of the place where the event is originating.
+*/
 function webSocketMessage(data, url) {
   var message = {
     currentTarget: {
@@ -45,11 +72,19 @@ function webSocketMessage(data, url) {
 
 module.exports = webSocketMessage;
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
+/**
+* This defines four methods: onopen, onmessage, onerror, and onclose. This is done this way instead of
+* just placing the methods on the prototype because we need to capture the callback when it is defined like so:
+*
+* mockSocket.onopen = function() { // this is what we need to store };
+*
+* The only way is to capture the callback via the custom setter below and then place them into the correct
+* namespace so they get invoked at the right time.
+*
+* @param {websocket: object} The websocket object which we want to define these properties onto
+*/
 function webSocketProperties(websocket) {
-  /*
-  * Defining custom setters for the 4 mocked methods: onopen, onmessage, onerror, and onclose.
-  */
   Object.defineProperties(websocket, {
     onopen: {
       enumerable: true,
@@ -88,7 +123,7 @@ function webSocketProperties(websocket) {
 
 module.exports = webSocketProperties;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 var webSocketMessage = require('./helpers/websocket-message');
 
 function Protocol(subject) {
@@ -120,7 +155,8 @@ Protocol.prototype = {
 
 module.exports = Protocol;
 
-},{"./helpers/websocket-message":3}],6:[function(require,module,exports){
+},{"./helpers/websocket-message":4}],7:[function(require,module,exports){
+var delay = require('./helpers/delay');
 var Subject = require('./subject');
 var Protocol = require('./protocol');
 var urlTransform = require('./helpers/url-transform');
@@ -160,19 +196,21 @@ WebSocketServer.prototype = {
   },
 
   send: function(data) {
-    this.protocol.subject.notify('clientOnMessage', webSocketMessage(data, this.url));
+    delay(function() {
+      this.protocol.subject.notify('clientOnMessage', webSocketMessage(data, this.url));
+    }, this);
   },
 
   close: function() {
-    window.setTimeout(function(context) {
-      context.protocol.closeConnection(context);
-    }, 4, this);
+    delay(function() {
+      this.protocol.closeConnection(this);
+    }, this);
   }
 }
 
 module.exports = WebSocketServer;
 
-},{"./helpers/url-transform":2,"./helpers/websocket-message":3,"./protocol":5,"./subject":7}],7:[function(require,module,exports){
+},{"./helpers/delay":2,"./helpers/url-transform":3,"./helpers/websocket-message":4,"./protocol":6,"./subject":8}],8:[function(require,module,exports){
 function Subject() {
   this.list = {};
 }
@@ -253,7 +291,8 @@ Subject.prototype = {
 
 module.exports = Subject;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
+var delay = require('./helpers/delay');
 var urlTransform = require('./helpers/url-transform');
 var webSocketMessage = require('./helpers/websocket-message');
 var webSocketProperties = require('./helpers/websocket-properties');
@@ -266,18 +305,12 @@ function MockSocket(url) {
 
   webSocketProperties(this);
 
-  /*
-  * Here we let the protocol know that we are both ready to change our ready state and that
-  * this client is connecting to the mock server. It is wrapped inside of a settimeout to allow the thread
-  * to finish assigning its on* methods before sending the notificiations. This is purely a timing hack.
-  * http://geekabyte.blogspot.com/2014/01/javascript-effect-of-setting-settimeout.html
-  */
-  window.setTimeout(function(context) {
-    // create the initial observer for all ready state changes and
-    // tell the protocol that the client has been created
-    context.protocol.subject.observe('updateReadyState', context._updateReadyState, context);
-    context.protocol.subject.notify('clientAttemptingToConnect');
-  }, 4, this);
+  delay(function() {
+    // Let the protocol know that we are both ready to change our ready state and that
+    // this client is connecting to the mock server.
+    this.protocol.subject.observe('updateReadyState', this._updateReadyState, context);
+    this.protocol.subject.notify('clientAttemptingToConnect');
+  }, this);
 }
 
 MockSocket.CONNECTING = 0;
@@ -313,7 +346,9 @@ MockSocket.prototype = {
   * @param {data: *}: Any javascript object which will be crafted into a MessageObject.
   */
   send: function(data) {
-    this.protocol.subject.notify('clientHasSentMessage', webSocketMessage(data, this.url));
+    delay(function() {
+      this.protocol.subject.notify('clientHasSentMessage', webSocketMessage(data, this.url));
+    }, this);
   },
 
   /**
@@ -321,9 +356,9 @@ MockSocket.prototype = {
   * protocol that it is closing the connection.
   */
   close: function() {
-    window.setTimeout(function(context) {
-      context.protocol.closeConnection(context);
-    }, 4, this);
+    delay(function() {
+      this.protocol.closeConnection(this);
+    }, this);
   },
 
   /**
@@ -340,4 +375,4 @@ MockSocket.prototype = {
 
 module.exports = MockSocket;
 
-},{"./helpers/url-transform":2,"./helpers/websocket-message":3,"./helpers/websocket-properties":4}]},{},[1]);
+},{"./helpers/delay":2,"./helpers/url-transform":3,"./helpers/websocket-message":4,"./helpers/websocket-properties":5}]},{},[1]);

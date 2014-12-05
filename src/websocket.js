@@ -1,3 +1,4 @@
+var delay = require('./helpers/delay');
 var urlTransform = require('./helpers/url-transform');
 var webSocketMessage = require('./helpers/websocket-message');
 var webSocketProperties = require('./helpers/websocket-properties');
@@ -10,18 +11,12 @@ function MockSocket(url) {
 
   webSocketProperties(this);
 
-  /*
-  * Here we let the protocol know that we are both ready to change our ready state and that
-  * this client is connecting to the mock server. It is wrapped inside of a settimeout to allow the thread
-  * to finish assigning its on* methods before sending the notificiations. This is purely a timing hack.
-  * http://geekabyte.blogspot.com/2014/01/javascript-effect-of-setting-settimeout.html
-  */
-  window.setTimeout(function(context) {
-    // create the initial observer for all ready state changes and
-    // tell the protocol that the client has been created
-    context.protocol.subject.observe('updateReadyState', context._updateReadyState, context);
-    context.protocol.subject.notify('clientAttemptingToConnect');
-  }, 4, this);
+  delay(function() {
+    // Let the protocol know that we are both ready to change our ready state and that
+    // this client is connecting to the mock server.
+    this.protocol.subject.observe('updateReadyState', this._updateReadyState, context);
+    this.protocol.subject.notify('clientAttemptingToConnect');
+  }, this);
 }
 
 MockSocket.CONNECTING = 0;
@@ -57,7 +52,9 @@ MockSocket.prototype = {
   * @param {data: *}: Any javascript object which will be crafted into a MessageObject.
   */
   send: function(data) {
-    this.protocol.subject.notify('clientHasSentMessage', webSocketMessage(data, this.url));
+    delay(function() {
+      this.protocol.subject.notify('clientHasSentMessage', webSocketMessage(data, this.url));
+    }, this);
   },
 
   /**
@@ -65,9 +62,9 @@ MockSocket.prototype = {
   * protocol that it is closing the connection.
   */
   close: function() {
-    window.setTimeout(function(context) {
-      context.protocol.closeConnection(context);
-    }, 4, this);
+    delay(function() {
+      this.protocol.closeConnection(this);
+    }, this);
   },
 
   /**

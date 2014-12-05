@@ -1,3 +1,4 @@
+var delay = require('./helpers/delay');
 var Subject = require('./subject');
 var Protocol = require('./protocol');
 var urlTransform = require('./helpers/url-transform');
@@ -37,13 +38,15 @@ WebSocketServer.prototype = {
   },
 
   send: function(data) {
-    this.protocol.subject.notify('clientOnMessage', webSocketMessage(data, this.url));
+    delay(function() {
+      this.protocol.subject.notify('clientOnMessage', webSocketMessage(data, this.url));
+    }, this);
   },
 
   close: function() {
-    window.setTimeout(function(context) {
-      context.protocol.closeConnection(context);
-    }, 4, this);
+    delay(function() {
+      this.protocol.closeConnection(this);
+    }, this);
   }
 }
 

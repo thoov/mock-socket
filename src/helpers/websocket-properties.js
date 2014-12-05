@@ -1,7 +1,15 @@
+/**
+* This defines four methods: onopen, onmessage, onerror, and onclose. This is done this way instead of
+* just placing the methods on the prototype because we need to capture the callback when it is defined like so:
+*
+* mockSocket.onopen = function() { // this is what we need to store };
+*
+* The only way is to capture the callback via the custom setter below and then place them into the correct
+* namespace so they get invoked at the right time.
+*
+* @param {websocket: object} The websocket object which we want to define these properties onto
+*/
 function webSocketProperties(websocket) {
-  /*
-  * Defining custom setters for the 4 mocked methods: onopen, onmessage, onerror, and onclose.
-  */
   Object.defineProperties(websocket, {
     onopen: {
       enumerable: true,
