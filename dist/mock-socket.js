@@ -15,7 +15,6 @@ window.Subject = subject;
 * before invoking the delay callback. This is purely a timing hack.
 * http://geekabyte.blogspot.com/2014/01/javascript-effect-of-setting-settimeout.html
 *
-* @method
 * @param {callback: function} the callback which will be invoked after the timeout
 * @parma {context: object} the context in which to invoke the function
 */
@@ -308,7 +307,7 @@ function MockSocket(url) {
   delay(function() {
     // Let the protocol know that we are both ready to change our ready state and that
     // this client is connecting to the mock server.
-    this.protocol.subject.observe('updateReadyState', this._updateReadyState, context);
+    this.protocol.subject.observe('updateReadyState', this._updateReadyState, this);
     this.protocol.subject.notify('clientAttemptingToConnect');
   }, this);
 }

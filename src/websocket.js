@@ -14,7 +14,7 @@ function MockSocket(url) {
   delay(function() {
     // Let the protocol know that we are both ready to change our ready state and that
     // this client is connecting to the mock server.
-    this.protocol.subject.observe('updateReadyState', this._updateReadyState, context);
+    this.protocol.subject.observe('updateReadyState', this._updateReadyState, this);
     this.protocol.subject.notify('clientAttemptingToConnect');
   }, this);
 }

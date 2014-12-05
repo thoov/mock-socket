@@ -1,10 +1,9 @@
 module('Mocksocket onopen tests');
 
 asyncTest('that the mocksocket onopen function is called after mocksocket object is created', function() {
-  var mockWebsockets;
   var socketUrl       = 'ws://localhost:8080';
   var webSocketServer = new WebSocketServer(socketUrl);
-  mockWebsockets = new MockSocket(socketUrl);
+  var mockWebsockets  = new MockSocket(socketUrl);
 
   expect(3);
 
@@ -18,10 +17,9 @@ asyncTest('that the mocksocket onopen function is called after mocksocket object
 
 
 asyncTest('that the mock server connection function is called after mocksocket object is created', function() {
-  var mockWebsockets;
   var socketUrl       = 'ws://localhost:8080';
   var webSocketServer = new WebSocketServer(socketUrl);
-  mockWebsockets = new MockSocket(socketUrl);
+  var mockWebsockets  = new MockSocket(socketUrl);
 
   expect(1);
 
@@ -29,4 +27,25 @@ asyncTest('that the mock server connection function is called after mocksocket o
     ok(true, 'mock server on connection fires as expected');
     start();
   });
+});
+
+
+asyncTest('that the mock server connection function is called after mocksocket object is created', function() {
+  var semaphore       = false;
+  var socketUrl       = 'ws://localhost:8080';
+  var webSocketServer = new WebSocketServer(socketUrl);
+  var mockWebsockets  = new MockSocket(socketUrl);
+
+  expect(2);
+
+  webSocketServer.on('connection', function() {
+    ok(!semaphore, 'The mock server\'s connection was called first before the onopen function');
+    semaphore = true;
+  });
+
+  mockWebsockets.onopen = function(event) {
+    ok(semaphore, 'The onopen function was called second after the mock server\'s connection function');
+    semaphore = true;
+    start();
+  };
 });

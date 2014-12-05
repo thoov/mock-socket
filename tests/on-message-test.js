@@ -1,11 +1,10 @@
 module('Mocksocket onmessage tests');
 
 asyncTest('that the mocksocket onmessage function is called after a message is sent', function() {
-  var mockWebsockets;
   var messageData     = 'simple string';
   var socketUrl       = 'ws://localhost:8080';
   var webSocketServer = new WebSocketServer(socketUrl);
-  mockWebsockets = new MockSocket(socketUrl);
+  var mockWebsockets  = new MockSocket(socketUrl);
 
   expect(4);
 

@@ -1,10 +1,9 @@
 module('Mocksocket onclose test');
 
 asyncTest('that the mocksocket onclose function is called after closing mocksocket', function() {
-  var mockWebsockets;
   var socketUrl       = 'ws://localhost:8080';
   var webSocketServer = new WebSocketServer(socketUrl);
-  mockWebsockets = new MockSocket(socketUrl);
+  var mockWebsockets  = new MockSocket(socketUrl);
 
   expect(4);
 
@@ -25,10 +24,9 @@ asyncTest('that the mocksocket onclose function is called after closing mocksock
 });
 
 asyncTest('that the mocksocket onclose function is called after closing the mockserver', function() {
-  var mockWebsockets;
   var socketUrl       = 'ws://localhost:8080';
   var webSocketServer = new WebSocketServer(socketUrl);
-  mockWebsockets = new MockSocket(socketUrl);
+  var mockWebsockets  = new MockSocket(socketUrl);
 
   expect(4);
 
