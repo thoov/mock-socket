@@ -1,6 +1,6 @@
-var delay = require('./helpers/delay');
-var urlTransform = require('./helpers/url-transform');
-var webSocketMessage = require('./helpers/websocket-message');
+var delay               = require('./helpers/delay');
+var urlTransform        = require('./helpers/url-transform');
+var webSocketMessage    = require('./helpers/websocket-message');
 var webSocketProperties = require('./helpers/websocket-properties');
 
 function MockSocket(url) {

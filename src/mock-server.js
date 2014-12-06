@@ -1,7 +1,7 @@
-var delay = require('./helpers/delay');
-var Subject = require('./subject');
-var Protocol = require('./protocol');
-var urlTransform = require('./helpers/url-transform');
+var Protocol         = require('./protocol');
+var delay            = require('./helpers/delay');
+var Subject          = require('./helpers/subject');
+var urlTransform     = require('./helpers/url-transform');
 var webSocketMessage = require('./helpers/websocket-message');
 
 function WebSocketServer(url) {

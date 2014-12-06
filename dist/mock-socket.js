@@ -1,15 +1,15 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var server = require('./server.js');
-var protocol = require('./protocol.js');
-var subject = require('./subject.js');
-var websocket = require('./websocket.js');
+var protocol   = require('./protocol');
+var mockserver = require('./mock-server');
+var mocksocket = require('./mock-socket');
+var subject    = require('./helpers/subject');
 
-window.MockSocket = websocket;
-window.WebSocketServer = server;
-window.Protocol = protocol;
 window.Subject = subject;
+window.Protocol = protocol;
+window.MockSocket = mocksocket;
+window.WebSocketServer = mockserver;
 
-},{"./protocol.js":6,"./server.js":7,"./subject.js":8,"./websocket.js":9}],2:[function(require,module,exports){
+},{"./helpers/subject":3,"./mock-server":7,"./mock-socket":8,"./protocol":9}],2:[function(require,module,exports){
 /**
 * This delay allows the thread to finish assigning its on* methods
 * before invoking the delay callback. This is purely a timing hack.
@@ -27,189 +27,6 @@ function delay(callback, context) {
 module.exports = delay;
 
 },{}],3:[function(require,module,exports){
-/**
-* The native websocket object will transform urls without a pathname to have just a /.
-* As an example: ws://localhost:8080 would actually be ws://localhost:8080/ but ws://example.com/foo would not
-* change. This function does this transformation to stay inline with the native websocket implementation.
-*
-* @param {url: string} The url to transform.
-*/
-function urlTransform(url) {
-  var a = document.createElement('a');
-  a.href = url;
-
-  // Note: that the a.pathname === '' is for phantomJS
-  if((a.pathname === '/' || a.pathname === '') && url.slice(-1) !== '/') {
-    url += '/';
-  }
-
-  return url;
-}
-
-module.exports = urlTransform;
-
-},{}],4:[function(require,module,exports){
-/**
-* This is a mock websocket event message that is passed into the onopen, opmessage, ...
-* functions.
-*
-* TODO: Fill out this object to be more inline with the actual event object.
-*
-* @param {data: *} The data to send.
-* @param {url: string} The url of the place where the event is originating.
-*/
-function webSocketMessage(data, url) {
-  var message = {
-    currentTarget: {
-      url: url
-    },
-    data: data
-  };
-
-  return message;
-};
-
-module.exports = webSocketMessage;
-
-},{}],5:[function(require,module,exports){
-/**
-* This defines four methods: onopen, onmessage, onerror, and onclose. This is done this way instead of
-* just placing the methods on the prototype because we need to capture the callback when it is defined like so:
-*
-* mockSocket.onopen = function() { // this is what we need to store };
-*
-* The only way is to capture the callback via the custom setter below and then place them into the correct
-* namespace so they get invoked at the right time.
-*
-* @param {websocket: object} The websocket object which we want to define these properties onto
-*/
-function webSocketProperties(websocket) {
-  Object.defineProperties(websocket, {
-    onopen: {
-      enumerable: true,
-      get: function() { return websocket._onopen; },
-      set: function(callback) {
-        websocket._onopen = callback;
-        websocket.protocol.subject.observe('clientOnOpen', callback, websocket);
-      }
-    },
-    onmessage: {
-      enumerable: true,
-      get: function() { return websocket._onmessage; },
-      set: function(callback) {
-        websocket._onmessage = callback;
-        websocket.protocol.subject.observe('clientOnMessage', callback, websocket);
-      }
-    },
-    onclose: {
-      enumerable: true,
-      get: function() { return websocket._onclose; },
-      set: function(callback) {
-        websocket._onclose = callback;
-        websocket.protocol.subject.observe('clientHasLeft', callback, websocket);
-      }
-    },
-    onerror: {
-      enumerable: true,
-      get: function() { return websocket._onerror; },
-      set: function(callback) {
-        websocket._onerror = callback;
-        websocket.protocol.subject.observe('clientOnError', callback, websocket);
-      }
-    }
-  });
-};
-
-module.exports = webSocketProperties;
-
-},{}],6:[function(require,module,exports){
-var webSocketMessage = require('./helpers/websocket-message');
-
-function Protocol(subject) {
-  this.subject = subject;
-  this.subject.observe('clientAttemptingToConnect', this.clientAttemptingToConnect, this);
-}
-
-Protocol.prototype = {
-  server: null,
-  clientAttemptingToConnect: function() {
-    // If the server is not ready and the client tries to connect this results in a the onerror method
-    // being invoked.
-    if(!this.server) {
-      this.subject.notify('updateReadyState', MockSocket.CLOSED);
-      this.subject.notify('clientOnError');
-      return false;
-    }
-
-    this.subject.notify('updateReadyState', MockSocket.OPEN);
-    this.subject.notify('clientHasJoined', this.server);
-    this.subject.notify('clientOnOpen', webSocketMessage(null, this.server.url));
-  },
-
-  closeConnection: function(initiator) {
-    this.subject.notify('updateReadyState', MockSocket.CLOSED);
-    this.subject.notify('clientHasLeft', webSocketMessage(null, initiator.url));
-  }
-};
-
-module.exports = Protocol;
-
-},{"./helpers/websocket-message":4}],7:[function(require,module,exports){
-var delay = require('./helpers/delay');
-var Subject = require('./subject');
-var Protocol = require('./protocol');
-var urlTransform = require('./helpers/url-transform');
-var webSocketMessage = require('./helpers/websocket-message');
-
-function WebSocketServer(url) {
-  this.url = urlTransform(url);
-
-  var subject = new Subject();
-  var protocol = new Protocol(subject);
-
-  // TODO: Is there a better way of doing this?
-  window.MockSocket.protocol = protocol;
-  this.protocol = protocol;
-  protocol.server = this;
-}
-
-WebSocketServer.prototype = {
-  protocol: null,
-
-  on: function(type, callback) {
-    var observerKey;
-
-    switch(type) {
-      case 'connection':
-        observerKey = 'clientHasJoined';
-        break;
-      case 'message':
-        observerKey = 'clientHasSentMessage';
-        break;
-      case 'close':
-        observerKey = 'clientHasLeft';
-        break;
-    }
-
-    this.protocol.subject.observe(observerKey, callback, this);
-  },
-
-  send: function(data) {
-    delay(function() {
-      this.protocol.subject.notify('clientOnMessage', webSocketMessage(data, this.url));
-    }, this);
-  },
-
-  close: function() {
-    delay(function() {
-      this.protocol.closeConnection(this);
-    }, this);
-  }
-}
-
-module.exports = WebSocketServer;
-
-},{"./helpers/delay":2,"./helpers/url-transform":3,"./helpers/websocket-message":4,"./protocol":6,"./subject":8}],8:[function(require,module,exports){
 function Subject() {
   this.list = {};
 }
@@ -290,10 +107,161 @@ Subject.prototype = {
 
 module.exports = Subject;
 
-},{}],9:[function(require,module,exports){
-var delay = require('./helpers/delay');
-var urlTransform = require('./helpers/url-transform');
+},{}],4:[function(require,module,exports){
+/**
+* The native websocket object will transform urls without a pathname to have just a /.
+* As an example: ws://localhost:8080 would actually be ws://localhost:8080/ but ws://example.com/foo would not
+* change. This function does this transformation to stay inline with the native websocket implementation.
+*
+* @param {url: string} The url to transform.
+*/
+function urlTransform(url) {
+  var a = document.createElement('a');
+  a.href = url;
+
+  // Note: that the a.pathname === '' is for phantomJS
+  if((a.pathname === '/' || a.pathname === '') && url.slice(-1) !== '/') {
+    url += '/';
+  }
+
+  return url;
+}
+
+module.exports = urlTransform;
+
+},{}],5:[function(require,module,exports){
+/**
+* This is a mock websocket event message that is passed into the onopen, opmessage, ...
+* functions.
+*
+* TODO: Fill out this object to be more inline with the actual event object.
+*
+* @param {data: *} The data to send.
+* @param {url: string} The url of the place where the event is originating.
+*/
+function webSocketMessage(data, url) {
+  var message = {
+    currentTarget: {
+      url: url
+    },
+    data: data
+  };
+
+  return message;
+};
+
+module.exports = webSocketMessage;
+
+},{}],6:[function(require,module,exports){
+/**
+* This defines four methods: onopen, onmessage, onerror, and onclose. This is done this way instead of
+* just placing the methods on the prototype because we need to capture the callback when it is defined like so:
+*
+* mockSocket.onopen = function() { // this is what we need to store };
+*
+* The only way is to capture the callback via the custom setter below and then place them into the correct
+* namespace so they get invoked at the right time.
+*
+* @param {websocket: object} The websocket object which we want to define these properties onto
+*/
+function webSocketProperties(websocket) {
+  Object.defineProperties(websocket, {
+    onopen: {
+      enumerable: true,
+      get: function() { return websocket._onopen; },
+      set: function(callback) {
+        websocket._onopen = callback;
+        websocket.protocol.subject.observe('clientOnOpen', callback, websocket);
+      }
+    },
+    onmessage: {
+      enumerable: true,
+      get: function() { return websocket._onmessage; },
+      set: function(callback) {
+        websocket._onmessage = callback;
+        websocket.protocol.subject.observe('clientOnMessage', callback, websocket);
+      }
+    },
+    onclose: {
+      enumerable: true,
+      get: function() { return websocket._onclose; },
+      set: function(callback) {
+        websocket._onclose = callback;
+        websocket.protocol.subject.observe('clientHasLeft', callback, websocket);
+      }
+    },
+    onerror: {
+      enumerable: true,
+      get: function() { return websocket._onerror; },
+      set: function(callback) {
+        websocket._onerror = callback;
+        websocket.protocol.subject.observe('clientOnError', callback, websocket);
+      }
+    }
+  });
+};
+
+module.exports = webSocketProperties;
+
+},{}],7:[function(require,module,exports){
+var Protocol         = require('./protocol');
+var delay            = require('./helpers/delay');
+var Subject          = require('./helpers/subject');
+var urlTransform     = require('./helpers/url-transform');
 var webSocketMessage = require('./helpers/websocket-message');
+
+function WebSocketServer(url) {
+  this.url = urlTransform(url);
+
+  var subject = new Subject();
+  var protocol = new Protocol(subject);
+
+  // TODO: Is there a better way of doing this?
+  window.MockSocket.protocol = protocol;
+  this.protocol = protocol;
+  protocol.server = this;
+}
+
+WebSocketServer.prototype = {
+  protocol: null,
+
+  on: function(type, callback) {
+    var observerKey;
+
+    switch(type) {
+      case 'connection':
+        observerKey = 'clientHasJoined';
+        break;
+      case 'message':
+        observerKey = 'clientHasSentMessage';
+        break;
+      case 'close':
+        observerKey = 'clientHasLeft';
+        break;
+    }
+
+    this.protocol.subject.observe(observerKey, callback, this);
+  },
+
+  send: function(data) {
+    delay(function() {
+      this.protocol.subject.notify('clientOnMessage', webSocketMessage(data, this.url));
+    }, this);
+  },
+
+  close: function() {
+    delay(function() {
+      this.protocol.closeConnection(this);
+    }, this);
+  }
+}
+
+module.exports = WebSocketServer;
+
+},{"./helpers/delay":2,"./helpers/subject":3,"./helpers/url-transform":4,"./helpers/websocket-message":5,"./protocol":9}],8:[function(require,module,exports){
+var delay               = require('./helpers/delay');
+var urlTransform        = require('./helpers/url-transform');
+var webSocketMessage    = require('./helpers/websocket-message');
 var webSocketProperties = require('./helpers/websocket-properties');
 
 function MockSocket(url) {
@@ -374,4 +342,36 @@ MockSocket.prototype = {
 
 module.exports = MockSocket;
 
-},{"./helpers/delay":2,"./helpers/url-transform":3,"./helpers/websocket-message":4,"./helpers/websocket-properties":5}]},{},[1]);
+},{"./helpers/delay":2,"./helpers/url-transform":4,"./helpers/websocket-message":5,"./helpers/websocket-properties":6}],9:[function(require,module,exports){
+var webSocketMessage = require('./helpers/websocket-message');
+
+function Protocol(subject) {
+  this.subject = subject;
+  this.subject.observe('clientAttemptingToConnect', this.clientAttemptingToConnect, this);
+}
+
+Protocol.prototype = {
+  server: null,
+  clientAttemptingToConnect: function() {
+    // If the server is not ready and the client tries to connect this results in a the onerror method
+    // being invoked.
+    if(!this.server) {
+      this.subject.notify('updateReadyState', MockSocket.CLOSED);
+      this.subject.notify('clientOnError');
+      return false;
+    }
+
+    this.subject.notify('updateReadyState', MockSocket.OPEN);
+    this.subject.notify('clientHasJoined', this.server);
+    this.subject.notify('clientOnOpen', webSocketMessage(null, this.server.url));
+  },
+
+  closeConnection: function(initiator) {
+    this.subject.notify('updateReadyState', MockSocket.CLOSED);
+    this.subject.notify('clientHasLeft', webSocketMessage(null, initiator.url));
+  }
+};
+
+module.exports = Protocol;
+
+},{"./helpers/websocket-message":5}]},{},[1]);
