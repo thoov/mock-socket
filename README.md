@@ -28,7 +28,7 @@ node_modules/mock-socket/dist/mock-socket.min.js
 MockSocket is comprised of 2 main parts. A mock "server" object and a mock "WebSockets" object. In this section
 I will explain both of these parts.
 
-**Mock Sockets Server**
+**Mock Sockets Server:**
 This library adds a global object called `WebSocketServer` which you can use to create a fake socket server instance. Here
 is where you would "mock" your server side application logic. Below is an example of this in action:
 
