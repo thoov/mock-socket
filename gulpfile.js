@@ -10,7 +10,7 @@ gulp.task('clean', function(cb) {
 });
 
 gulp.task('build', ['clean'], function() {
-  var bundleStream = browserify('./src/main.js').bundle()
+  var bundleStream = browserify('./src/main.js').bundle();
 
   bundleStream
   .pipe(source('mock-socket.js'))
