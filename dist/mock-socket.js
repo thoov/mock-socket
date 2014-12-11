@@ -43,7 +43,7 @@ function socketEventMessage(name, data, origin) {
 	var source			= null;
 	var ports 			= null;
 	var sourcePlacehold = null;
-	var messageEvent 	= new window.MessageEvent(name);
+	var messageEvent 	= new MessageEvent(name);
 	messageEvent.initMessageEvent(name, bubbles, cancelable, data, origin, lastEventId, source, ports);
 
 	Object.defineProperties(messageEvent, {
