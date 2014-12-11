@@ -1,6 +1,6 @@
 var delay               = require('./helpers/delay');
 var urlTransform        = require('./helpers/url-transform');
-var webSocketMessage    = require('./helpers/websocket-message');
+var socketMessageEvent  = require('./helpers/message-event');
 var webSocketProperties = require('./helpers/websocket-properties');
 
 function MockSocket(url) {
@@ -53,7 +53,7 @@ MockSocket.prototype = {
   */
   send: function(data) {
     delay(function() {
-      this.protocol.subject.notify('clientHasSentMessage', webSocketMessage(data, this.url));
+      this.protocol.subject.notify('clientHasSentMessage', socketMessageEvent('message', data, this.url));
     }, this);
   },
 

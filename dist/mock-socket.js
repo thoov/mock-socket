@@ -10,7 +10,7 @@ window.Protocol = protocol;
 window.MockSocket = mocksocket;
 window.WebSocketServer = mockserver;
 
-},{"./helpers/subject":3,"./mock-server":7,"./mock-socket":8,"./protocol":9}],2:[function(require,module,exports){
+},{"./helpers/subject":4,"./mock-server":7,"./mock-socket":8,"./protocol":9}],2:[function(require,module,exports){
 /**
 * This delay allows the thread to finish assigning its on* methods
 * before invoking the delay callback. This is purely a timing hack.
@@ -28,6 +28,71 @@ function delay(callback, context) {
 module.exports = delay;
 
 },{}],3:[function(require,module,exports){
+/*
+* This is a mock websocket event message that is passed into the onopen,
+* opmessage, etc functions.
+*
+* @param {name: string} The name of the event
+* @param {data: *} The data to send.
+* @param {origin: string} The url of the place where the event is originating.
+*/
+function socketEventMessage(name, data, origin) {
+	var bubbles 				= false;
+	var cancelable 			= false;
+	var lastEventId 		= null;
+	var source					= null;
+	var ports 					= null;
+	var sourcePlacehold = null;
+
+	try {
+		var messageEvent = new MessageEvent(name);
+		messageEvent.initMessageEvent(name, bubbles, cancelable, data, origin, lastEventId, source, ports);
+
+		Object.defineProperties(messageEvent, {
+			source:  {
+				get: function() { return sourcePlacehold; },
+				set: function(value) { sourcePlacehold = value; }
+			},
+			srcElement: {
+				get: function() { return this.source; }
+			},
+			currentTarget: {
+				get: function() { return this.source; }
+			}
+		});
+	}
+	catch (e) {
+		// We are unable to create a MessageEvent Object. This should only be happening in PhantomJS.
+		var messageEvent = {
+			bubbles: bubbles,
+			cancelable: cancelable,
+			data: data,
+			origin: origin,
+			lastEventId: lastEventId,
+			source: source,
+			ports: ports
+		};
+
+		Object.defineProperties(messageEvent, {
+			source:  {
+				get: function() { return sourcePlacehold; },
+				set: function(value) { sourcePlacehold = value; }
+			},
+			srcElement: {
+				get: function() { return this.source; }
+			},
+			currentTarget: {
+				get: function() { return this.source; }
+			}
+		});
+	}
+
+	return messageEvent;
+}
+
+module.exports = socketEventMessage;
+
+},{}],4:[function(require,module,exports){
 function Subject() {
   this.list = {};
 }
@@ -108,7 +173,7 @@ Subject.prototype = {
 
 module.exports = Subject;
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /**
 * The native websocket object will transform urls without a pathname to have just a /.
 * As an example: ws://localhost:8080 would actually be ws://localhost:8080/ but ws://example.com/foo would not
@@ -130,29 +195,6 @@ function urlTransform(url) {
 
 module.exports = urlTransform;
 
-},{}],5:[function(require,module,exports){
-/**
-* This is a mock websocket event message that is passed into the onopen, opmessage, ...
-* functions.
-*
-* TODO: Fill out this object to be more inline with the actual event object.
-*
-* @param {data: *} The data to send.
-* @param {url: string} The url of the place where the event is originating.
-*/
-function webSocketMessage(data, url) {
-  var message = {
-    currentTarget: {
-      url: url
-    },
-    data: data
-  };
-
-  return message;
-};
-
-module.exports = webSocketMessage;
-
 },{}],6:[function(require,module,exports){
 /**
 * This defines four methods: onopen, onmessage, onerror, and onclose. This is done this way instead of
@@ -166,37 +208,44 @@ module.exports = webSocketMessage;
 * @param {websocket: object} The websocket object which we want to define these properties onto
 */
 function webSocketProperties(websocket) {
+  var eventMessageSource = function(callback) {
+    return function(event) {
+      event.source = websocket;
+      callback.apply(websocket, arguments);
+    }
+  };
+
   Object.defineProperties(websocket, {
     onopen: {
       enumerable: true,
       get: function() { return websocket._onopen; },
       set: function(callback) {
-        websocket._onopen = callback;
-        websocket.protocol.subject.observe('clientOnOpen', callback, websocket);
+        websocket._onopen = eventMessageSource(callback);
+        websocket.protocol.subject.observe('clientOnOpen', websocket._onopen, websocket);
       }
     },
     onmessage: {
       enumerable: true,
       get: function() { return websocket._onmessage; },
       set: function(callback) {
-        websocket._onmessage = callback;
-        websocket.protocol.subject.observe('clientOnMessage', callback, websocket);
+        websocket._onmessage = eventMessageSource(callback);
+        websocket.protocol.subject.observe('clientOnMessage', websocket._onmessage, websocket);
       }
     },
     onclose: {
       enumerable: true,
       get: function() { return websocket._onclose; },
       set: function(callback) {
-        websocket._onclose = callback;
-        websocket.protocol.subject.observe('clientHasLeft', callback, websocket);
+        websocket._onclose = eventMessageSource(callback);
+        websocket.protocol.subject.observe('clientHasLeft', websocket._onclose, websocket);
       }
     },
     onerror: {
       enumerable: true,
       get: function() { return websocket._onerror; },
       set: function(callback) {
-        websocket._onerror = callback;
-        websocket.protocol.subject.observe('clientOnError', callback, websocket);
+        websocket._onerror = eventMessageSource(callback);
+        websocket.protocol.subject.observe('clientOnError', websocket._onerror, websocket);
       }
     }
   });
@@ -209,7 +258,7 @@ var Protocol         = require('./protocol');
 var delay            = require('./helpers/delay');
 var Subject          = require('./helpers/subject');
 var urlTransform     = require('./helpers/url-transform');
-var webSocketMessage = require('./helpers/websocket-message');
+var socketMessageEvent = require('./helpers/message-event');
 
 function WebSocketServer(url) {
   var subject   = new Subject();
@@ -268,7 +317,7 @@ WebSocketServer.prototype = {
   */
   send: function(data) {
     delay(function() {
-      this.protocol.subject.notify('clientOnMessage', webSocketMessage(data, this.url));
+      this.protocol.subject.notify('clientOnMessage', socketMessageEvent('message', data, this.url));
     }, this);
   },
 
@@ -284,10 +333,10 @@ WebSocketServer.prototype = {
 
 module.exports = WebSocketServer;
 
-},{"./helpers/delay":2,"./helpers/subject":3,"./helpers/url-transform":4,"./helpers/websocket-message":5,"./protocol":9}],8:[function(require,module,exports){
+},{"./helpers/delay":2,"./helpers/message-event":3,"./helpers/subject":4,"./helpers/url-transform":5,"./protocol":9}],8:[function(require,module,exports){
 var delay               = require('./helpers/delay');
 var urlTransform        = require('./helpers/url-transform');
-var webSocketMessage    = require('./helpers/websocket-message');
+var socketMessageEvent  = require('./helpers/message-event');
 var webSocketProperties = require('./helpers/websocket-properties');
 
 function MockSocket(url) {
@@ -340,7 +389,7 @@ MockSocket.prototype = {
   */
   send: function(data) {
     delay(function() {
-      this.protocol.subject.notify('clientHasSentMessage', webSocketMessage(data, this.url));
+      this.protocol.subject.notify('clientHasSentMessage', socketMessageEvent('message', data, this.url));
     }, this);
   },
 
@@ -368,8 +417,8 @@ MockSocket.prototype = {
 
 module.exports = MockSocket;
 
-},{"./helpers/delay":2,"./helpers/url-transform":4,"./helpers/websocket-message":5,"./helpers/websocket-properties":6}],9:[function(require,module,exports){
-var webSocketMessage = require('./helpers/websocket-message');
+},{"./helpers/delay":2,"./helpers/message-event":3,"./helpers/url-transform":5,"./helpers/websocket-properties":6}],9:[function(require,module,exports){
+var socketMessageEvent = require('./helpers/message-event');
 
 function Protocol(subject) {
   this.subject = subject;
@@ -389,15 +438,15 @@ Protocol.prototype = {
 
     this.subject.notify('updateReadyState', MockSocket.OPEN);
     this.subject.notify('clientHasJoined', this.server);
-    this.subject.notify('clientOnOpen', webSocketMessage(null, this.server.url));
+    this.subject.notify('clientOnOpen', socketMessageEvent('open', null, this.server.url));
   },
 
   closeConnection: function(initiator) {
     this.subject.notify('updateReadyState', MockSocket.CLOSED);
-    this.subject.notify('clientHasLeft', webSocketMessage(null, initiator.url));
+    this.subject.notify('clientHasLeft', socketMessageEvent('close', null, initiator.url));
   }
 };
 
 module.exports = Protocol;
 
-},{"./helpers/websocket-message":5}]},{},[1]);
+},{"./helpers/message-event":3}]},{},[1]);

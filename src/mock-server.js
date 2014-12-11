@@ -2,7 +2,7 @@ var Protocol         = require('./protocol');
 var delay            = require('./helpers/delay');
 var Subject          = require('./helpers/subject');
 var urlTransform     = require('./helpers/url-transform');
-var webSocketMessage = require('./helpers/websocket-message');
+var socketMessageEvent = require('./helpers/message-event');
 
 function WebSocketServer(url) {
   var subject   = new Subject();
@@ -61,7 +61,7 @@ WebSocketServer.prototype = {
   */
   send: function(data) {
     delay(function() {
-      this.protocol.subject.notify('clientOnMessage', webSocketMessage(data, this.url));
+      this.protocol.subject.notify('clientOnMessage', socketMessageEvent('message', data, this.url));
     }, this);
   },
 
