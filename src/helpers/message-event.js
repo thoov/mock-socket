@@ -7,12 +7,12 @@
 * @param {origin: string} The url of the place where the event is originating.
 */
 function socketEventMessage(name, data, origin) {
-	var bubbles 				= false;
-	var cancelable 			= false;
-	var lastEventId 		= '';
-	var source					= null;
-	var ports 					= null;
-	var targetPlacehold = null;
+	var bubbles 		= false;
+	var cancelable 		= false;
+	var lastEventId 	= '';
+	var source		= null;
+	var ports 		= null;
+	var targetPlacehold	= null;
 
 	try {
 		var messageEvent = new MessageEvent(name);
