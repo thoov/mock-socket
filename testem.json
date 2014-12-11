@@ -4,7 +4,7 @@
 	"src_files": [
 		"dist/**/*.js",
 		"src/helpers/**/*.js",
-		"tests/**/*.js"
+		"tests/**/*-test.js"
 	],
 	"src_files_ignore": "dist/**/*.min.js",
 	"phantomjs_debug_port_disabled": 8007
