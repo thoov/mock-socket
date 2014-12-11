@@ -9,25 +9,25 @@
 function socketEventMessage(name, data, origin) {
 	var bubbles 				= false;
 	var cancelable 			= false;
-	var lastEventId 		= null;
+	var lastEventId 		= '';
 	var source					= null;
 	var ports 					= null;
-	var sourcePlacehold = null;
+	var targetPlacehold = null;
 
 	try {
 		var messageEvent = new MessageEvent(name);
-		messageEvent.initMessageEvent(name, bubbles, cancelable, data, origin, lastEventId, source, ports);
+		messageEvent.initMessageEvent(name, bubbles, cancelable, data, origin, lastEventId);
 
 		Object.defineProperties(messageEvent, {
-			source:  {
-				get: function() { return sourcePlacehold; },
-				set: function(value) { sourcePlacehold = value; }
+			target:  {
+				get: function() { return targetPlacehold; },
+				set: function(value) { targetPlacehold = value; }
 			},
 			srcElement: {
-				get: function() { return this.source; }
+				get: function() { return this.target; }
 			},
 			currentTarget: {
-				get: function() { return this.source; }
+				get: function() { return this.target; }
 			}
 		});
 	}
@@ -40,19 +40,22 @@ function socketEventMessage(name, data, origin) {
 			origin: origin,
 			lastEventId: lastEventId,
 			source: source,
-			ports: ports
+			ports: ports,
+			defaultPrevented: false,
+			returnValue: true,
+			clipboardData: undefined
 		};
 
 		Object.defineProperties(messageEvent, {
-			source:  {
-				get: function() { return sourcePlacehold; },
-				set: function(value) { sourcePlacehold = value; }
+			target:  {
+				get: function() { return targetPlacehold; },
+				set: function(value) { targetPlacehold = value; }
 			},
 			srcElement: {
-				get: function() { return this.source; }
+				get: function() { return this.target; }
 			},
 			currentTarget: {
-				get: function() { return this.source; }
+				get: function() { return this.target; }
 			}
 		});
 	}

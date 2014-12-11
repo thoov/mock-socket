@@ -12,7 +12,7 @@
 function webSocketProperties(websocket) {
   var eventMessageSource = function(callback) {
     return function(event) {
-      event.source = websocket;
+      event.target = websocket;
       callback.apply(websocket, arguments);
     }
   };

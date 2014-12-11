@@ -1,12 +1,18 @@
 module('Websocket message event Tests');
 
-test('Url transform is done correctly', function(){
+test('Mock message event has correct properties', function(){
 	var testObject = {foo: 'bar'};
 	var eventMessage = socketEventMessage('open', 'testing', 'ws://localhost');
 
-	eventMessage.source = testObject;
+	eventMessage.target = testObject;
 
-	ok(eventMessage.source === eventMessage.srcElement);
-	ok(eventMessage.source === eventMessage.currentTarget);
+	ok(eventMessage.source === null);
+	ok(eventMessage.target === eventMessage.srcElement);
+	ok(eventMessage.target === eventMessage.currentTarget);
 	equal(eventMessage.currentTarget.foo, 'bar');
+
+	equal(eventMessage.lastEventId, '');
+	equal(eventMessage.clipboardData, undefined);
+	equal(eventMessage.defaultPrevented, false);
+	equal(eventMessage.returnValue, true);
 });
