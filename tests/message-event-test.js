@@ -6,9 +6,9 @@ test('Mock message event has correct properties', function(){
 
 	eventMessage.target = testObject;
 
-	ok(eventMessage.source === null);
-	ok(eventMessage.target === eventMessage.srcElement);
-	ok(eventMessage.target === eventMessage.currentTarget);
+	equal(eventMessage.source, null);
+	equal(eventMessage.target, eventMessage.srcElement);
+	equal(eventMessage.target, eventMessage.currentTarget);
 	equal(eventMessage.currentTarget.foo, 'bar');
 
 	equal(eventMessage.lastEventId, '');
