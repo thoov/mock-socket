@@ -265,8 +265,7 @@ var urlTransform     = require('./helpers/url-transform');
 var socketMessageEvent = require('./helpers/message-event');
 
 function WebSocketServer(url) {
-  var subject   = new Subject();
-  var protocol  = new Protocol(subject);
+  var protocol  = new Protocol();
   this.url      = urlTransform(url);
 
   // TODO: Is there a better way of doing this?
@@ -309,7 +308,7 @@ WebSocketServer.prototype = {
 
     // Make sure that the observerKey is valid before observing on it.
     if(typeof observerKey === 'string') {
-      this.protocol.subject.observe(observerKey, callback, this);
+      this.protocol.setServerOnCallback(observerKey, callback, this);
     }
   },
 
@@ -321,7 +320,7 @@ WebSocketServer.prototype = {
   */
   send: function(data) {
     delay(function() {
-      this.protocol.subject.notify('clientOnMessage', socketMessageEvent('message', data, this.url));
+      this.protocol.sendMessageToClients(socketMessageEvent('message', data, this.url));
     }, this);
   },
 
@@ -330,7 +329,7 @@ WebSocketServer.prototype = {
   */
   close: function() {
     delay(function() {
-      this.protocol.closeConnection(this);
+      this.protocol.closeConnection(socketMessageEvent('close', null, this.url));
     }, this);
   }
 }
@@ -354,8 +353,7 @@ function MockSocket(url) {
   delay(function() {
     // Let the protocol know that we are both ready to change our ready state and that
     // this client is connecting to the mock server.
-    this.protocol.subject.observe('updateReadyState', this._updateReadyState, this);
-    this.protocol.subject.notify('clientAttemptingToConnect');
+    this.protocol.clientIsConnecting(this, this._updateReadyState);
   }, this);
 }
 
@@ -393,7 +391,7 @@ MockSocket.prototype = {
   */
   send: function(data) {
     delay(function() {
-      this.protocol.subject.notify('clientHasSentMessage', socketMessageEvent('message', data, this.url));
+      this.protocol.sendMessageToServer(socketMessageEvent('message', data, this.url));
     }, this);
   },
 
@@ -403,7 +401,7 @@ MockSocket.prototype = {
   */
   close: function() {
     delay(function() {
-      this.protocol.closeConnection(this);
+      this.protocol.closeConnection(socketMessageEvent('close', null, this.url));
     }, this);
   },
 
@@ -426,8 +424,8 @@ module.exports = MockSocket;
 },{"./helpers/delay":2,"./helpers/message-event":3,"./helpers/url-transform":5,"./helpers/websocket-properties":6}],9:[function(require,module,exports){
 var socketMessageEvent = require('./helpers/message-event');
 
-function Protocol(subject) {
-  this.subject = subject;
+function Protocol() {
+  this.subject = new Subject();
   this.subject.observe('clientAttemptingToConnect', this.clientAttemptingToConnect, this);
 }
 
@@ -447,9 +445,57 @@ Protocol.prototype = {
     this.subject.notify('clientOnOpen', socketMessageEvent('open', null, this.server.url));
   },
 
-  closeConnection: function(initiator) {
+  /*
+  * This notifies the mock server that a client is connecting and also sets up
+  * the ready state observer.
+  *
+  * @param {client: object} the context of the client
+  * @param {readyStateFunction: function} the function that will be invoked on a ready state change
+  */
+  clientIsConnecting: function(client, readyStateFunction) {
+    this.subject.observe('updateReadyState', readyStateFunction, client);
+    this.subject.notify('clientAttemptingToConnect');
+  },
+
+  /*
+  * Closes a connection.
+  *
+  * TODO: make sure this works with multiple mock clients.
+  *
+  * @param {messageEvent: object} the mock message event.
+  */
+  closeConnection: function(messageEvent) {
     this.subject.notify('updateReadyState', MockSocket.CLOSED);
-    this.subject.notify('clientHasLeft', socketMessageEvent('close', null, initiator.url));
+    this.subject.notify('clientHasLeft', messageEvent);
+  },
+
+  /*
+  * Notifies the mock server that a client has sent a message.
+  *
+  * @param {messageEvent: object} the mock message event.
+  */
+  sendMessageToServer: function(messageEvent) {
+    this.subject.notify('clientHasSentMessage', messageEvent);
+  },
+
+  /*
+  * Notifies all clients that the server has sent a message
+  *
+  * @param {messageEvent: object} the mock message event.
+  */
+  sendMessageToClients: function(messageEvent) {
+    this.subject.notify('clientOnMessage', messageEvent);
+  },
+
+  /*
+  * Setup the mock server on callback function observers.
+  *
+  * @param {observerKey: string} either: connection, message or close
+  * @param {callback: function} the callback to be invoked
+  * @param {server: object} the context of the server
+  */
+  setServerOnCallback: function(observerKey, callback, server) {
+    this.subject.observe(observerKey, callback, server);
   }
 };
 

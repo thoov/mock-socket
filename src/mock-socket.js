@@ -14,8 +14,7 @@ function MockSocket(url) {
   delay(function() {
     // Let the protocol know that we are both ready to change our ready state and that
     // this client is connecting to the mock server.
-    this.protocol.subject.observe('updateReadyState', this._updateReadyState, this);
-    this.protocol.subject.notify('clientAttemptingToConnect');
+    this.protocol.clientIsConnecting(this, this._updateReadyState);
   }, this);
 }
 
@@ -53,7 +52,7 @@ MockSocket.prototype = {
   */
   send: function(data) {
     delay(function() {
-      this.protocol.subject.notify('clientHasSentMessage', socketMessageEvent('message', data, this.url));
+      this.protocol.sendMessageToServer(socketMessageEvent('message', data, this.url));
     }, this);
   },
 
@@ -63,7 +62,7 @@ MockSocket.prototype = {
   */
   close: function() {
     delay(function() {
-      this.protocol.closeConnection(this);
+      this.protocol.closeConnection(socketMessageEvent('close', null, this.url));
     }, this);
   },
 

@@ -5,8 +5,7 @@ var urlTransform     = require('./helpers/url-transform');
 var socketMessageEvent = require('./helpers/message-event');
 
 function WebSocketServer(url) {
-  var subject   = new Subject();
-  var protocol  = new Protocol(subject);
+  var protocol  = new Protocol();
   this.url      = urlTransform(url);
 
   // TODO: Is there a better way of doing this?
@@ -49,7 +48,7 @@ WebSocketServer.prototype = {
 
     // Make sure that the observerKey is valid before observing on it.
     if(typeof observerKey === 'string') {
-      this.protocol.subject.observe(observerKey, callback, this);
+      this.protocol.setServerOnCallback(observerKey, callback, this);
     }
   },
 
@@ -61,7 +60,7 @@ WebSocketServer.prototype = {
   */
   send: function(data) {
     delay(function() {
-      this.protocol.subject.notify('clientOnMessage', socketMessageEvent('message', data, this.url));
+      this.protocol.sendMessageToClients(socketMessageEvent('message', data, this.url));
     }, this);
   },
 
@@ -70,7 +69,7 @@ WebSocketServer.prototype = {
   */
   close: function() {
     delay(function() {
-      this.protocol.closeConnection(this);
+      this.protocol.closeConnection(socketMessageEvent('close', null, this.url));
     }, this);
   }
 }
