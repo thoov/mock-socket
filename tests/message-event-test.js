@@ -15,4 +15,5 @@ test('Mock message event has correct properties', function(){
 	equal(eventMessage.clipboardData, undefined);
 	equal(eventMessage.defaultPrevented, false);
 	equal(eventMessage.returnValue, true);
+	equal(eventMessage.type, 'open');
 });
