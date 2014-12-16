@@ -415,7 +415,9 @@ MockSocket.prototype = {
   * @param {newReadyState: number}: The new ready state. Must be 0-4
   */
   _updateReadyState: function(newReadyState) {
-    this.readyState = newReadyState;
+    if(newReadyState >= 0 && newReadyState <= 4) {
+      this.readyState = newReadyState;
+    }
   }
 };
 
