@@ -1,3 +1,5 @@
+var globalContext = require('./global-context');
+
 /**
 * This delay allows the thread to finish assigning its on* methods
 * before invoking the delay callback. This is purely a timing hack.
@@ -7,7 +9,7 @@
 * @parma {context: object} the context in which to invoke the function
 */
 function delay(callback, context) {
-  window.setTimeout(function(context) {
+  globalContext.setTimeout(function(context) {
     callback.call(context);
   }, 4, context);
 }

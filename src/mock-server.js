@@ -1,19 +1,18 @@
-var Protocol         = require('./protocol');
-var delay            = require('./helpers/delay');
-var Subject          = require('./helpers/subject');
-var urlTransform     = require('./helpers/url-transform');
+var Protocol           = require('./protocol');
+var delay              = require('./helpers/delay');
+var Subject            = require('./helpers/subject');
+var urlTransform       = require('./helpers/url-transform');
 var socketMessageEvent = require('./helpers/message-event');
+var globalContext      = require('./helpers/global-context');
 
 function MockServer(url) {
-  var protocol  = new Protocol();
+  var protocol  = new globalContext.Protocol();
   this.url      = urlTransform(url);
 
-  // TODO: Is there a better way of doing this?
-  if(window.hasOwnProperty('MockSocket')) {
-    window.MockSocket.protocol[this.url] = protocol;
-    this.protocol = protocol;
-    protocol.server = this;
-  }
+  globalContext.MockSocket.protocol[this.url] = protocol;
+
+  this.protocol = protocol;
+  protocol.server = this;
 }
 
 MockServer.prototype = {
@@ -72,6 +71,6 @@ MockServer.prototype = {
       this.protocol.closeConnection(socketMessageEvent('close', null, this.url));
     }, this);
   }
-}
+};
 
 module.exports = MockServer;

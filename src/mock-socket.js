@@ -1,13 +1,14 @@
 var delay               = require('./helpers/delay');
 var urlTransform        = require('./helpers/url-transform');
 var socketMessageEvent  = require('./helpers/message-event');
+var globalContext       = require('./helpers/global-context');
 var webSocketProperties = require('./helpers/websocket-properties');
 
 function MockSocket(url) {
   this.binaryType = 'blob';
   this.url        = urlTransform(url);
-  this.readyState = MockSocket.CONNECTING;
-  this.protocol   = MockSocket.protocol[this.url];
+  this.readyState = globalContext.MockSocket.CONNECTING;
+  this.protocol   = globalContext.MockSocket.protocol[this.url];
 
   webSocketProperties(this);
 

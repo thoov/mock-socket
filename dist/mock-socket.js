@@ -1,25 +1,19 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-(function (global){
 // Starting point for browserify and throws important objects into the window object
-var protocol   = require('./protocol');
-var mockServer = require('./mock-server');
-var mockSocket = require('./mock-socket');
-var subject    = require('./helpers/subject');
-
-// Setting the global context to either window (in a browser) or global (in node)
-var globalContext = window || global;
-
-if (!globalContext) {
-  throw new Error('Unable to set the global context to either window or global.');
-}
+var protocol      = require('./protocol');
+var mockServer    = require('./mock-server');
+var mockSocket    = require('./mock-socket');
+var subject       = require('./helpers/subject');
+var globalContext = require('./helpers/global-context');
 
 globalContext.Subject    = subject;
 globalContext.Protocol   = protocol;
 globalContext.MockSocket = mockSocket;
 globalContext.MockServer = mockServer;
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./helpers/subject":4,"./mock-server":7,"./mock-socket":8,"./protocol":9}],2:[function(require,module,exports){
+},{"./helpers/global-context":3,"./helpers/subject":5,"./mock-server":8,"./mock-socket":9,"./protocol":10}],2:[function(require,module,exports){
+var globalContext = require('./global-context');
+
 /**
 * This delay allows the thread to finish assigning its on* methods
 * before invoking the delay callback. This is purely a timing hack.
@@ -29,14 +23,30 @@ globalContext.MockServer = mockServer;
 * @parma {context: object} the context in which to invoke the function
 */
 function delay(callback, context) {
-  window.setTimeout(function(context) {
+  globalContext.setTimeout(function(context) {
     callback.call(context);
   }, 4, context);
 }
 
 module.exports = delay;
 
-},{}],3:[function(require,module,exports){
+},{"./global-context":3}],3:[function(require,module,exports){
+(function (global){
+/*
+* Determines the global context. This should be either window (in the)
+* case where we are in a browser) or global (in the case where we are in
+* node)
+*/
+var globalContext = window || global;
+
+if (!globalContext) {
+  throw new Error('Unable to set the global context to either window or global.');
+}
+
+module.exports = globalContext;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],4:[function(require,module,exports){
 /*
 * This is a mock websocket event message that is passed into the onopen,
 * opmessage, etc functions.
@@ -105,7 +115,7 @@ function socketEventMessage(name, data, origin) {
 
 module.exports = socketEventMessage;
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 function Subject() {
   this.list = {};
 }
@@ -209,7 +219,7 @@ Subject.prototype = {
 
 module.exports = Subject;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /**
 * The native websocket object will transform urls without a pathname to have just a /.
 * As an example: ws://localhost:8080 would actually be ws://localhost:8080/ but ws://example.com/foo would not
@@ -231,7 +241,7 @@ function urlTransform(url) {
 
 module.exports = urlTransform;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /**
 * This defines four methods: onopen, onmessage, onerror, and onclose. This is done this way instead of
 * just placing the methods on the prototype because we need to capture the callback when it is defined like so:
@@ -289,23 +299,22 @@ function webSocketProperties(websocket) {
 
 module.exports = webSocketProperties;
 
-},{}],7:[function(require,module,exports){
-var Protocol         = require('./protocol');
-var delay            = require('./helpers/delay');
-var Subject          = require('./helpers/subject');
-var urlTransform     = require('./helpers/url-transform');
+},{}],8:[function(require,module,exports){
+var Protocol           = require('./protocol');
+var delay              = require('./helpers/delay');
+var Subject            = require('./helpers/subject');
+var urlTransform       = require('./helpers/url-transform');
 var socketMessageEvent = require('./helpers/message-event');
+var globalContext      = require('./helpers/global-context');
 
 function MockServer(url) {
-  var protocol  = new Protocol();
+  var protocol  = new globalContext.Protocol();
   this.url      = urlTransform(url);
 
-  // TODO: Is there a better way of doing this?
-  if(window.hasOwnProperty('MockSocket')) {
-    window.MockSocket.protocol[this.url] = protocol;
-    this.protocol = protocol;
-    protocol.server = this;
-  }
+  globalContext.MockSocket.protocol[this.url] = protocol;
+
+  this.protocol = protocol;
+  protocol.server = this;
 }
 
 MockServer.prototype = {
@@ -364,21 +373,22 @@ MockServer.prototype = {
       this.protocol.closeConnection(socketMessageEvent('close', null, this.url));
     }, this);
   }
-}
+};
 
 module.exports = MockServer;
 
-},{"./helpers/delay":2,"./helpers/message-event":3,"./helpers/subject":4,"./helpers/url-transform":5,"./protocol":9}],8:[function(require,module,exports){
+},{"./helpers/delay":2,"./helpers/global-context":3,"./helpers/message-event":4,"./helpers/subject":5,"./helpers/url-transform":6,"./protocol":10}],9:[function(require,module,exports){
 var delay               = require('./helpers/delay');
 var urlTransform        = require('./helpers/url-transform');
 var socketMessageEvent  = require('./helpers/message-event');
+var globalContext       = require('./helpers/global-context');
 var webSocketProperties = require('./helpers/websocket-properties');
 
 function MockSocket(url) {
   this.binaryType = 'blob';
   this.url        = urlTransform(url);
-  this.readyState = MockSocket.CONNECTING;
-  this.protocol   = MockSocket.protocol[this.url];
+  this.readyState = globalContext.MockSocket.CONNECTING;
+  this.protocol   = globalContext.MockSocket.protocol[this.url];
 
   webSocketProperties(this);
 
@@ -454,11 +464,12 @@ MockSocket.prototype = {
 
 module.exports = MockSocket;
 
-},{"./helpers/delay":2,"./helpers/message-event":3,"./helpers/url-transform":5,"./helpers/websocket-properties":6}],9:[function(require,module,exports){
+},{"./helpers/delay":2,"./helpers/global-context":3,"./helpers/message-event":4,"./helpers/url-transform":6,"./helpers/websocket-properties":7}],10:[function(require,module,exports){
 var socketMessageEvent = require('./helpers/message-event');
+var globalContext      = require('./helpers/global-context');
 
 function Protocol() {
-  this.subject = new Subject();
+  this.subject = new globalContext.Subject();
 }
 
 Protocol.prototype = {
@@ -476,12 +487,12 @@ Protocol.prototype = {
 
     // if the server has not been set then we notify the onclose method of this client
     if(!this.server) {
-      this.subject.notify(client, 'updateReadyState', MockSocket.CLOSED);
+      this.subject.notify(client, 'updateReadyState', globalContext.MockSocket.CLOSED);
       this.subject.notifyOnlyFor(client, 'clientOnError');
       return false;
     }
 
-    this.subject.notifyOnlyFor(client, 'updateReadyState', MockSocket.OPEN);
+    this.subject.notifyOnlyFor(client, 'updateReadyState', globalContext.MockSocket.OPEN);
     this.subject.notify('clientHasJoined', this.server);
     this.subject.notifyOnlyFor(client, 'clientOnOpen', socketMessageEvent('open', null, this.server.url));
   },
@@ -494,7 +505,7 @@ Protocol.prototype = {
   * @param {messageEvent: object} the mock message event.
   */
   closeConnection: function(messageEvent) {
-    this.subject.notify('updateReadyState', MockSocket.CLOSED);
+    this.subject.notify('updateReadyState', globalContext.MockSocket.CLOSED);
     this.subject.notify('clientHasLeft', messageEvent);
   },
 
@@ -530,4 +541,4 @@ Protocol.prototype = {
 
 module.exports = Protocol;
 
-},{"./helpers/message-event":3}]},{},[1]);
+},{"./helpers/global-context":3,"./helpers/message-event":4}]},{},[1]);

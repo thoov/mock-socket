@@ -1,7 +1,8 @@
 var socketMessageEvent = require('./helpers/message-event');
+var globalContext      = require('./helpers/global-context');
 
 function Protocol() {
-  this.subject = new Subject();
+  this.subject = new globalContext.Subject();
 }
 
 Protocol.prototype = {
@@ -19,12 +20,12 @@ Protocol.prototype = {
 
     // if the server has not been set then we notify the onclose method of this client
     if(!this.server) {
-      this.subject.notify(client, 'updateReadyState', MockSocket.CLOSED);
+      this.subject.notify(client, 'updateReadyState', globalContext.MockSocket.CLOSED);
       this.subject.notifyOnlyFor(client, 'clientOnError');
       return false;
     }
 
-    this.subject.notifyOnlyFor(client, 'updateReadyState', MockSocket.OPEN);
+    this.subject.notifyOnlyFor(client, 'updateReadyState', globalContext.MockSocket.OPEN);
     this.subject.notify('clientHasJoined', this.server);
     this.subject.notifyOnlyFor(client, 'clientOnOpen', socketMessageEvent('open', null, this.server.url));
   },
@@ -37,7 +38,7 @@ Protocol.prototype = {
   * @param {messageEvent: object} the mock message event.
   */
   closeConnection: function(messageEvent) {
-    this.subject.notify('updateReadyState', MockSocket.CLOSED);
+    this.subject.notify('updateReadyState', globalContext.MockSocket.CLOSED);
     this.subject.notify('clientHasLeft', messageEvent);
   },
 
