@@ -1,31 +1,31 @@
-var webSocketServer;
+var mockServer;
 
 module('Mock Socket Tests', {
   setup: function() {
-    webSocketServer = new WebSocketServer('ws://localhost:8080');
-    webSocketServer.on('connection', function(server) {
+    mockServer = new MockServer('ws://localhost:8080');
+    mockServer.on('connection', function(server) {
       server.send('hello');
     });
   }
 });
 
 asyncTest('Connection with the server happens correctly', function() {
-  var mockWebsockets = new MockSocket('ws://localhost:8080');
+  var mockSocket = new MockSocket('ws://localhost:8080');
 
   expect(1);
 
-  mockWebsockets.onopen = function() {
+  mockSocket.onopen = function() {
     ok(true, 'onopen fires as expected');
     start();
   };
 });
 
 asyncTest('On message with the server happens correctly', function() {
-  var mockWebsockets = new MockSocket('ws://localhost:8080');
+  var mockSocket = new MockSocket('ws://localhost:8080');
 
   expect(1);
 
-  mockWebsockets.onmessage = function() {
+  mockSocket.onmessage = function() {
     ok(true, 'onmessage fires as expected');
     start();
   };

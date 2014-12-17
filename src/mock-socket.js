@@ -7,7 +7,7 @@ function MockSocket(url) {
   this.binaryType = 'blob';
   this.url        = urlTransform(url);
   this.readyState = MockSocket.CONNECTING;
-  this.protocol   = MockSocket.protocol;
+  this.protocol   = MockSocket.protocol[this.url];
 
   webSocketProperties(this);
 
@@ -23,6 +23,7 @@ MockSocket.OPEN = 1;
 MockSocket.CLOSING = 2;
 MockSocket.LOADING = 3;
 MockSocket.CLOSED = 4;
+MockSocket.protocol = {};
 
 MockSocket.prototype = {
 

@@ -1,15 +1,24 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function (global){
 // Starting point for browserify and throws important objects into the window object
 var protocol   = require('./protocol');
-var mockserver = require('./mock-server');
-var mocksocket = require('./mock-socket');
+var mockServer = require('./mock-server');
+var mockSocket = require('./mock-socket');
 var subject    = require('./helpers/subject');
 
-window.Subject = subject;
-window.Protocol = protocol;
-window.MockSocket = mocksocket;
-window.WebSocketServer = mockserver;
+// Setting the global context to either window (in a browser) or global (in node)
+var globalContext = window || global;
 
+if (!globalContext) {
+  throw new Error('Unable to set the global context to either window or global.');
+}
+
+globalContext.Subject    = subject;
+globalContext.Protocol   = protocol;
+globalContext.MockSocket = mockSocket;
+globalContext.MockServer = mockServer;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./helpers/subject":4,"./mock-server":7,"./mock-socket":8,"./protocol":9}],2:[function(require,module,exports){
 /**
 * This delay allows the thread to finish assigning its on* methods
@@ -37,12 +46,12 @@ module.exports = delay;
 * @param {origin: string} The url of the place where the event is originating.
 */
 function socketEventMessage(name, data, origin) {
-	var bubbles 		= false;
-	var cancelable 		= false;
-	var lastEventId 	= '';
-	var source		= null;
-	var ports 		= null;
-	var targetPlacehold	= null;
+	var bubbles         = false;
+	var cancelable      = false;
+	var lastEventId     = '';
+	var source          = null;
+	var ports           = null;
+	var targetPlacehold = null;
 
 	try {
 		var messageEvent = new MessageEvent(name);
@@ -108,8 +117,8 @@ Subject.prototype = {
   * fired with the context that is passed in.
   *
   * @param {namespace: string}
-  * @param {namespace: function}
-  * @param {namespace: object}
+  * @param {callback: function}
+  * @param {context: object}
   */
   observe: function(namespace, callback, context) {
 
@@ -127,27 +136,13 @@ Subject.prototype = {
   },
 
   /**
-  * TODO: Fix this
-  */
-  unobserve: function(namespace, obj) {
-    for (var i = 0, len = this.list[namespace].length; i < len; i++) {
-      if (this.list[namespace][i] === obj) {
-        this.list[namespace].splice(i, 1);
-        return true;
-      }
-    }
-
-    return false;
-  },
-
-  /**
   * Remove all observers from a given namespace.
   *
   * @param {namespace: string} The namespace to clear.
   */
   clearAll: function(namespace) {
 
-    if(typeof namespace !== 'string') {
+    if(!this.verifyNamespaceArg(namespace)) {
       return false;
     }
 
@@ -158,13 +153,14 @@ Subject.prototype = {
   * Notify all callbacks that have been bound to the given namespace.
   *
   * @param {namespace: string} The namespace to notify observers on.
+  * @param {namespace: url} The url to notify observers on.
   */
   notify: function(namespace) {
 
     // This strips the namespace from the list of args as we dont want to pass that into the callback.
     var argumentsForCallback = Array.prototype.slice.call(arguments, 1);
 
-    if(typeof namespace !== 'string' || !this.list[namespace]) {
+    if(!this.verifyNamespaceArg(namespace)) {
       return false;
     }
 
@@ -172,6 +168,42 @@ Subject.prototype = {
     for(var i = 0, len = this.list[namespace].length; i < len; i++) {
       this.list[namespace][i].callback.apply(this.list[namespace][i].context, argumentsForCallback);
     }
+  },
+
+  /*
+  * Notify only the callback of the given context and namespace.
+  *
+  * @param {context: object} the context to match against.
+  * @param {namespace: string} The namespace to notify observers on.
+  */
+  notifyOnlyFor: function(context, namespace) {
+
+    // This strips the namespace from the list of args as we dont want to pass that into the callback.
+    var argumentsForCallback = Array.prototype.slice.call(arguments, 2);
+
+    if(!this.verifyNamespaceArg(namespace)) {
+      return false;
+    }
+
+    // Loop over all of the observers and fire the callback function with the context.
+    for(var i = 0, len = this.list[namespace].length; i < len; i++) {
+      if(this.list[namespace][i].context === context) {
+        this.list[namespace][i].callback.apply(this.list[namespace][i].context, argumentsForCallback);
+      }
+    }
+  },
+
+  /*
+  * Verifies that the namespace is valid.
+  *
+  * @param {namespace: string} The namespace to verify.
+  */
+  verifyNamespaceArg: function(namespace) {
+    if(typeof namespace !== 'string' || !this.list[namespace]) {
+      return false;
+    }
+
+    return true;
   }
 };
 
@@ -264,19 +296,19 @@ var Subject          = require('./helpers/subject');
 var urlTransform     = require('./helpers/url-transform');
 var socketMessageEvent = require('./helpers/message-event');
 
-function WebSocketServer(url) {
+function MockServer(url) {
   var protocol  = new Protocol();
   this.url      = urlTransform(url);
 
   // TODO: Is there a better way of doing this?
   if(window.hasOwnProperty('MockSocket')) {
-    window.MockSocket.protocol = protocol;
+    window.MockSocket.protocol[this.url] = protocol;
     this.protocol = protocol;
     protocol.server = this;
   }
 }
 
-WebSocketServer.prototype = {
+MockServer.prototype = {
   protocol: null,
 
   /**
@@ -334,7 +366,7 @@ WebSocketServer.prototype = {
   }
 }
 
-module.exports = WebSocketServer;
+module.exports = MockServer;
 
 },{"./helpers/delay":2,"./helpers/message-event":3,"./helpers/subject":4,"./helpers/url-transform":5,"./protocol":9}],8:[function(require,module,exports){
 var delay               = require('./helpers/delay');
@@ -346,7 +378,7 @@ function MockSocket(url) {
   this.binaryType = 'blob';
   this.url        = urlTransform(url);
   this.readyState = MockSocket.CONNECTING;
-  this.protocol   = MockSocket.protocol;
+  this.protocol   = MockSocket.protocol[this.url];
 
   webSocketProperties(this);
 
@@ -362,6 +394,7 @@ MockSocket.OPEN = 1;
 MockSocket.CLOSING = 2;
 MockSocket.LOADING = 3;
 MockSocket.CLOSED = 4;
+MockSocket.protocol = {};
 
 MockSocket.prototype = {
 
@@ -426,24 +459,10 @@ var socketMessageEvent = require('./helpers/message-event');
 
 function Protocol() {
   this.subject = new Subject();
-  this.subject.observe('clientAttemptingToConnect', this.clientAttemptingToConnect, this);
 }
 
 Protocol.prototype = {
   server: null,
-  clientAttemptingToConnect: function() {
-    // If the server is not ready and the client tries to connect this results in a the onerror method
-    // being invoked.
-    if(!this.server) {
-      this.subject.notify('updateReadyState', MockSocket.CLOSED);
-      this.subject.notify('clientOnError');
-      return false;
-    }
-
-    this.subject.notify('updateReadyState', MockSocket.OPEN);
-    this.subject.notify('clientHasJoined', this.server);
-    this.subject.notify('clientOnOpen', socketMessageEvent('open', null, this.server.url));
-  },
 
   /*
   * This notifies the mock server that a client is connecting and also sets up
@@ -454,7 +473,17 @@ Protocol.prototype = {
   */
   clientIsConnecting: function(client, readyStateFunction) {
     this.subject.observe('updateReadyState', readyStateFunction, client);
-    this.subject.notify('clientAttemptingToConnect');
+
+    // if the server has not been set then we notify the onclose method of this client
+    if(!this.server) {
+      this.subject.notify(client, 'updateReadyState', MockSocket.CLOSED);
+      this.subject.notifyOnlyFor(client, 'clientOnError');
+      return false;
+    }
+
+    this.subject.notifyOnlyFor(client, 'updateReadyState', MockSocket.OPEN);
+    this.subject.notify('clientHasJoined', this.server);
+    this.subject.notifyOnlyFor(client, 'clientOnOpen', socketMessageEvent('open', null, this.server.url));
   },
 
   /*

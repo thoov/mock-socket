@@ -4,19 +4,19 @@ var Subject          = require('./helpers/subject');
 var urlTransform     = require('./helpers/url-transform');
 var socketMessageEvent = require('./helpers/message-event');
 
-function WebSocketServer(url) {
+function MockServer(url) {
   var protocol  = new Protocol();
   this.url      = urlTransform(url);
 
   // TODO: Is there a better way of doing this?
   if(window.hasOwnProperty('MockSocket')) {
-    window.MockSocket.protocol = protocol;
+    window.MockSocket.protocol[this.url] = protocol;
     this.protocol = protocol;
     protocol.server = this;
   }
 }
 
-WebSocketServer.prototype = {
+MockServer.prototype = {
   protocol: null,
 
   /**
@@ -74,4 +74,4 @@ WebSocketServer.prototype = {
   }
 }
 
-module.exports = WebSocketServer;
+module.exports = MockServer;

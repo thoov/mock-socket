@@ -2,24 +2,10 @@ var socketMessageEvent = require('./helpers/message-event');
 
 function Protocol() {
   this.subject = new Subject();
-  this.subject.observe('clientAttemptingToConnect', this.clientAttemptingToConnect, this);
 }
 
 Protocol.prototype = {
   server: null,
-  clientAttemptingToConnect: function() {
-    // If the server is not ready and the client tries to connect this results in a the onerror method
-    // being invoked.
-    if(!this.server) {
-      this.subject.notify('updateReadyState', MockSocket.CLOSED);
-      this.subject.notify('clientOnError');
-      return false;
-    }
-
-    this.subject.notify('updateReadyState', MockSocket.OPEN);
-    this.subject.notify('clientHasJoined', this.server);
-    this.subject.notify('clientOnOpen', socketMessageEvent('open', null, this.server.url));
-  },
 
   /*
   * This notifies the mock server that a client is connecting and also sets up
@@ -30,7 +16,17 @@ Protocol.prototype = {
   */
   clientIsConnecting: function(client, readyStateFunction) {
     this.subject.observe('updateReadyState', readyStateFunction, client);
-    this.subject.notify('clientAttemptingToConnect');
+
+    // if the server has not been set then we notify the onclose method of this client
+    if(!this.server) {
+      this.subject.notify(client, 'updateReadyState', MockSocket.CLOSED);
+      this.subject.notifyOnlyFor(client, 'clientOnError');
+      return false;
+    }
+
+    this.subject.notifyOnlyFor(client, 'updateReadyState', MockSocket.OPEN);
+    this.subject.notify('clientHasJoined', this.server);
+    this.subject.notifyOnlyFor(client, 'clientOnOpen', socketMessageEvent('open', null, this.server.url));
   },
 
   /*
