@@ -13,7 +13,7 @@ function MockSocket(url) {
   webSocketProperties(this);
 
   delay(function() {
-    // Let the protocol know that we are both ready to change our ready state and that
+    // Let the service know that we are both ready to change our ready state and that
     // this client is connecting to the mock server.
     this.service.clientIsConnecting(this, this._updateReadyState);
   }, this);
@@ -38,17 +38,17 @@ MockSocket.prototype = {
   _onclose   : null,
 
   /*
-  * This holds reference to the protocol object. The protocol object is how we can
+  * This holds reference to the service object. The service object is how we can
   * communicate with the backend via the pub/sub model.
   *
-  * The protocol a property called subject which we can use to observe or notifiy with.
-  * this.protocol.subject.notify('foo') & this.protocol.subject.observe('foo', callback, context)
+  * The service has properties which we can use to observe or notifiy with.
+  * this.service.notify('foo') & this.service.observe('foo', callback, context)
   */
   service: null,
 
   /**
   * This is a mock for the native send function found on the WebSocket object. It notifies the
-  * protocol that it has sent a message.
+  * service that it has sent a message.
   *
   * @param {data: *}: Any javascript object which will be crafted into a MessageObject.
   */
@@ -60,7 +60,7 @@ MockSocket.prototype = {
 
   /**
   * This is a mock for the native close function found on the WebSocket object. It notifies the
-  * protocol that it is closing the connection.
+  * service that it is closing the connection.
   */
   close: function() {
     delay(function() {
@@ -71,7 +71,7 @@ MockSocket.prototype = {
   /**
   * This is a private method that can be used to change the readyState. This is used
   * like this: this.protocol.subject.observe('updateReadyState', this._updateReadyState, this);
-  * so that the protocol and the server can change the readyState simply be notifing a namespace.
+  * so that the service and the server can change the readyState simply be notifing a namespace.
   *
   * @param {newReadyState: number}: The new ready state. Must be 0-4
   */
