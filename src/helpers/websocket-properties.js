@@ -39,7 +39,7 @@ function webSocketProperties(websocket) {
       get: function() { return this._onclose; },
       set: function(callback) {
         this._onclose = eventMessageSource(callback);
-        this.service.setCallbackObserver('clientHasLeft', this._onclose, websocket);
+        this.service.setCallbackObserver('clientOnclose', this._onclose, websocket);
       }
     },
     onerror: {

@@ -64,7 +64,7 @@ MockSocket.prototype = {
   */
   close: function() {
     delay(function() {
-      this.service.closeConnection(socketMessageEvent('close', null, this.url));
+      this.service.closeConnectionFromClient(socketMessageEvent('close', null, this.url), this);
     }, this);
   },
 

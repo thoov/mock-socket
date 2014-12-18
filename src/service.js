@@ -31,16 +31,31 @@ SocketService.prototype = {
   },
 
   /*
-  * Closes a connection.
-  *
-  * TODO: make sure this works with multiple mock clients.
+  * Closes a connection from the server's perspective. This should
+  * close all clients.
   *
   * @param {messageEvent: object} the mock message event.
   */
-  closeConnection: function(messageEvent) {
+  closeConnectionFromServer: function(messageEvent) {
     this.notify('updateReadyState', globalContext.MockSocket.CLOSED);
-    this.notify('clientHasLeft', messageEvent);
+    this.notify('clientOnclose', messageEvent);
+    this.notify('clientHasLeft');
   },
+
+  /*
+  * Closes a connection from the clients perspective. This
+  * should only close the client who initiated the close and not
+  * all of the other clients.
+  *
+  * @param {messageEvent: object} the mock message event.
+  * @param {client: object} the context of the client
+  */
+  closeConnectionFromClient: function(messageEvent, client) {
+    this.notifyOnlyFor(client, 'updateReadyState', globalContext.MockSocket.CLOSED);
+    this.notifyOnlyFor(client, 'clientOnclose', messageEvent);
+    this.notify('clientHasLeft');
+  },
+
 
   /*
   * Notifies the mock server that a client has sent a message.

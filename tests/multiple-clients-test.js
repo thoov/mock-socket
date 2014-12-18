@@ -51,6 +51,24 @@ asyncTest('mock clients will connect to the right mock server', function() {
   };
 });
 
+asyncTest('mock clients onopen functions are fired only once', function() {
+  var socketURL  = 'ws://localhost:8080';
+  var mockServer = new MockServer(socketURL);
+  var socketA    = new MockSocket(socketURL);
+
+  expect(2);
+
+  socketA.onopen = function() {
+    ok(true, 'mocksocket onopen fires as expected');
+
+    var socketB = new MockSocket(socketURL);
+    socketB.onopen = function() {
+      ok(true, 'mocksocket onclose fires as expected');
+      start();
+    };
+  };
+});
+
 asyncTest('mock clients can send message to the right mock server', function() {
   var serverA = new MockServer('ws://localhost:8080');
   var serverB = new MockServer('ws://localhost:8081');
@@ -89,7 +107,6 @@ asyncTest('mock clients can send message to the right mock server', function() {
   };
 });
 
-
 asyncTest('mock clients can send message to the right mock server', function() {
   var semaphore  = 0;
   var mockServer = new MockServer('ws://localhost:8080');
@@ -109,6 +126,38 @@ asyncTest('mock clients can send message to the right mock server', function() {
 
   socketA.onclose = function() {
     ok(true, 'mocksocket onclose fires as expected');
+  };
+
+  socketB.onclose = function() {
+    ok(true, 'mocksocket onclose fires as expected');
+    start();
+  };
+});
+
+
+asyncTest('closing a client will only close itself and not other clients', function() {
+  var semaphore  = 0;
+  var mockServer = new MockServer('ws://localhost:8080');
+  var socketA    = new MockSocket('ws://localhost:8080');
+  var socketB    = new MockSocket('ws://localhost:8080');
+
+  expect(1);
+
+  mockServer.on('connection', function(server) {
+    semaphore++;
+
+    // Wait for both clients to connect then send the message.
+    if(semaphore === 2) {
+      server.send('Closing socket B')
+    }
+  });
+
+  socketA.onclose = function() {
+    ok(false, 'mocksocket should not close');
+  };
+
+  socketB.onmessage = function() {
+    this.close();
   };
 
   socketB.onclose = function() {
