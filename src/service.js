@@ -1,8 +1,75 @@
-function Subject() {
+var socketMessageEvent = require('./helpers/message-event');
+var globalContext      = require('./helpers/global-context');
+
+function SocketService() {
   this.list = {};
 }
 
-Subject.prototype = {
+SocketService.prototype = {
+  server: null,
+
+  /*
+  * This notifies the mock server that a client is connecting and also sets up
+  * the ready state observer.
+  *
+  * @param {client: object} the context of the client
+  * @param {readyStateFunction: function} the function that will be invoked on a ready state change
+  */
+  clientIsConnecting: function(client, readyStateFunction) {
+    this.observe('updateReadyState', readyStateFunction, client);
+
+    // if the server has not been set then we notify the onclose method of this client
+    if(!this.server) {
+      this.notify(client, 'updateReadyState', globalContext.MockSocket.CLOSED);
+      this.notifyOnlyFor(client, 'clientOnError');
+      return false;
+    }
+
+    this.notifyOnlyFor(client, 'updateReadyState', globalContext.MockSocket.OPEN);
+    this.notify('clientHasJoined', this.server);
+    this.notifyOnlyFor(client, 'clientOnOpen', socketMessageEvent('open', null, this.server.url));
+  },
+
+  /*
+  * Closes a connection.
+  *
+  * TODO: make sure this works with multiple mock clients.
+  *
+  * @param {messageEvent: object} the mock message event.
+  */
+  closeConnection: function(messageEvent) {
+    this.notify('updateReadyState', globalContext.MockSocket.CLOSED);
+    this.notify('clientHasLeft', messageEvent);
+  },
+
+  /*
+  * Notifies the mock server that a client has sent a message.
+  *
+  * @param {messageEvent: object} the mock message event.
+  */
+  sendMessageToServer: function(messageEvent) {
+    this.notify('clientHasSentMessage', messageEvent);
+  },
+
+  /*
+  * Notifies all clients that the server has sent a message
+  *
+  * @param {messageEvent: object} the mock message event.
+  */
+  sendMessageToClients: function(messageEvent) {
+    this.notify('clientOnMessage', messageEvent);
+  },
+
+  /*
+  * Setup the callback function observers for both the server and client.
+  *
+  * @param {observerKey: string} either: connection, message or close
+  * @param {callback: function} the callback to be invoked
+  * @param {server: object} the context of the server
+  */
+  setCallbackObserver: function(observerKey, callback, server) {
+    this.observe(observerKey, callback, server);
+  },
 
   /**
   * Binds a callback to a namespace. If notify is called on a namespace all "observers" will be
@@ -99,4 +166,4 @@ Subject.prototype = {
   }
 };
 
-module.exports = Subject;
+module.exports = SocketService;

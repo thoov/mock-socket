@@ -8,23 +8,23 @@ function MockSocket(url) {
   this.binaryType = 'blob';
   this.url        = urlTransform(url);
   this.readyState = globalContext.MockSocket.CONNECTING;
-  this.protocol   = globalContext.MockSocket.protocol[this.url];
+  this.service    = globalContext.MockSocket.services[this.url];
 
   webSocketProperties(this);
 
   delay(function() {
     // Let the protocol know that we are both ready to change our ready state and that
     // this client is connecting to the mock server.
-    this.protocol.clientIsConnecting(this, this._updateReadyState);
+    this.service.clientIsConnecting(this, this._updateReadyState);
   }, this);
 }
 
 MockSocket.CONNECTING = 0;
-MockSocket.OPEN = 1;
-MockSocket.CLOSING = 2;
-MockSocket.LOADING = 3;
-MockSocket.CLOSED = 4;
-MockSocket.protocol = {};
+MockSocket.OPEN       = 1;
+MockSocket.CLOSING    = 2;
+MockSocket.LOADING    = 3;
+MockSocket.CLOSED     = 4;
+MockSocket.services   = {};
 
 MockSocket.prototype = {
 
@@ -32,10 +32,10 @@ MockSocket.prototype = {
   * Holds the on*** callback functions. These are really just for the custom
   * getters that are defined in the helpers/websocket-properties. Accessing these properties is not advised.
   */
-  _onopen: null,
-  _onmessage: null,
-  _onerror: null,
-  _onclose: null,
+  _onopen    : null,
+  _onmessage : null,
+  _onerror   : null,
+  _onclose   : null,
 
   /*
   * This holds reference to the protocol object. The protocol object is how we can
@@ -44,7 +44,7 @@ MockSocket.prototype = {
   * The protocol a property called subject which we can use to observe or notifiy with.
   * this.protocol.subject.notify('foo') & this.protocol.subject.observe('foo', callback, context)
   */
-  protocol: null,
+  service: null,
 
   /**
   * This is a mock for the native send function found on the WebSocket object. It notifies the
@@ -54,7 +54,7 @@ MockSocket.prototype = {
   */
   send: function(data) {
     delay(function() {
-      this.protocol.sendMessageToServer(socketMessageEvent('message', data, this.url));
+      this.service.sendMessageToServer(socketMessageEvent('message', data, this.url));
     }, this);
   },
 
@@ -64,7 +64,7 @@ MockSocket.prototype = {
   */
   close: function() {
     delay(function() {
-      this.protocol.closeConnection(socketMessageEvent('close', null, this.url));
+      this.service.closeConnection(socketMessageEvent('close', null, this.url));
     }, this);
   },
 

@@ -1,22 +1,21 @@
-var Protocol           = require('./protocol');
+var Service            = require('./service');
 var delay              = require('./helpers/delay');
-var Subject            = require('./helpers/subject');
 var urlTransform       = require('./helpers/url-transform');
 var socketMessageEvent = require('./helpers/message-event');
 var globalContext      = require('./helpers/global-context');
 
 function MockServer(url) {
-  var protocol  = new globalContext.Protocol();
-  this.url      = urlTransform(url);
+  var service = new Service();
+  this.url    = urlTransform(url);
 
-  globalContext.MockSocket.protocol[this.url] = protocol;
+  globalContext.MockSocket.services[this.url] = service;
 
-  this.protocol = protocol;
-  protocol.server = this;
+  this.service   = service;
+  service.server = this;
 }
 
 MockServer.prototype = {
-  protocol: null,
+  service: null,
 
   /**
   * This is the main function for the mock server to subscribe to the on events.
@@ -47,7 +46,7 @@ MockServer.prototype = {
 
     // Make sure that the observerKey is valid before observing on it.
     if(typeof observerKey === 'string') {
-      this.protocol.setServerOnCallback(observerKey, callback, this);
+      this.service.setCallbackObserver(observerKey, callback, this);
     }
   },
 
@@ -59,7 +58,7 @@ MockServer.prototype = {
   */
   send: function(data) {
     delay(function() {
-      this.protocol.sendMessageToClients(socketMessageEvent('message', data, this.url));
+      this.service.sendMessageToClients(socketMessageEvent('message', data, this.url));
     }, this);
   },
 
@@ -68,7 +67,7 @@ MockServer.prototype = {
   */
   close: function() {
     delay(function() {
-      this.protocol.closeConnection(socketMessageEvent('close', null, this.url));
+      this.service.closeConnection(socketMessageEvent('close', null, this.url));
     }, this);
   }
 };

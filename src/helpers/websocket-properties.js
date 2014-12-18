@@ -20,34 +20,34 @@ function webSocketProperties(websocket) {
   Object.defineProperties(websocket, {
     onopen: {
       enumerable: true,
-      get: function() { return websocket._onopen; },
+      get: function() { return this._onopen; },
       set: function(callback) {
-        websocket._onopen = eventMessageSource(callback);
-        websocket.protocol.subject.observe('clientOnOpen', websocket._onopen, websocket);
+        this._onopen = eventMessageSource(callback);
+        this.service.setCallbackObserver('clientOnOpen', this._onopen, websocket);
       }
     },
     onmessage: {
       enumerable: true,
-      get: function() { return websocket._onmessage; },
+      get: function() { return this._onmessage; },
       set: function(callback) {
-        websocket._onmessage = eventMessageSource(callback);
-        websocket.protocol.subject.observe('clientOnMessage', websocket._onmessage, websocket);
+        this._onmessage = eventMessageSource(callback);
+        this.service.setCallbackObserver('clientOnMessage', this._onmessage, websocket);
       }
     },
     onclose: {
       enumerable: true,
-      get: function() { return websocket._onclose; },
+      get: function() { return this._onclose; },
       set: function(callback) {
-        websocket._onclose = eventMessageSource(callback);
-        websocket.protocol.subject.observe('clientHasLeft', websocket._onclose, websocket);
+        this._onclose = eventMessageSource(callback);
+        this.service.setCallbackObserver('clientHasLeft', this._onclose, websocket);
       }
     },
     onerror: {
       enumerable: true,
-      get: function() { return websocket._onerror; },
+      get: function() { return this._onerror; },
       set: function(callback) {
-        websocket._onerror = eventMessageSource(callback);
-        websocket.protocol.subject.observe('clientOnError', websocket._onerror, websocket);
+        this._onerror = eventMessageSource(callback);
+        this.service.setCallbackObserver('clientOnError', this._onerror, websocket);
       }
     }
   });

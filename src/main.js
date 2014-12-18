@@ -1,11 +1,9 @@
 // Starting point for browserify and throws important objects into the window object
-var protocol      = require('./protocol');
-var mockServer    = require('./mock-server');
-var mockSocket    = require('./mock-socket');
-var subject       = require('./helpers/subject');
+var Service       = require('./service');
+var MockServer    = require('./mock-server');
+var MockSocket    = require('./mock-socket');
 var globalContext = require('./helpers/global-context');
 
-globalContext.Subject    = subject;
-globalContext.Protocol   = protocol;
-globalContext.MockSocket = mockSocket;
-globalContext.MockServer = mockServer;
+globalContext.SocketService = Service;
+globalContext.MockSocket    = MockSocket;
+globalContext.MockServer    = MockServer;
