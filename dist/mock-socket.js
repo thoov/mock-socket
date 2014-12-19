@@ -397,8 +397,9 @@ SocketService.prototype = {
   * @param {messageEvent: object} the mock message event.
   */
   closeConnectionFromServer: function(messageEvent) {
-    this.notify('updateReadyState', globalContext.MockSocket.CLOSED);
+    this.notify('updateReadyState', globalContext.MockSocket.CLOSING);
     this.notify('clientOnclose', messageEvent);
+    this.notify('updateReadyState', globalContext.MockSocket.CLOSED);
     this.notify('clientHasLeft');
   },
 
@@ -411,8 +412,9 @@ SocketService.prototype = {
   * @param {client: object} the context of the client
   */
   closeConnectionFromClient: function(messageEvent, client) {
-    this.notifyOnlyFor(client, 'updateReadyState', globalContext.MockSocket.CLOSED);
+    this.notifyOnlyFor(client, 'updateReadyState', globalContext.MockSocket.CLOSING);
     this.notifyOnlyFor(client, 'clientOnclose', messageEvent);
+    this.notifyOnlyFor(client, 'updateReadyState', globalContext.MockSocket.CLOSED);
     this.notify('clientHasLeft');
   },
 
