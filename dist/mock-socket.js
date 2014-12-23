@@ -35,7 +35,14 @@ module.exports = delay;
 * case where we are in a browser) or global (in the case where we are in
 * node)
 */
-var globalContext = window || global;
+var globalContext;
+
+if(typeof window === 'undefined') {
+    globalContext = global;
+}
+else {
+    globalContext = window;
+}
 
 if (!globalContext) {
   throw new Error('Unable to set the global context to either window or global.');
@@ -136,7 +143,7 @@ function urlTransform(url) {
 module.exports = urlTransform;
 
 },{}],6:[function(require,module,exports){
-/**
+/*
 * This defines four methods: onopen, onmessage, onerror, and onclose. This is done this way instead of
 * just placing the methods on the prototype because we need to capture the callback when it is defined like so:
 *
@@ -213,7 +220,7 @@ function MockServer(url) {
 MockServer.prototype = {
   service: null,
 
-  /**
+  /*
   * This is the main function for the mock server to subscribe to the on events.
   *
   * ie: mockServer.on('connection', function() { console.log('a mock client connected'); });
@@ -224,7 +231,7 @@ MockServer.prototype = {
   on: function(type, callback) {
     var observerKey;
 
-    if(typeof callback !== 'function') {
+    if(typeof callback !== 'function' || typeof type !== 'string') {
       return false;
     }
 
@@ -246,7 +253,7 @@ MockServer.prototype = {
     }
   },
 
-  /**
+  /*
   * This send function will notify all mock clients via their onmessage callbacks that the server
   * has a message for them.
   *
@@ -258,7 +265,7 @@ MockServer.prototype = {
     }, this);
   },
 
-  /**
+  /*
   * Notifies all mock clients that the server is closing and their onclose callbacks should fire.
   */
   close: function() {
@@ -319,7 +326,7 @@ MockSocket.prototype = {
   */
   service: null,
 
-  /**
+  /*
   * This is a mock for the native send function found on the WebSocket object. It notifies the
   * service that it has sent a message.
   *
@@ -331,7 +338,7 @@ MockSocket.prototype = {
     }, this);
   },
 
-  /**
+  /*
   * This is a mock for the native close function found on the WebSocket object. It notifies the
   * service that it is closing the connection.
   */
@@ -341,7 +348,7 @@ MockSocket.prototype = {
     }, this);
   },
 
-  /**
+  /*
   * This is a private method that can be used to change the readyState. This is used
   * like this: this.protocol.subject.observe('updateReadyState', this._updateReadyState, this);
   * so that the service and the server can change the readyState simply be notifing a namespace.
@@ -448,7 +455,7 @@ SocketService.prototype = {
     this.observe(observerKey, callback, server);
   },
 
-  /**
+  /*
   * Binds a callback to a namespace. If notify is called on a namespace all "observers" will be
   * fired with the context that is passed in.
   *
@@ -471,7 +478,7 @@ SocketService.prototype = {
     this.list[namespace].push({callback: callback, context: context});
   },
 
-  /**
+  /*
   * Remove all observers from a given namespace.
   *
   * @param {namespace: string} The namespace to clear.
@@ -485,7 +492,7 @@ SocketService.prototype = {
     this.list[namespace] = [];
   },
 
-  /**
+  /*
   * Notify all callbacks that have been bound to the given namespace.
   *
   * @param {namespace: string} The namespace to notify observers on.

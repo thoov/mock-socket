@@ -17,7 +17,7 @@ function MockServer(url) {
 MockServer.prototype = {
   service: null,
 
-  /**
+  /*
   * This is the main function for the mock server to subscribe to the on events.
   *
   * ie: mockServer.on('connection', function() { console.log('a mock client connected'); });
@@ -28,7 +28,7 @@ MockServer.prototype = {
   on: function(type, callback) {
     var observerKey;
 
-    if(typeof callback !== 'function') {
+    if(typeof callback !== 'function' || typeof type !== 'string') {
       return false;
     }
 
@@ -50,7 +50,7 @@ MockServer.prototype = {
     }
   },
 
-  /**
+  /*
   * This send function will notify all mock clients via their onmessage callbacks that the server
   * has a message for them.
   *
@@ -62,7 +62,7 @@ MockServer.prototype = {
     }, this);
   },
 
-  /**
+  /*
   * Notifies all mock clients that the server is closing and their onclose callbacks should fire.
   */
   close: function() {

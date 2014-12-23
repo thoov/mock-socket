@@ -1,4 +1,4 @@
-/**
+/*
 * This defines four methods: onopen, onmessage, onerror, and onclose. This is done this way instead of
 * just placing the methods on the prototype because we need to capture the callback when it is defined like so:
 *

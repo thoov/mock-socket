@@ -88,7 +88,7 @@ SocketService.prototype = {
     this.observe(observerKey, callback, server);
   },
 
-  /**
+  /*
   * Binds a callback to a namespace. If notify is called on a namespace all "observers" will be
   * fired with the context that is passed in.
   *
@@ -111,7 +111,7 @@ SocketService.prototype = {
     this.list[namespace].push({callback: callback, context: context});
   },
 
-  /**
+  /*
   * Remove all observers from a given namespace.
   *
   * @param {namespace: string} The namespace to clear.
@@ -125,7 +125,7 @@ SocketService.prototype = {
     this.list[namespace] = [];
   },
 
-  /**
+  /*
   * Notify all callbacks that have been bound to the given namespace.
   *
   * @param {namespace: string} The namespace to notify observers on.

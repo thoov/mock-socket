@@ -46,7 +46,7 @@ MockSocket.prototype = {
   */
   service: null,
 
-  /**
+  /*
   * This is a mock for the native send function found on the WebSocket object. It notifies the
   * service that it has sent a message.
   *
@@ -58,7 +58,7 @@ MockSocket.prototype = {
     }, this);
   },
 
-  /**
+  /*
   * This is a mock for the native close function found on the WebSocket object. It notifies the
   * service that it is closing the connection.
   */
@@ -68,7 +68,7 @@ MockSocket.prototype = {
     }, this);
   },
 
-  /**
+  /*
   * This is a private method that can be used to change the readyState. This is used
   * like this: this.protocol.subject.observe('updateReadyState', this._updateReadyState, this);
   * so that the service and the server can change the readyState simply be notifing a namespace.
