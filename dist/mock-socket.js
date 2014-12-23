@@ -12,7 +12,7 @@ globalContext.MockServer    = MockServer;
 },{"./helpers/global-context":3,"./mock-server":7,"./mock-socket":8,"./service":9}],2:[function(require,module,exports){
 var globalContext = require('./global-context');
 
-/**
+/*
 * This delay allows the thread to finish assigning its on* methods
 * before invoking the delay callback. This is purely a timing hack.
 * http://geekabyte.blogspot.com/2014/01/javascript-effect-of-setting-settimeout.html
@@ -121,7 +121,7 @@ function socketEventMessage(name, data, origin) {
 module.exports = socketEventMessage;
 
 },{}],5:[function(require,module,exports){
-/**
+/*
 * The native websocket object will transform urls without a pathname to have just a /.
 * As an example: ws://localhost:8080 would actually be ws://localhost:8080/ but ws://example.com/foo would not
 * change. This function does this transformation to stay inline with the native websocket implementation.
