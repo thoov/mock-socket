@@ -136,10 +136,10 @@ require('./path/to/mocksocket/src/main');
 **NOTE:** If you make any changes to the src files you will need to run gulp to generate the new
 dist files
 
-### Feedback or issues
+### Feedback / Issues
 
 If you have any feedback, encounter any bugs, or just have a question, please feel free to create a [github issue](https://github.com/thoov/mock-socket/issues/new) or send me a tweet at [@thoov](https://twitter.com/thoov).
 
-## FAQ
+### FAQ
 
 * **LICENSE**: This library falls under the [MIT license](https://github.com/thoov/mock-socket/blob/master/LICENSE.txt)
