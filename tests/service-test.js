@@ -1,5 +1,5 @@
 var service;
-var myFunction = function() {};
+var blankFunction = function() {};
 
 module('Service Tests', {
   setup: function() {
@@ -12,19 +12,19 @@ test('Initialization is done correctly', function(){
 });
 
 test('observe method works', function(){
-  service.observe('testNamespace', myFunction, null);
+  service.observe('testNamespace', blankFunction, null);
 
   equal(service.list.testNamespace.length, 1, 'the testNamespace has an element in it');
-  deepEqual(service.list.testNamespace[0].callback, myFunction, 'the element in testNamespace has the correct callback');
+  deepEqual(service.list.testNamespace[0].callback, blankFunction, 'the element in testNamespace has the correct callback');
 
   equal(service.observe('testNamespace', 1, null), false, 'when adding an observer with a non function callback then the observe method returns false');
   equal(service.list.testNamespace.length, 1, 'the testNamespace has only 1 element and not 2');
 });
 
 test('clearAll method works', function(){
-  service.observe('testNamespace', myFunction, null);
-  service.observe('testNamespace', myFunction, null);
-  service.observe('fooNamespace', myFunction, null);
+  service.observe('testNamespace', blankFunction, null);
+  service.observe('testNamespace', blankFunction, null);
+  service.observe('fooNamespace', blankFunction, null);
 
   equal(service.list.testNamespace.length, 2, 'the testNamespace has 2 elements in it');
   equal(service.list.fooNamespace.length, 1, 'the fooNamespace has 1 element in it');
