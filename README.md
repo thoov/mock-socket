@@ -1,7 +1,6 @@
 # Mock Socket
 
-A javascript mocking library for WebSockets. This library aims to make testing websocket applications as simple and
-painless as possible. Inspired by [fakehr](https://github.com/trek/fakehr).
+A javascript mocking library for [WebSockets](https://developer.mozilla.org/en-US/docs/WebSockets). This library aims to make testing websocket applications in the bowser, in phantomjs, or even in nodejs as simple as possible.
 
 **Note:** This is currently in beta and is still a work in progress
 
@@ -10,40 +9,93 @@ painless as possible. Inspired by [fakehr](https://github.com/trek/fakehr).
 ## Installation
 
 ```shell
-bower install mock-socket --save-dev
+bower install mock-socket --save-dev # or npm i mock-socket
 ```
 
 Then include the dist file into your application:
-```shell
-bower_components/mock-socket/dist/mock-socket.min.js
+```html
+<script src="bower_components/mock-socket/dist/mock-socket.min.js"></script>
 ```
 
-**Note:** The package is also on npm.
+## Background
 
-## Simple Example
+This library is comprised of 2 main parts. A mock "server" object called MockServer and a mock "WebSockets" object
+called MockSocket. It is with these 2 mock object we are able to test the actual business logic of our code.
 
-Here is an example of how to start using mock-sockets inside of your test suite. Below is
-a qunit test but this could easily be incorporated into most suites:
+### MockServer
+
+MockServer is a global object which you can use to create a fake websocket server instance. Here
+is where you would "mock" your server side application logic. Below is an example of this in action:
 
 ```js
-// Set the global WebSocket object to our MockSocket object. This allows us to do new WebSocket and
-// create a MockSocket object insteaf of a native WebSocket object.
-window.WebSocket = MockSocket;
-
-// NOTE: you must create a new MockServer before you create a new WebSocket object. It is a good idea to place this
-// logic either at the top of your test or in a setup function.
-var mockServer = new MockServer();
+var mockServer = new MockServer('ws://localhost:8080');
 mockServer.on('connection', function(server) {
+
     server.on('message', function(data) {
         server.send('hello');
     });
 });
+```
 
-module('Simple Test');
+**Note:** This should look very familiar if you are using a node framework such as [ws](https://github.com/einaros/ws).
+
+### MockSockets
+
+MockSocket is a drop in replacement for the standard [WebSockets global](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
+found in all browsers. The goal is to be able to do the following and not notice anything different:
+
+```js
+window.WebSockets = MockSocket;
+```
+
+Notice that if our application uses WebSocket it will instead start to use the mock object.
+This is what allows us to test how our application handles events from the socket instead of stubbing
+out the code that interacts with the socket.
+
+```js
+// Anything referencing WebSockets will now use the MockSocket object and
+// will communicate with the MockSocket server.
+window.WebSockets = MockSocket;
+var mockSocket = new WebSocket('ws://localhost:8080');
+
+mockSocket.onopen = function(e) {
+    this.send('some data'); // this will trigger the mock server's on message callback
+};
+mockSocket.onmessage = function(e) {
+    var data = e.data; // the message is stored in the event's data property
+};
+mockSocket.onclose = function(e) {};
+mockSocket.onerror = function(e) {};
+```
+
+## Examples
+
+### Browser / PhantomJS
+
+Here is an example of how to start using mock-sockets inside of your test suite running in the browser or in PhantomJS. Below is
+a qunit test but this could easily be incorporated into most suites:
+
+```js
+// Set the global WebSocket object to our MockSocket object. This allows us to do: new WebSocket and
+// create a MockSocket object instead of a native WebSocket object.
+window.WebSocket = MockSocket;
+
+module('Simple Test',
+  setup: function() {
+    // NOTE: you must create a new MockServer before you create a new MockSocket object. It is a good idea to place this
+    // logic either at the top of your test or in a setup function.
+    var mockServer = new MockServer('ws://localhost:8080');
+    mockServer.on('connection', function(server) {
+      server.on('message', function(data) {
+        server.send('hello');
+      });
+    });
+  }
+);
 
 asyncTest('basic test', function(){
     // This is creating a MockSocket object and not a WebSocket object
-    var mockSocket = new WebSocket('ws://www.example.com/socketserver');
+    var mockSocket = new WebSocket('ws://localhost:8080');
     expect(2);
 
     mockSocket.onopen = function(e) {
@@ -59,75 +111,33 @@ asyncTest('basic test', function(){
 });
 ```
 
-**Note:** It is good practice to reset the global WebSocket object back to its original object after your tests have finished.
+**NOTE:** It is good practice to reset the global WebSocket object back to its original object after your tests have finished.
 
-## Background
+### NodeJS
 
-MockSocket is comprised of 2 main parts. A mock "server" object and a mock "WebSockets" object. In this section
-I will explain both of these parts.
+```javascript
+require('./path/to/mocksocket/src/main');
 
-**Mock Sockets Server:**
-This library adds a global object called `MockServer` which you can use to create a fake socket server instance. Here
-is where you would "mock" your server side application logic. Below is an example of this in action:
 
-```js
-var mockServer = new MockServer('ws://localhost:8080');
-mockServer.on('connection', function(server) {
 
-    server.on('message', function(data) {
-        server.send('hello');
-    });
-
-});
 ```
 
-**Note:** This should look very familiar if you are using a node framework such as [ws](https://github.com/einaros/ws).
-
-**Mock Sockets:**
-The second main part is another global variable called `MockSocket`. This is a drop in replacement for the standard [WebSockets
-global](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket).
-
-```js
-window.WebSockets = MockSocket;
-
-// Anything referencing WebSockets will now use the MockSocket object and
-// will communicate with the WebSocketServer.
-var mockSocket = new WebSocket('ws://localhost:8080');
-
-mockSocket.onopen = function(e) {
-    this.send('some data'); // this will trigger the mock server's on message callback
-};
-mockSocket.onmessage = function(e) {
-    var data = e.data; // the message is stored in the event's data property
-};
-mockSocket.onclose = function(e) {};
-mockSocket.onerror = function(e) {};
-```
-
-## Building from source
+### Building from source / Running tests
 
 * `git clone git@github.com:thoov/mock-socket.git`
 * `cd mock-socket`
-* `npm install`
+* `npm i`
+* `npm i -g gulp`
 * `gulp`
-
-**Note:** If you make any changes to the src files you will need to run gulp to generate the new
-dist files
-
-## Running tests
-
-* `git clone git@github.com:thoov/mock-socket.git`
-* `cd mock-socket`
-* `npm install`
 * `npm t`
 
-**Note:** If you make any changes to the src files you will need to run gulp to generate the new
+**NOTE:** If you make any changes to the src files you will need to run gulp to generate the new
 dist files
 
-## Feedback or issues
+### Feedback or issues
 
 If you have any feedback, encounter any bugs, or just have a question, please feel free to create a [github issue](https://github.com/thoov/mock-socket/issues/new) or send me a tweet at [@thoov](https://twitter.com/thoov).
 
 ## FAQ
 
-* **License**: Mock Socks falls under the [MIT license](https://github.com/thoov/mock-socket/blob/master/LICENSE.txt)
+* **LICENSE**: This library falls under the [MIT license](https://github.com/thoov/mock-socket/blob/master/LICENSE.txt)
