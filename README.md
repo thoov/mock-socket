@@ -122,7 +122,7 @@ require('./path/to/mocksocket/src/main');
 
 ```
 
-### Building from source / Running tests
+## Building from source / Running tests
 
 * `git clone git@github.com:thoov/mock-socket.git`
 * `cd mock-socket`
