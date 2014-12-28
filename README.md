@@ -2,14 +2,14 @@
 
 A javascript mocking library for [WebSockets](https://developer.mozilla.org/en-US/docs/WebSockets). This library aims to make testing websocket applications in the bowser, in phantomjs, or even in nodejs as simple as possible.
 
-**Note:** This is currently in beta and is still a work in progress
 
 [![Build Status](https://travis-ci.org/thoov/mock-socket.svg?branch=master)](https://travis-ci.org/thoov/mock-socket)
+[![Code Climate](https://codeclimate.com/github/thoov/mock-socket/badges/gpa.svg)](https://codeclimate.com/github/thoov/mock-socket)
 
 ## Installation
 
 ```shell
-bower install mock-socket --save-dev # or npm i mock-socket
+bower install mock-socket --save-dev # or npm i mock-socket --save-dev
 ```
 
 Then include the dist file into your application:
@@ -19,8 +19,8 @@ Then include the dist file into your application:
 
 ## Background
 
-This library is comprised of 2 main parts. A mock "server" object called MockServer and a mock "WebSockets" object
-called MockSocket. It is with these 2 mock object we are able to test the actual business logic of our code.
+This library is comprised of 2 main parts. A mock "server" object called **MockServer** and a mock "WebSockets" object
+called **MockSocket**. It is with these 2 mock objects that we are able to test the actual business logic of our code.
 
 ### MockServer
 
@@ -37,7 +37,7 @@ mockServer.on('connection', function(server) {
 });
 ```
 
-**Note:** This should look very familiar if you are using a node framework such as [ws](https://github.com/einaros/ws).
+**NOTE:** This should look very familiar if you are using a node framework such as [ws](https://github.com/einaros/ws).
 
 ### MockSockets
 
@@ -115,10 +115,10 @@ asyncTest('basic test', function(){
 
 ### NodeJS
 
-```javascript
+```js
 require('./path/to/mocksocket/src/main');
 
-
+// Here the objects have been set to the global object and can be referenced by: MockServer and MockSocket
 
 ```
 
