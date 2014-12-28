@@ -59,7 +59,8 @@ window.WebSockets = MockSocket;
 var mockSocket = new WebSocket('ws://localhost:8080');
 
 mockSocket.onopen = function(e) {
-    this.send('some data'); // this will trigger the mock server's on message callback
+    // this will trigger the mock server's on message callback
+    this.send('some data');
 };
 mockSocket.onmessage = function(e) {
     var data = e.data; // the message is stored in the event's data property
@@ -76,13 +77,14 @@ Here is an example of how to start using mock-sockets inside of your test suite 
 a qunit test but this could easily be incorporated into most suites:
 
 ```js
-// Set the global WebSocket object to our MockSocket object. This allows us to do: new WebSocket and
-// create a MockSocket object instead of a native WebSocket object.
+// Set the global WebSocket object to our MockSocket object. This allows us to 
+// do: new WebSocket and create a MockSocket object instead of a native WebSocket object.
 window.WebSocket = MockSocket;
 
 module('Simple Test',
   setup: function() {
-    // NOTE: you must create a new MockServer before you create a new MockSocket object. It is a good idea to place this
+    // NOTE: you must create a new MockServer before you create 
+    // a new MockSocket object. It is a good idea to place this
     // logic either at the top of your test or in a setup function.
     var mockServer = new MockServer('ws://localhost:8080');
     mockServer.on('connection', function(server) {
@@ -118,8 +120,8 @@ asyncTest('basic test', function(){
 ```js
 require('./path/to/mocksocket/src/main');
 
-// Here the objects have been set to the global object and can be referenced by: MockServer and MockSocket
-
+// Here the objects have been set to the global 
+// object and can be referenced by: MockServer and MockSocket
 ```
 
 ## Building from source / Running tests
