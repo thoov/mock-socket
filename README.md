@@ -39,7 +39,7 @@ mockServer.on('connection', function(server) {
 
 **NOTE:** This should look very familiar if you are using a node framework such as [ws](https://github.com/einaros/ws).
 
-### MockSockets
+### MockSocket
 
 MockSocket is a drop in replacement for the standard [WebSockets global](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
 found in all browsers. The goal is to be able to do the following and not notice anything different:
