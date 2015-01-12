@@ -126,12 +126,14 @@ require('./path/to/mocksocket/src/main');
 
 ## Building from source / Running tests
 
-* `git clone git@github.com:thoov/mock-socket.git`
-* `cd mock-socket`
-* `npm i`
-* `npm i -g gulp`
-* `gulp`
-* `npm t`
+```
+git clone git@github.com:thoov/mock-socket.git
+cd mock-socket
+npm i
+npm i -g gulp
+gulp
+npm t
+```
 
 **NOTE:** If you make any changes to the src files you will need to run gulp to generate the new
 dist files
