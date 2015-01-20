@@ -6,6 +6,12 @@
 * @param {url: string} The url to transform.
 */
 function urlTransform(url) {
+
+  /* Ignore url query string */
+  if (url.indexOf('?') !== -1) {
+    url = url.split('?')[0];
+  }
+
   var a = document.createElement('a');
   a.href = url;
 

@@ -13,7 +13,9 @@ function webSocketProperties(websocket) {
   var eventMessageSource = function(callback) {
     return function(event) {
       event.target = websocket;
-      callback.apply(websocket, arguments);
+      if (callback !== null) {
+        callback.apply(websocket, arguments);
+      }
     }
   };
 
