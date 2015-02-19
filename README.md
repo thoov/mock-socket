@@ -77,13 +77,13 @@ Here is an example of how to start using mock-sockets inside of your test suite 
 a qunit test but this could easily be incorporated into most suites:
 
 ```js
-// Set the global WebSocket object to our MockSocket object. This allows us to 
+// Set the global WebSocket object to our MockSocket object. This allows us to
 // do: new WebSocket and create a MockSocket object instead of a native WebSocket object.
 window.WebSocket = MockSocket;
 
 module('Simple Test',
   setup: function() {
-    // NOTE: you must create a new MockServer before you create 
+    // NOTE: you must create a new MockServer before you create
     // a new MockSocket object. It is a good idea to place this
     // logic either at the top of your test or in a setup function.
     var mockServer = new MockServer('ws://localhost:8080');
@@ -120,7 +120,7 @@ asyncTest('basic test', function(){
 ```js
 require('./path/to/mocksocket/src/main');
 
-// Here the objects have been set to the global 
+// Here the objects have been set to the global
 // object and can be referenced by: MockServer and MockSocket
 ```
 
@@ -145,3 +145,4 @@ If you have any feedback, encounter any bugs, or just have a question, please fe
 ### FAQ
 
 * **LICENSE**: This library falls under the [MIT license](https://github.com/thoov/mock-socket/blob/master/LICENSE.txt)
+* **Third Party Libraries**: [js-url](https://github.com/websanova/js-url)
