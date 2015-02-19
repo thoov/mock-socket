@@ -7,4 +7,5 @@ test('Url transform is done correctly', function(){
   equal(urlTransform('ws://localhost.com'), 'ws://localhost.com/');
   equal(urlTransform('ws://localhost.com:8080/'), 'ws://localhost.com:8080/');
   equal(urlTransform('ws://localhost.com/foo'), 'ws://localhost.com/foo');
+  equal(urlTransform('ws://localhost.com/foo/'), 'ws://localhost.com/foo/');
 });
