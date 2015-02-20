@@ -125,7 +125,7 @@ require('./path/to/mocksocket/src/main');
 ```
 
 ### Ember-CLI wrapper
-@yratanov has been gracious to create a mock-sockets wrapper for websocket applications running in [ember-cli](https://github.com/yratanov/ember-cli-mock-socket).
+[@yratanov](https://github.com/yratanov) has been gracious to create a mock-sockets wrapper for websocket applications running in [ember-cli](https://github.com/yratanov/ember-cli-mock-socket).
 
 ## Building from source / Running tests
 
