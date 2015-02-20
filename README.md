@@ -124,6 +124,9 @@ require('./path/to/mocksocket/src/main');
 // object and can be referenced by: MockServer and MockSocket
 ```
 
+### Ember-CLI wrapper
+@yratanov has been gracious to create a mock-sockets wrapper for websocket applications running in [ember-cli](https://github.com/yratanov/ember-cli-mock-socket).
+
 ## Building from source / Running tests
 
 ```
@@ -145,4 +148,6 @@ If you have any feedback, encounter any bugs, or just have a question, please fe
 ### FAQ
 
 * **LICENSE**: This library falls under the [MIT license](https://github.com/thoov/mock-socket/blob/master/LICENSE.txt)
-* **Third Party Libraries**: [js-url](https://github.com/websanova/js-url)
+
+### Third Party Libraries
+* [js-url](https://github.com/websanova/js-url)
