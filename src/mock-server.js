@@ -46,6 +46,7 @@ MockServer.prototype = {
 
     // Make sure that the observerKey is valid before observing on it.
     if(typeof observerKey === 'string') {
+      this.service.clearAll(observerKey);
       this.service.setCallbackObserver(observerKey, callback, this);
     }
   },
