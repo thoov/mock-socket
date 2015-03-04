@@ -129,10 +129,13 @@ module.exports = socketEventMessage;
 * @param {url: string} The url to transform.
 */
 function urlTransform(url) {
-  var urlPath = urlParse('path', url);
+  var urlPath  = urlParse('path', url);
+  var urlQuery = urlParse('?', url);
+
+  urlQuery = (urlQuery) ? '?' + urlQuery : '';
 
   if(urlPath === '') {
-    return url + '/';
+    return url.split('?')[0] + '/' + urlQuery;
   }
 
   return url;
