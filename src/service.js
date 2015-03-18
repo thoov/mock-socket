@@ -65,7 +65,7 @@ SocketService.prototype = {
   * @param {messageEvent: object} the mock message event.
   */
   sendMessageToServer: function(messageEvent) {
-    this.notify('clientHasSentMessage', messageEvent);
+    this.notify('clientHasSentMessage', messageEvent.data);
   },
 
   /*

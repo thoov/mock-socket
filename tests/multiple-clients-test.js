@@ -83,7 +83,7 @@ asyncTest('mock clients can send message to the right mock server', function() {
     ok(true, 'mock server on connection fires as expected');
 
     server.on('message', function(event) {
-      equal(event.data, dataA);
+      equal(event, dataA);
     });
   });
 
@@ -91,7 +91,7 @@ asyncTest('mock clients can send message to the right mock server', function() {
     ok(true, 'mock server on connection fires as expected');
 
     server.on('message', function(event) {
-      equal(event.data, dataB);
+      equal(event, dataB);
       start();
     });
   });
