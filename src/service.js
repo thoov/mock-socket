@@ -52,10 +52,12 @@ SocketService.prototype = {
   * @param {client: object} the context of the client
   */
   closeConnectionFromClient: function(messageEvent, client) {
-    this.notifyOnlyFor(client, 'updateReadyState', globalContext.MockSocket.CLOSING);
-    this.notifyOnlyFor(client, 'clientOnclose', messageEvent);
-    this.notifyOnlyFor(client, 'updateReadyState', globalContext.MockSocket.CLOSED);
-    this.notify('clientHasLeft');
+    if(client.readyState === globalContext.MockSocket.OPEN) {
+      this.notifyOnlyFor(client, 'updateReadyState', globalContext.MockSocket.CLOSING);
+      this.notifyOnlyFor(client, 'clientOnclose', messageEvent);
+      this.notifyOnlyFor(client, 'updateReadyState', globalContext.MockSocket.CLOSED);
+      this.notify('clientHasLeft');
+    }
   },
 
 

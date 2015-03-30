@@ -45,3 +45,22 @@ asyncTest('that the mocksocket onclose function is called after closing the mock
 
   mockServer.close();
 });
+
+asyncTest('that closing a mock socket will only call the mock servers onclose callback once', function() {
+  var socketUrl  = 'ws://localhost:8080';
+  var mockServer = new MockServer(socketUrl);
+  var mockSocket = new MockSocket(socketUrl);
+
+  expect(1);
+
+  mockServer.on('close', function() {
+    ok(true, 'mock server on close fires as expected');
+  });
+
+  mockSocket.close();
+  mockSocket.close();
+
+  setTimeout(function() {
+    start();
+  }, 100);
+});
