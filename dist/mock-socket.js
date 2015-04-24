@@ -245,6 +245,8 @@ function webSocketProperties(websocket) {
       get: function() { return this._onopen; },
       set: function(callback) {
         this._onopen = eventMessageSource(callback);
+        // Dispose the previous listeners ('set' overrides)
+        this.service.clearAll('clientOnOpen');
         this.service.setCallbackObserver('clientOnOpen', this._onopen, websocket);
       }
     },
@@ -253,6 +255,8 @@ function webSocketProperties(websocket) {
       get: function() { return this._onmessage; },
       set: function(callback) {
         this._onmessage = eventMessageSource(callback);
+        // Dispose the previous listeners ('set' overrides)
+        this.service.clearAll('clientOnMessage');
         this.service.setCallbackObserver('clientOnMessage', this._onmessage, websocket);
       }
     },
@@ -261,6 +265,8 @@ function webSocketProperties(websocket) {
       get: function() { return this._onclose; },
       set: function(callback) {
         this._onclose = eventMessageSource(callback);
+        // Dispose the previous listeners ('set' overrides)
+        this.service.clearAll('clientOnclose');
         this.service.setCallbackObserver('clientOnclose', this._onclose, websocket);
       }
     },
@@ -269,6 +275,8 @@ function webSocketProperties(websocket) {
       get: function() { return this._onerror; },
       set: function(callback) {
         this._onerror = eventMessageSource(callback);
+        // Dispose the previous listeners ('set' overrides)
+        this.service.clearAll('clientOnError');
         this.service.setCallbackObserver('clientOnError', this._onerror, websocket);
       }
     }
