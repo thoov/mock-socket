@@ -46,10 +46,10 @@ asyncTest('notify method works', function() {
   var sampleData = {
     foo: 'bar'
   };
-  var testFunciton = function() {
+  var testFunction = function() {
     ok(true, 'The test function was called');
   };
-  var fooFunciton = function(fooData) {
+  var fooFunction = function(fooData) {
     ok(true, 'The foo function was called');
     deepEqual(sampleData, fooData, 'Arguments are correctly passed to observers');
     start();
@@ -57,10 +57,10 @@ asyncTest('notify method works', function() {
 
   expect(4);
 
-  service.observe('testNamespace', testFunciton, null);
+  service.observe('testNamespace', testFunction, null);
   service.notify('testNamespace');
 
-  service.observe('fooNamespace', fooFunciton, null);
+  service.observe('fooNamespace', fooFunction, null);
   service.notify('fooNamespace', sampleData);
 
   equal(service.notify('barNamespace'), false, 'trying to notify on a namespace that has not been initialized will return false');
