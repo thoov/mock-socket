@@ -3,13 +3,15 @@
 var Service       = require('./service');
 var MockServer    = require('./mock-server');
 var MockSocket    = require('./mock-socket');
+var MockSocketIO  = require('./mock-socket-io');
 var globalContext = require('./helpers/global-context');
 
 globalContext.SocketService = Service;
 globalContext.MockSocket    = MockSocket;
+globalContext.MockSocketIO  = MockSocketIO;
 globalContext.MockServer    = MockServer;
 
-},{"./helpers/global-context":3,"./mock-server":7,"./mock-socket":8,"./service":9}],2:[function(require,module,exports){
+},{"./helpers/global-context":3,"./mock-server":7,"./mock-socket":9,"./mock-socket-io":8,"./service":10}],2:[function(require,module,exports){
 var globalContext = require('./global-context');
 
 /*
@@ -308,11 +310,11 @@ MockServer.prototype = {
   on: function(type, callback) {
     var observerKey;
 
-    if(typeof callback !== 'function' || typeof type !== 'string') {
+    if (typeof callback !== 'function' || typeof type !== 'string') {
       return false;
     }
 
-    switch(type) {
+    switch (type) {
       case 'connection':
         observerKey = 'clientHasJoined';
         break;
@@ -322,10 +324,12 @@ MockServer.prototype = {
       case 'close':
         observerKey = 'clientHasLeft';
         break;
+      default:
+        observerKey = type;
     }
 
     // Make sure that the observerKey is valid before observing on it.
-    if(typeof observerKey === 'string') {
+    if (typeof observerKey === 'string') {
       this.service.clearAll(observerKey);
       this.service.setCallbackObserver(observerKey, callback, this);
     }
@@ -338,8 +342,19 @@ MockServer.prototype = {
   * @param {data: *}: Any javascript object which will be crafted into a MessageObject.
   */
   send: function(data) {
+    this.emit('message', data);
+  },
+
+  /*
+  * This emit function will notify all mock clients via their on callbacks that
+  * the server has a message for them with a specific named event à la socket.io.
+  *
+  * @param {name} The name of the event ot emit
+  * @param {data: *}: Any javascript object which will be crafted into a MessageObject.
+  */
+  emit: function(name, data) {
     delay(function() {
-      this.service.sendMessageToClients(socketMessageEvent('message', data, this.url));
+      this.service.sendMessageToClients(socketMessageEvent(name, data, this.url));
     }, this);
   },
 
@@ -355,7 +370,25 @@ MockServer.prototype = {
 
 module.exports = MockServer;
 
-},{"./helpers/delay":2,"./helpers/global-context":3,"./helpers/message-event":4,"./helpers/url-transform":5,"./service":9}],8:[function(require,module,exports){
+},{"./helpers/delay":2,"./helpers/global-context":3,"./helpers/message-event":4,"./helpers/url-transform":5,"./service":10}],8:[function(require,module,exports){
+var MockSocket = require('./mock-socket');
+
+function MockSocketIO(url) {
+  var socket = new MockSocket(url);
+  socket._isSocketIO = true;
+  return socket;
+}
+
+/*
+ * alias io(url)
+ */
+MockSocketIO.connect = function(url) {
+  return MockSocketIO(url);
+};
+
+module.exports = MockSocketIO;
+
+},{"./mock-socket":9}],9:[function(require,module,exports){
 var delay               = require('./helpers/delay');
 var urlTransform        = require('./helpers/url-transform');
 var socketMessageEvent  = require('./helpers/message-event');
@@ -394,6 +427,28 @@ MockSocket.prototype = {
   _onmessage : null,
   _onerror   : null,
   _onclose   : null,
+  _isSocketIO: null,
+
+  /*
+  * Define a callback for a specific event, as required for socket.io
+  */
+  on: function(eventName, callback) {
+    var isSocketIO = this._isSocketIO;
+
+    var callBack = function(event) {
+      if (event.type === eventName) {
+        event.target = this;
+        if (isSocketIO) {
+          var data = arguments[0].data;
+          callback.apply(this, [data]);
+        } else {
+          callback.apply(this, arguments);
+        }
+      }
+    };
+
+    this.service.setCallbackObserver('clientOnMessage', callBack, this);
+  },
 
   /*
   * This holds reference to the service object. The service object is how we can
@@ -473,8 +528,18 @@ MockSocket.prototype = {
   * @param {data: *}: Any javascript object which will be crafted into a MessageObject.
   */
   send: function(data) {
+    this.emit('message', data);
+  },
+
+  /*
+  * This is like the native send message but allows a specified namespace. It's
+  * there to support a socket.io interface for working in channels
+  *
+  * @param {data: *}: Any javascript object which will be crafted into a MessageObject.
+  */
+  emit: function(namespace, data) {
     delay(function() {
-      this.service.sendMessageToServer(socketMessageEvent('message', data, this.url));
+      this.service.sendMessageToServer(socketMessageEvent(namespace, data, this.url));
     }, this);
   },
 
@@ -504,7 +569,7 @@ MockSocket.prototype = {
 
 module.exports = MockSocket;
 
-},{"./helpers/delay":2,"./helpers/global-context":3,"./helpers/message-event":4,"./helpers/url-transform":5,"./helpers/websocket-properties":6}],9:[function(require,module,exports){
+},{"./helpers/delay":2,"./helpers/global-context":3,"./helpers/message-event":4,"./helpers/url-transform":5,"./helpers/websocket-properties":6}],10:[function(require,module,exports){
 var socketMessageEvent = require('./helpers/message-event');
 var globalContext      = require('./helpers/global-context');
 
@@ -574,7 +639,14 @@ SocketService.prototype = {
   * @param {messageEvent: object} the mock message event.
   */
   sendMessageToServer: function(messageEvent) {
-    this.notify('clientHasSentMessage', messageEvent.data, messageEvent);
+    var type = messageEvent.type;
+    var namespace = 'clientHasSentMessage';
+
+    if (type && type !== 'message') {
+      namespace = type;
+    }
+
+    this.notify(namespace, messageEvent.data, messageEvent);
   },
 
   /*

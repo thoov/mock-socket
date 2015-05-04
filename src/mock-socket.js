@@ -36,6 +36,28 @@ MockSocket.prototype = {
   _onmessage : null,
   _onerror   : null,
   _onclose   : null,
+  _isSocketIO: null,
+
+  /*
+  * Define a callback for a specific event, as required for socket.io
+  */
+  on: function(eventName, callback) {
+    var isSocketIO = this._isSocketIO;
+
+    var callBack = function(event) {
+      if (event.type === eventName) {
+        event.target = this;
+        if (isSocketIO) {
+          var data = arguments[0].data;
+          callback.apply(this, [data]);
+        } else {
+          callback.apply(this, arguments);
+        }
+      }
+    };
+
+    this.service.setCallbackObserver('clientOnMessage', callBack, this);
+  },
 
   /*
   * This holds reference to the service object. The service object is how we can
@@ -115,8 +137,18 @@ MockSocket.prototype = {
   * @param {data: *}: Any javascript object which will be crafted into a MessageObject.
   */
   send: function(data) {
+    this.emit('message', data);
+  },
+
+  /*
+  * This is like the native send message but allows a specified namespace. It's
+  * there to support a socket.io interface for working in channels
+  *
+  * @param {data: *}: Any javascript object which will be crafted into a MessageObject.
+  */
+  emit: function(namespace, data) {
     delay(function() {
-      this.service.sendMessageToServer(socketMessageEvent('message', data, this.url));
+      this.service.sendMessageToServer(socketMessageEvent(namespace, data, this.url));
     }, this);
   },
 

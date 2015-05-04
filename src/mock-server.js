@@ -28,11 +28,11 @@ MockServer.prototype = {
   on: function(type, callback) {
     var observerKey;
 
-    if(typeof callback !== 'function' || typeof type !== 'string') {
+    if (typeof callback !== 'function' || typeof type !== 'string') {
       return false;
     }
 
-    switch(type) {
+    switch (type) {
       case 'connection':
         observerKey = 'clientHasJoined';
         break;
@@ -42,10 +42,12 @@ MockServer.prototype = {
       case 'close':
         observerKey = 'clientHasLeft';
         break;
+      default:
+        observerKey = type;
     }
 
     // Make sure that the observerKey is valid before observing on it.
-    if(typeof observerKey === 'string') {
+    if (typeof observerKey === 'string') {
       this.service.clearAll(observerKey);
       this.service.setCallbackObserver(observerKey, callback, this);
     }
@@ -58,8 +60,19 @@ MockServer.prototype = {
   * @param {data: *}: Any javascript object which will be crafted into a MessageObject.
   */
   send: function(data) {
+    this.emit('message', data);
+  },
+
+  /*
+  * This emit function will notify all mock clients via their on callbacks that
+  * the server has a message for them with a specific named event à la socket.io.
+  *
+  * @param {name} The name of the event ot emit
+  * @param {data: *}: Any javascript object which will be crafted into a MessageObject.
+  */
+  emit: function(name, data) {
     delay(function() {
-      this.service.sendMessageToClients(socketMessageEvent('message', data, this.url));
+      this.service.sendMessageToClients(socketMessageEvent(name, data, this.url));
     }, this);
   },
 
