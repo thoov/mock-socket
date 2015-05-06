@@ -306,6 +306,7 @@ var urlTransform       = require('./helpers/url-transform');
 var socketMessageEvent = require('./helpers/message-event');
 var globalContext      = require('./helpers/global-context');
 
+
 function MockServer(url) {
   var service = new Service();
   this.url    = urlTransform(url);
@@ -315,6 +316,8 @@ function MockServer(url) {
   this.service   = service;
   service.server = this;
 }
+
+
 
 MockServer.prototype = {
   service: null,
@@ -328,11 +331,9 @@ MockServer.prototype = {
   */
   on: function(type, callback) {
     var observerKey;
-
     if(typeof callback !== 'function' || typeof type !== 'string') {
       return false;
     }
-
     switch(type) {
       case 'connection':
         observerKey = 'clientHasJoined';

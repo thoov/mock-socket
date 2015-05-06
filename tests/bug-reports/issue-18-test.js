@@ -19,9 +19,6 @@ asyncTest('msgs only sent from the server to single mock-socket', function() {
 		connectionCount++;
 	});
 
-	socketA.onopen = function() {
-		socketA.send("hello");
-	};
 	socketA.onmessage = function(e) {
 		equal(e.data, dataA);
 	};
@@ -97,3 +94,4 @@ asyncTest('can close single socket', function() {
 		start();
 	}, 500)
 });
+
