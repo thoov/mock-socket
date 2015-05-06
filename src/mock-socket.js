@@ -47,6 +47,65 @@ MockSocket.prototype = {
   service: null,
 
   /*
+  * Internal storage for event handlers. Basically, there could be more than one
+  * handler per event so we store them all in array.
+  */
+  _eventHandlers: {},
+
+  /*
+  * This is a mock for EventTarget's addEventListener method. A bit naive and
+  * doesn't implement third useCapture parameter but should be enough for most
+  * (if not all) cases.
+  *
+  * @param {event: string}: Event name.
+  * @param {handler: function}: Any callback function for event handling.
+  */
+  addEventListener: function(event, handler) {
+    if(!this._eventHandlers[event]) {
+      this._eventHandlers[event] = [];
+      this['on' + event] = this.dispatchEvent.bind(this);
+    }
+    this._eventHandlers[event].push(handler);
+  },
+
+  /*
+  * This is a mock for EventTarget's removeEventListener method. A bit naive and
+  * doesn't implement third useCapture parameter but should be enough for most
+  * (if not all) cases.
+  *
+  * @param {event: string}: Event name.
+  * @param {handler: function}: Any callback function for event handling. Should
+  * be one of the functions used in the previous calls of addEventListener method.
+  */
+  removeEventListener: function(event, handler) {
+    if(!this._eventHandlers[event]) {
+      return;
+    }
+    var handlers = this._eventHandlers[event];
+    handlers.splice(handlers.indexOf(handler), 1);
+    if(!handlers.length) {
+      delete this._eventHandlers[event];
+      delete this['on' + event];
+    }
+  },
+
+  /*
+  * This is a mock for EventTarget's dispatchEvent method.
+  *
+  * @param {event: MessageEvent}: Some event, either native MessageEvent or an object
+  * returned by require('./helpers/message-event')
+  */
+  dispatchEvent: function(event) {
+    var handlers = this._eventHandlers[event.type];
+    if(!handlers) {
+      return;
+    }
+    for(var i = 0; i < handlers.length; i++) {
+      handlers[i].call(this, event);
+    }
+  },
+
+  /*
   * This is a mock for the native send function found on the WebSocket object. It notifies the
   * service that it has sent a message.
   *
