@@ -9,7 +9,31 @@ globalContext.SocketService = Service;
 globalContext.MockSocket    = MockSocket;
 globalContext.MockServer    = MockServer;
 
-},{"./helpers/global-context":3,"./mock-server":7,"./mock-socket":8,"./service":9}],2:[function(require,module,exports){
+},{"./helpers/global-context":4,"./mock-server":8,"./mock-socket":9,"./service":10}],2:[function(require,module,exports){
+var socketMessageEvent = require('./helpers/message-event');
+var delay = require('./helpers/delay');
+function ClientServerBinding(client, server) {
+		this.send = function(msg) {
+		delay(function() {
+			if (client.onmessage) {
+				client.onmessage(socketMessageEvent('message', msg, server.url));
+			}
+		}, this)
+	}
+
+	this.on = function(type, callback) {
+		server.on.call(server, type, callback)
+	}
+
+	this.close = function() {
+		server.close.call(server)
+	}
+}
+
+
+
+module.exports = ClientServerBinding
+},{"./helpers/delay":3,"./helpers/message-event":5}],3:[function(require,module,exports){
 var globalContext = require('./global-context');
 
 /*
@@ -28,7 +52,7 @@ function delay(callback, context) {
 
 module.exports = delay;
 
-},{"./global-context":3}],3:[function(require,module,exports){
+},{"./global-context":4}],4:[function(require,module,exports){
 (function (global){
 /*
 * Determines the global context. This should be either window (in the)
@@ -51,7 +75,7 @@ if (!globalContext) {
 module.exports = globalContext;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /*
 * This is a mock websocket event message that is passed into the onopen,
 * opmessage, etc functions.
@@ -120,7 +144,7 @@ function socketEventMessage(name, data, origin) {
 
 module.exports = socketEventMessage;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /*
 * The native websocket object will transform urls without a pathname to have just a /.
 * As an example: ws://localhost:8080 would actually be ws://localhost:8080/ but ws://example.com/foo would not
@@ -219,7 +243,7 @@ function urlParse(arg, url) {
 
 module.exports = urlTransform;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /*
 * This defines four methods: onopen, onmessage, onerror, and onclose. This is done this way instead of
 * just placing the methods on the prototype because we need to capture the callback when it is defined like so:
@@ -277,26 +301,28 @@ function webSocketProperties(websocket) {
 
 module.exports = webSocketProperties;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 var Service            = require('./service');
 var delay              = require('./helpers/delay');
 var urlTransform       = require('./helpers/url-transform');
 var socketMessageEvent = require('./helpers/message-event');
 var globalContext      = require('./helpers/global-context');
 
+
 function MockServer(url) {
   var service = new Service();
   this.url    = urlTransform(url);
-
+  this.clients = [];
   globalContext.MockSocket.services[this.url] = service;
 
   this.service   = service;
   service.server = this;
 }
 
+
+
 MockServer.prototype = {
   service: null,
-
   /*
   * This is the main function for the mock server to subscribe to the on events.
   *
@@ -307,11 +333,9 @@ MockServer.prototype = {
   */
   on: function(type, callback) {
     var observerKey;
-
     if(typeof callback !== 'function' || typeof type !== 'string') {
       return false;
     }
-
     switch(type) {
       case 'connection':
         observerKey = 'clientHasJoined';
@@ -355,7 +379,7 @@ MockServer.prototype = {
 
 module.exports = MockServer;
 
-},{"./helpers/delay":2,"./helpers/global-context":3,"./helpers/message-event":4,"./helpers/url-transform":5,"./service":9}],8:[function(require,module,exports){
+},{"./helpers/delay":3,"./helpers/global-context":4,"./helpers/message-event":5,"./helpers/url-transform":6,"./service":10}],9:[function(require,module,exports){
 var delay               = require('./helpers/delay');
 var urlTransform        = require('./helpers/url-transform');
 var socketMessageEvent  = require('./helpers/message-event');
@@ -442,9 +466,10 @@ MockSocket.prototype = {
 
 module.exports = MockSocket;
 
-},{"./helpers/delay":2,"./helpers/global-context":3,"./helpers/message-event":4,"./helpers/url-transform":5,"./helpers/websocket-properties":6}],9:[function(require,module,exports){
+},{"./helpers/delay":3,"./helpers/global-context":4,"./helpers/message-event":5,"./helpers/url-transform":6,"./helpers/websocket-properties":7}],10:[function(require,module,exports){
 var socketMessageEvent = require('./helpers/message-event');
 var globalContext      = require('./helpers/global-context');
+var ClientServerBinding = require('./client-server-binding');
 
 function SocketService() {
   this.list = {};
@@ -471,7 +496,19 @@ SocketService.prototype = {
     }
 
     this.notifyOnlyFor(client, 'updateReadyState', globalContext.MockSocket.OPEN);
-    this.notify('clientHasJoined', this.server);
+    var conn = new ClientServerBinding(client, this.server);
+
+    client.index = this.server.clients.length;
+    this.server.clients.push(conn);
+
+    // Modify context of clientHasJoin callbacks to point to conn object.
+    if (this.list['clientHasJoined']){
+      for(var i = 0, len = this.server.connectionCallbacks; i < len; i++) {
+        this.list['clientHasJoined'][i].context = conn;
+      }
+    }
+
+    this.notify('clientHasJoined', conn);
     this.notifyOnlyFor(client, 'clientOnOpen', socketMessageEvent('open', null, this.server.url));
   },
 
@@ -486,6 +523,7 @@ SocketService.prototype = {
     this.notify('clientOnclose', messageEvent);
     this.notify('updateReadyState', globalContext.MockSocket.CLOSED);
     this.notify('clientHasLeft');
+    this.server.clients = [];
   },
 
   /*
@@ -501,6 +539,7 @@ SocketService.prototype = {
       this.notifyOnlyFor(client, 'updateReadyState', globalContext.MockSocket.CLOSING);
       this.notifyOnlyFor(client, 'clientOnclose', messageEvent);
       this.notifyOnlyFor(client, 'updateReadyState', globalContext.MockSocket.CLOSED);
+      this.server.clients.splice(client.index, 1);
       this.notify('clientHasLeft');
     }
   },
@@ -632,4 +671,4 @@ SocketService.prototype = {
 
 module.exports = SocketService;
 
-},{"./helpers/global-context":3,"./helpers/message-event":4}]},{},[1]);
+},{"./client-server-binding":2,"./helpers/global-context":4,"./helpers/message-event":5}]},{},[1]);
