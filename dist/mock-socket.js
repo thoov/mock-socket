@@ -442,7 +442,10 @@ MockSocket.prototype = {
   addEventListener: function(event, handler) {
     if(!this._eventHandlers[event]) {
       this._eventHandlers[event] = [];
-      this['on' + event] = this.dispatchEvent.bind(this);
+      var self = this;
+      this['on' + event] = function(eventObject) {
+        self.dispatchEvent(eventObject);
+      }
     }
     this._eventHandlers[event].push(handler);
   },
