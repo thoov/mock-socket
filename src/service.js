@@ -1,5 +1,6 @@
 var socketMessageEvent = require('./helpers/message-event');
 var globalContext      = require('./helpers/global-context');
+var ClientServerBinding = require('./client-server-binding');
 
 function SocketService() {
   this.list = {};
@@ -26,7 +27,19 @@ SocketService.prototype = {
     }
 
     this.notifyOnlyFor(client, 'updateReadyState', globalContext.MockSocket.OPEN);
-    this.notify('clientHasJoined', this.server);
+    var conn = new ClientServerBinding(client, this.server);
+
+    client.index = this.server.clients.length;
+    this.server.clients.push(conn);
+
+    // Modify context of clientHasJoin callbacks to point to conn object.
+    if (this.list['clientHasJoined']){
+      for(var i = 0, len = this.server.connectionCallbacks; i < len; i++) {
+        this.list['clientHasJoined'][i].context = conn;
+      }
+    }
+
+    this.notify('clientHasJoined', conn);
     this.notifyOnlyFor(client, 'clientOnOpen', socketMessageEvent('open', null, this.server.url));
   },
 
@@ -41,6 +54,7 @@ SocketService.prototype = {
     this.notify('clientOnclose', messageEvent);
     this.notify('updateReadyState', globalContext.MockSocket.CLOSED);
     this.notify('clientHasLeft');
+    this.server.clients = [];
   },
 
   /*
@@ -56,6 +70,7 @@ SocketService.prototype = {
       this.notifyOnlyFor(client, 'updateReadyState', globalContext.MockSocket.CLOSING);
       this.notifyOnlyFor(client, 'clientOnclose', messageEvent);
       this.notifyOnlyFor(client, 'updateReadyState', globalContext.MockSocket.CLOSED);
+      this.server.clients.splice(client.index, 1);
       this.notify('clientHasLeft');
     }
   },
