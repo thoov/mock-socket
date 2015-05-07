@@ -26,7 +26,7 @@ function ClientServerBinding(client, server) {
 	}
 
 	this.close = function() {
-		server.close.call(server)
+		client.close.call(client);
 	}
 }
 

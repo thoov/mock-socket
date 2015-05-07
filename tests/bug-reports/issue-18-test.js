@@ -66,3 +66,34 @@ asyncTest('msgs can be broadcasted', function() {
 		start();
 	}, 500)
 });
+
+asyncTest('can close single socket', function() {
+	var socketUrl = 'ws://localhost:8080';
+	var server = new MockServer(socketUrl);
+	var dataA = 'foo';
+	var socketA = new MockSocket(socketUrl);
+	var socketB = new MockSocket(socketUrl);
+
+	expect(1);
+
+	var connectionCount = 0;
+	server.on('connection', function(conn) {
+		if (connectionCount === 0) {
+		} else {
+			conn.close();
+		}
+		connectionCount++;
+	});
+
+	socketA.onclose = function(e) {
+		ok(false, 'socketA should not close');
+	};
+
+	socketB.onclose = function(e) {
+		ok(true, 'socketB should close');
+	};
+
+	setTimeout(function() {
+		start();
+	}, 500)
+});

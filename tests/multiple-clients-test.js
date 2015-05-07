@@ -120,7 +120,7 @@ asyncTest('mock clients can send message to the right mock server', function() {
 
     // Wait for both clients to connect then close the connection.
     if(semaphore === 2) {
-      server.close();
+      this.close();
     }
   });
 
