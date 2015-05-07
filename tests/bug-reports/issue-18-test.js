@@ -94,4 +94,3 @@ asyncTest('can close single socket', function() {
 		start();
 	}, 500)
 });
-
