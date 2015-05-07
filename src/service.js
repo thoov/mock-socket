@@ -27,19 +27,12 @@ SocketService.prototype = {
     }
 
     this.notifyOnlyFor(client, 'updateReadyState', globalContext.MockSocket.OPEN);
-    var conn = new ClientServerBinding(client, this.server);
 
+    var conn = new ClientServerBinding(client, this.server);
     client.index = this.server.clients.length;
     this.server.clients.push(conn);
-
-    // Modify context of clientHasJoin callbacks to point to conn object.
-    if (this.list['clientHasJoined']){
-      for(var i = 0, len = this.server.connectionCallbacks; i < len; i++) {
-        this.list['clientHasJoined'][i].context = conn;
-      }
-    }
-
     this.notify('clientHasJoined', conn);
+
     this.notifyOnlyFor(client, 'clientOnOpen', socketMessageEvent('open', null, this.server.url));
   },
 

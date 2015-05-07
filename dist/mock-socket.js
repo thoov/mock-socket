@@ -30,8 +30,6 @@ function ClientServerBinding(client, server) {
 	}
 }
 
-
-
 module.exports = ClientServerBinding
 },{"./helpers/delay":3,"./helpers/message-event":5}],3:[function(require,module,exports){
 var globalContext = require('./global-context');
@@ -308,7 +306,6 @@ var urlTransform       = require('./helpers/url-transform');
 var socketMessageEvent = require('./helpers/message-event');
 var globalContext      = require('./helpers/global-context');
 
-
 function MockServer(url) {
   var service = new Service();
   this.url    = urlTransform(url);
@@ -318,8 +315,6 @@ function MockServer(url) {
   this.service   = service;
   service.server = this;
 }
-
-
 
 MockServer.prototype = {
   service: null,
@@ -333,9 +328,11 @@ MockServer.prototype = {
   */
   on: function(type, callback) {
     var observerKey;
+
     if(typeof callback !== 'function' || typeof type !== 'string') {
       return false;
     }
+
     switch(type) {
       case 'connection':
         observerKey = 'clientHasJoined';
@@ -496,19 +493,12 @@ SocketService.prototype = {
     }
 
     this.notifyOnlyFor(client, 'updateReadyState', globalContext.MockSocket.OPEN);
-    var conn = new ClientServerBinding(client, this.server);
 
+    var conn = new ClientServerBinding(client, this.server);
     client.index = this.server.clients.length;
     this.server.clients.push(conn);
-
-    // Modify context of clientHasJoin callbacks to point to conn object.
-    if (this.list['clientHasJoined']){
-      for(var i = 0, len = this.server.connectionCallbacks; i < len; i++) {
-        this.list['clientHasJoined'][i].context = conn;
-      }
-    }
-
     this.notify('clientHasJoined', conn);
+
     this.notifyOnlyFor(client, 'clientOnOpen', socketMessageEvent('open', null, this.server.url));
   },
 

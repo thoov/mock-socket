@@ -10,16 +10,14 @@ asyncTest('msgs only sent from the server to single mock-socket', function() {
 	expect(2);
 
 	var connectionCount = 0;
-	server.on('connection', function(server) {
+	server.on('connection', function(conn) {
 		if (connectionCount === 0) {
-			server.send(dataA);
+			conn.send(dataA);
 		} else {
-			server.send(dataB);
+			conn.send(dataB);
 		}
 		connectionCount++;
 	});
-
-
 
 	socketA.onopen = function() {
 		socketA.send("hello");
@@ -35,7 +33,6 @@ asyncTest('msgs only sent from the server to single mock-socket', function() {
 		start();
 	}, 500)
 });
-
 
 asyncTest('msgs can be broadcasted', function() {
 	var socketUrl = 'ws://localhost:8080';
@@ -57,9 +54,6 @@ asyncTest('msgs can be broadcasted', function() {
 		}
 		connectionCount++;
 	});
-
-
-
 
 	socketA.onmessage = function(e) {
 		equal(e.data, dataA);

@@ -18,6 +18,4 @@ function ClientServerBinding(client, server) {
 	}
 }
 
-
-
 module.exports = ClientServerBinding
