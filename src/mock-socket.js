@@ -19,6 +19,13 @@ function MockSocket(url) {
   }, this);
 }
 
+/*
+* Socket.io style connect interface
+*/
+MockSocket.connect = function(url) {
+  return new MockSocket(url);
+};
+
 MockSocket.CONNECTING = 0;
 MockSocket.OPEN       = 1;
 MockSocket.CLOSING    = 2;
