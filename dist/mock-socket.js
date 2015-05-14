@@ -12,17 +12,18 @@ globalContext.MockServer    = MockServer;
 },{"./helpers/global-context":4,"./mock-server":8,"./mock-socket":9,"./service":10}],2:[function(require,module,exports){
 var socketMessageEvent = require('./helpers/message-event');
 var delay = require('./helpers/delay');
+
 function ClientServerBinding(client, server) {
-		this.send = function(msg) {
+	this.send = function(msg) {
 		delay(function() {
 			if (client.onmessage) {
 				client.onmessage(socketMessageEvent('message', msg, server.url));
 			}
-		}, this)
+		}, this);
 	}
 
 	this.on = function(type, callback) {
-		server.on.call(server, type, callback)
+		server.on.call(server, type, callback);
 	}
 
 	this.close = function() {
@@ -310,6 +311,7 @@ function MockServer(url) {
   var service = new Service();
   this.url    = urlTransform(url);
   this.clients = [];
+
   globalContext.MockSocket.services[this.url] = service;
 
   this.service   = service;
@@ -318,6 +320,7 @@ function MockServer(url) {
 
 MockServer.prototype = {
   service: null,
+
   /*
   * This is the main function for the mock server to subscribe to the on events.
   *

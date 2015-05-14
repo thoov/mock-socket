@@ -8,6 +8,7 @@ function MockServer(url) {
   var service = new Service();
   this.url    = urlTransform(url);
   this.clients = [];
+
   globalContext.MockSocket.services[this.url] = service;
 
   this.service   = service;
@@ -16,6 +17,7 @@ function MockServer(url) {
 
 MockServer.prototype = {
   service: null,
+
   /*
   * This is the main function for the mock server to subscribe to the on events.
   *
