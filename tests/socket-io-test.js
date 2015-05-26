@@ -3,8 +3,8 @@ var mockServer;
 module('Socket.io tests', {
   setup: function() {
     mockServer = new MockServer('ws://localhost:8080');
-    mockServer.on('connection', function(server) {
-      server.emit('crazyevent', 'hello');
+    mockServer.on('connection', function(socket) {
+      socket.emit('crazyevent', 'hello');
     });
   }
 });

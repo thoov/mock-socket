@@ -296,6 +296,10 @@ function MockServer(url) {
   service.server = this;
 }
 
+MockServer.of = function(url) {
+  return new MockServer(url);
+};
+
 MockServer.prototype = {
   service: null,
 
