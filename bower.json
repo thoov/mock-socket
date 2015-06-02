@@ -2,6 +2,7 @@
   "name": "mock-socket",
   "version": "0.4.0",
   "homepage": "https://github.com/thoov/mock-socket",
+  "main": "dist/mock-socket.js",
   "authors": [
     "Travis Hoover <thoov7@gmail.com>"
   ],
