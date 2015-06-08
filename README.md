@@ -69,6 +69,29 @@ mockSocket.onclose = function(e) {};
 mockSocket.onerror = function(e) {};
 ```
 
+## Socket.io
+
+MockSocket and MockServer also support a socket.io style interface:
+
+```js
+var mockServer = new MockServer('ws://localhost:8080');
+mockServer.on('connection', function(server) {
+    server.on('message', function(data) {
+        server.emit('chat message', 'hello');
+    });
+});
+```
+and for the client:
+
+```js
+window.io = MockSocketIO;
+var mockSocket = io('ws://localhost:8080');
+
+mockSocket.on('chat message', function(message) {
+    console.log('got a message ' + message);
+});
+```
+
 ## Examples
 
 ### Browser / PhantomJS

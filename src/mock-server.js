@@ -12,7 +12,13 @@ function MockServer(url) {
 
   this.service   = service;
   service.server = this;
+
+  this.rooms = {};
 }
+
+MockServer.of = function(url) {
+  return new MockServer(url);
+};
 
 MockServer.prototype = {
   service: null,
@@ -28,11 +34,11 @@ MockServer.prototype = {
   on: function(type, callback) {
     var observerKey;
 
-    if(typeof callback !== 'function' || typeof type !== 'string') {
+    if (typeof callback !== 'function' || typeof type !== 'string') {
       return false;
     }
 
-    switch(type) {
+    switch (type) {
       case 'connection':
         observerKey = 'clientHasJoined';
         break;
@@ -42,10 +48,12 @@ MockServer.prototype = {
       case 'close':
         observerKey = 'clientHasLeft';
         break;
+      default:
+        observerKey = type;
     }
 
     // Make sure that the observerKey is valid before observing on it.
-    if(typeof observerKey === 'string') {
+    if (typeof observerKey === 'string') {
       this.service.clearAll(observerKey);
       this.service.setCallbackObserver(observerKey, callback, this);
     }
@@ -58,10 +66,20 @@ MockServer.prototype = {
   * @param {data: *}: Any javascript object which will be crafted into a MessageObject.
   */
   send: function(data) {
-    delay(function() {
-      this.service.sendMessageToClients(socketMessageEvent('message', data, this.url));
-    }, this);
+    this.emit('message', data);
   },
+
+  /*
+  * This emit function will notify all mock clients via their on callbacks that
+  * the server has a message for them with a specific named event.
+  *
+  * @param {name} The name of the event ot emit
+  * @param {data: *}: Any javascript object which will be crafted into a MessageObject.
+  */
+  emit: function(name, data) {
+    delay(function() {
+      this.service.sendMessageToClients(socketMessageEvent(name, data, this.url));
+    }, this);  },
 
   /*
   * Notifies all mock clients that the server is closing and their onclose callbacks should fire.
@@ -70,6 +88,37 @@ MockServer.prototype = {
     delay(function() {
       this.service.closeConnectionFromServer(socketMessageEvent('close', null, this.url));
     }, this);
+  },
+
+  /*
+  * Makes the server join a room, all events transmitted to this room will
+  * be sent to the client.
+  *
+  * For now overly trivial since the server does not distinguish between differnt clients
+  */
+  join: function(room) {
+    this.rooms[room] = true;
+  },
+
+  /*
+  * The server leaves the room and stops receiving messages sent only to that room
+  */
+  leave: function(room) {
+    delete this.rooms[room];
+  },
+
+  /*
+  * Scopes chained calls to emit to just the room in question
+  */
+  to: function(room) {
+    if (this.rooms[room] !== null) {
+      return this;
+    } else {
+      return {
+        emit: function() {
+        }
+      };
+    }
   }
 };
 
