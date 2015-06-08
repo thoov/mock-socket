@@ -294,6 +294,8 @@ function MockServer(url) {
 
   this.service   = service;
   service.server = this;
+
+  this.rooms = {};
 }
 
 MockServer.of = function(url) {
@@ -351,7 +353,7 @@ MockServer.prototype = {
 
   /*
   * This emit function will notify all mock clients via their on callbacks that
-  * the server has a message for them with a specific named event à la socket.io.
+  * the server has a message for them with a specific named event.
   *
   * @param {name} The name of the event ot emit
   * @param {data: *}: Any javascript object which will be crafted into a MessageObject.
@@ -359,8 +361,7 @@ MockServer.prototype = {
   emit: function(name, data) {
     delay(function() {
       this.service.sendMessageToClients(socketMessageEvent(name, data, this.url));
-    }, this);
-  },
+    }, this);  },
 
   /*
   * Notifies all mock clients that the server is closing and their onclose callbacks should fire.
@@ -369,6 +370,37 @@ MockServer.prototype = {
     delay(function() {
       this.service.closeConnectionFromServer(socketMessageEvent('close', null, this.url));
     }, this);
+  },
+
+  /*
+  * Makes the server join a room, all events transmitted to this room will
+  * be sent to the client.
+  *
+  * For now overly trivial since the server does not distinguish between differnt clients
+  */
+  join: function(room) {
+    this.rooms[room] = true;
+  },
+
+  /*
+  * The server leaves the room and stops receiving messages sent only to that room
+  */
+  leave: function(room) {
+    delete this.rooms[room];
+  },
+
+  /*
+  * Scopes chained calls to emit to just the room in question
+  */
+  to: function(room) {
+    if (this.rooms[room] !== null) {
+      return this;
+    } else {
+      return {
+        emit: function() {
+        }
+      };
+    }
   }
 };
 
