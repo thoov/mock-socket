@@ -17,19 +17,6 @@ function socketEventMessage(name, data, origin) {
 	try {
 		var messageEvent = new MessageEvent(name);
 		messageEvent.initMessageEvent(name, bubbles, cancelable, data, origin, lastEventId);
-
-		Object.defineProperties(messageEvent, {
-			target:  {
-				get: function() { return targetPlacehold; },
-				set: function(value) { targetPlacehold = value; }
-			},
-			srcElement: {
-				get: function() { return this.target; }
-			},
-			currentTarget: {
-				get: function() { return this.target; }
-			}
-		});
 	}
 	catch (e) {
 		// We are unable to create a MessageEvent Object. This should only be happening in PhantomJS.
@@ -46,20 +33,20 @@ function socketEventMessage(name, data, origin) {
 			returnValue      : true,
 			clipboardData    : undefined
 		};
-
-		Object.defineProperties(messageEvent, {
-			target:  {
-				get: function() { return targetPlacehold; },
-				set: function(value) { targetPlacehold = value; }
-			},
-			srcElement: {
-				get: function() { return this.target; }
-			},
-			currentTarget: {
-				get: function() { return this.target; }
-			}
-		});
 	}
+
+	Object.defineProperties(messageEvent, {
+		target:  {
+			get: function() { return targetPlacehold; },
+			set: function(value) { targetPlacehold = value; }
+		},
+		srcElement: {
+			get: function() { return this.target; }
+		},
+		currentTarget: {
+			get: function() { return this.target; }
+		}
+	});
 
 	return messageEvent;
 }
