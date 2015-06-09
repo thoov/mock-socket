@@ -22,8 +22,7 @@ function MockSocket(url) {
 MockSocket.CONNECTING = 0;
 MockSocket.OPEN       = 1;
 MockSocket.CLOSING    = 2;
-MockSocket.LOADING    = 3;
-MockSocket.CLOSED     = 4;
+MockSocket.CLOSED     = 3;
 MockSocket.services   = {};
 
 MockSocket.prototype = {
