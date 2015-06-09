@@ -102,6 +102,11 @@ function socketEventMessage(name, data, origin) {
 		}
 	});
 
+	if (name === "close") {
+		messageEvent.code = 1000;
+		messageEvent.wasClean = true;
+	}
+
 	return messageEvent;
 }
 
