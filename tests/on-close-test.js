@@ -5,7 +5,7 @@ asyncTest('that the mocksocket onclose function is called after closing mocksock
   var mockServer = new MockServer(socketUrl);
   var mockSocket = new MockSocket(socketUrl);
 
-  expect(4);
+  expect(6);
 
   mockServer.on('close', function() {
     ok(true, 'mock server on close fires as expected');
@@ -15,6 +15,8 @@ asyncTest('that the mocksocket onclose function is called after closing mocksock
     ok(true, 'mocksocket onclose fires as expected');
     equal(this.readyState, MockSocket.CLOSING, 'the readystate is correct to closed');
     equal(event.currentTarget.url, urlTransform(socketUrl), 'onclose function receives a valid event obejct');
+    equal(event.code, 1000, 'close event returns expected code');
+    strictEqual(event.wasClean, true, 'close event returns wasClean flag');
 
     // TODO: add more checks to validate the event object
     start();
