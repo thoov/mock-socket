@@ -1,15 +1,4 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-// Starting point for browserify and throws important objects into the window object
-var Service       = require('./service');
-var MockServer    = require('./mock-server');
-var MockSocket    = require('./mock-socket');
-var globalContext = require('./helpers/global-context');
-
-globalContext.SocketService = Service;
-globalContext.MockSocket    = MockSocket;
-globalContext.MockServer    = MockServer;
-
-},{"./helpers/global-context":3,"./mock-server":7,"./mock-socket":8,"./service":9}],2:[function(require,module,exports){
 var globalContext = require('./global-context');
 
 /*
@@ -28,7 +17,7 @@ function delay(callback, context) {
 
 module.exports = delay;
 
-},{"./global-context":3}],3:[function(require,module,exports){
+},{"./global-context":2}],2:[function(require,module,exports){
 (function (global){
 /*
 * Determines the global context. This should be either window (in the)
@@ -51,7 +40,7 @@ if (!globalContext) {
 module.exports = globalContext;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 /*
 * This is a mock websocket event message that is passed into the onopen,
 * opmessage, etc functions.
@@ -120,7 +109,7 @@ function socketEventMessage(name, data, origin) {
 
 module.exports = socketEventMessage;
 
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /*
 * The native websocket object will transform urls without a pathname to have just a /.
 * As an example: ws://localhost:8080 would actually be ws://localhost:8080/ but ws://example.com/foo would not
@@ -219,7 +208,7 @@ function urlParse(arg, url) {
 
 module.exports = urlTransform;
 
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /*
 * This defines four methods: onopen, onmessage, onerror, and onclose. This is done this way instead of
 * just placing the methods on the prototype because we need to capture the callback when it is defined like so:
@@ -277,7 +266,18 @@ function webSocketProperties(websocket) {
 
 module.exports = webSocketProperties;
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
+// Starting point for browserify and throws important objects into the window object
+var Service       = require('./service');
+var MockServer    = require('./mock-server');
+var MockSocket    = require('./mock-socket');
+var globalContext = require('./helpers/global-context');
+
+globalContext.SocketService = Service;
+globalContext.MockSocket    = MockSocket;
+globalContext.MockServer    = MockServer;
+
+},{"./helpers/global-context":2,"./mock-server":7,"./mock-socket":8,"./service":9}],7:[function(require,module,exports){
 var Service            = require('./service');
 var delay              = require('./helpers/delay');
 var urlTransform       = require('./helpers/url-transform');
@@ -355,7 +355,7 @@ MockServer.prototype = {
 
 module.exports = MockServer;
 
-},{"./helpers/delay":2,"./helpers/global-context":3,"./helpers/message-event":4,"./helpers/url-transform":5,"./service":9}],8:[function(require,module,exports){
+},{"./helpers/delay":1,"./helpers/global-context":2,"./helpers/message-event":3,"./helpers/url-transform":4,"./service":9}],8:[function(require,module,exports){
 var delay               = require('./helpers/delay');
 var urlTransform        = require('./helpers/url-transform');
 var socketMessageEvent  = require('./helpers/message-event');
@@ -503,7 +503,7 @@ MockSocket.prototype = {
 
 module.exports = MockSocket;
 
-},{"./helpers/delay":2,"./helpers/global-context":3,"./helpers/message-event":4,"./helpers/url-transform":5,"./helpers/websocket-properties":6}],9:[function(require,module,exports){
+},{"./helpers/delay":1,"./helpers/global-context":2,"./helpers/message-event":3,"./helpers/url-transform":4,"./helpers/websocket-properties":5}],9:[function(require,module,exports){
 var socketMessageEvent = require('./helpers/message-event');
 var globalContext      = require('./helpers/global-context');
 
@@ -693,4 +693,4 @@ SocketService.prototype = {
 
 module.exports = SocketService;
 
-},{"./helpers/global-context":3,"./helpers/message-event":4}]},{},[1]);
+},{"./helpers/global-context":2,"./helpers/message-event":3}]},{},[6]);

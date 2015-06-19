@@ -1,6 +1,6 @@
 {
   "name": "mock-socket",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "A mocking library for WebSockets",
   "main": "./src/main.js",
   "directories": {
@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/thoov/mock-socket",
   "devDependencies": {
-    "browserify": "^6.3.3",
+    "browserify": "^10.2.4",
     "del": "^0.1.3",
     "gulp": "^3.8.10",
     "gulp-streamify": "0.0.5",
