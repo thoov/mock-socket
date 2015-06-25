@@ -20,8 +20,8 @@ SocketService.prototype = {
 
     // if the server has not been set then we notify the onclose method of this client
     if(!this.server) {
-      this.notify(client, 'updateReadyState', globalContext.MockSocket.CLOSED);
-      this.notifyOnlyFor(client, 'clientOnError');
+      this.notifyOnlyFor(client, 'updateReadyState', globalContext.MockSocket.CLOSED);
+      this.notifyOnlyFor(client, 'clientOnError', socketMessageEvent('error', null, client.url));
       return false;
     }
 
