@@ -11,8 +11,16 @@ function MockServer(url) {
   globalContext.MockSocket.services[this.url] = service;
 
   this.service   = service;
-  service.server = this;
+  // ignore possible query parameters
+  if(url.indexOf(MockServer.unresolvableURL) === -1) {
+    service.server = this;
+  }
 }
+
+/*
+* This URL can be used to emulate server that does not establish connection
+*/
+MockServer.unresolvableURL = "ws://unresolvable_url";
 
 MockServer.prototype = {
   service: null,

@@ -291,8 +291,16 @@ function MockServer(url) {
   globalContext.MockSocket.services[this.url] = service;
 
   this.service   = service;
-  service.server = this;
+  // ignore possible query parameters
+  if(url.indexOf(MockServer.unresolvableURL) === -1) {
+    service.server = this;
+  }
 }
+
+/*
+* This URL can be used to emulate server that does not establish connection
+*/
+MockServer.unresolvableURL = "ws://unresolvable_url";
 
 MockServer.prototype = {
   service: null,
@@ -526,8 +534,8 @@ SocketService.prototype = {
 
     // if the server has not been set then we notify the onclose method of this client
     if(!this.server) {
-      this.notify(client, 'updateReadyState', globalContext.MockSocket.CLOSED);
-      this.notifyOnlyFor(client, 'clientOnError');
+      this.notifyOnlyFor(client, 'updateReadyState', globalContext.MockSocket.CLOSED);
+      this.notifyOnlyFor(client, 'clientOnError', socketMessageEvent('error', null, client.url));
       return false;
     }
 
