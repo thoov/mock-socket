@@ -13,24 +13,26 @@ QUnit.module('Mock Socket Tests', {
   }
 });
 
-QUnit.asyncTest('Connection with the server happens correctly', assert => {
+QUnit.test('Connection with the server happens correctly', assert => {
   var mockSocket = new MockSocket('ws://localhost:8080');
+  var done = assert.async();
 
   assert.expect(1);
 
   mockSocket.onopen = function() {
     assert.ok(true, 'onopen fires as expected');
-    assert.start();
+    done();
   };
 });
 
-QUnit.asyncTest('On message with the server happens correctly', assert => {
+QUnit.test('On message with the server happens correctly', assert => {
   var mockSocket = new MockSocket('ws://localhost:8080');
+  var done = assert.async();
 
   assert.expect(1);
 
   mockSocket.onmessage = function() {
     assert.ok(true, 'onmessage fires as expected');
-    assert.start();
+    done();
   };
 });
