@@ -64,4 +64,4 @@ function socketEventMessage(name, data, origin) {
 	return messageEvent;
 }
 
-module.exports = socketEventMessage;
+export default socketEventMessage;

@@ -2,7 +2,6 @@
 
 A javascript mocking library for [websockets](https://developer.mozilla.org/en-US/docs/WebSockets). This library aims to make testing websocket applications in the bowser, in phantomjs, or even in nodejs as simple as possible.
 
-
 [![Build Status](https://travis-ci.org/thoov/mock-socket.svg?branch=master)](https://travis-ci.org/thoov/mock-socket)
 [![Code Climate](https://codeclimate.com/github/thoov/mock-socket/badges/gpa.svg)](https://codeclimate.com/github/thoov/mock-socket)
 
@@ -138,7 +137,7 @@ gulp
 npm t
 ```
 
-**NOTE:** If you make any changes to the src files you will need to run gulp to generate the new
+**NOTE:** If you make any changes to the src files you will need to run `npm run build` to generate the new
 dist files
 
 ### Feedback / Issues

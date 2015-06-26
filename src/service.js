@@ -1,5 +1,5 @@
-var socketMessageEvent = require('./helpers/message-event');
-var globalContext      = require('./helpers/global-context');
+import socketMessageEvent from './helpers/message-event';
+import globalContext      from './helpers/global-context';
 
 function SocketService() {
   this.list = {};
@@ -185,4 +185,4 @@ SocketService.prototype = {
   }
 };
 
-module.exports = SocketService;
+export default SocketService;

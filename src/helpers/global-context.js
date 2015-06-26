@@ -16,4 +16,4 @@ if (!globalContext) {
   throw new Error('Unable to set the global context to either window or global.');
 }
 
-module.exports = globalContext;
+export default globalContext;

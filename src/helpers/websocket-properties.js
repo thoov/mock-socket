@@ -53,4 +53,4 @@ function webSocketProperties(websocket) {
   });
 };
 
-module.exports = webSocketProperties;
+export default webSocketProperties;

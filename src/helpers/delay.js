@@ -1,4 +1,4 @@
-var globalContext = require('./global-context');
+import globalContext from './global-context';
 
 /*
 * This delay allows the thread to finish assigning its on* methods
@@ -14,4 +14,4 @@ function delay(callback, context) {
   }, 4, context);
 }
 
-module.exports = delay;
+export default delay;

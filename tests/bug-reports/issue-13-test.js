@@ -1,6 +1,10 @@
-module('Issue #13: Sockets send messages multiple times');
+import QUnit from 'qunit';
+import MockServer from '../src/mock-server';
+import MockSocket from '../src/mock-socket';
 
-asyncTest('mock sockets sends double messages', function() {
+QUnit.module('Issue #13: Sockets send messages multiple times');
+
+QUnit.asyncTest('mock sockets sends double messages', function(assert) {
   var socketUrl             = 'ws://localhost:8080';
   var mockServer            = new MockServer(socketUrl);
   var mockSocketA           = new MockSocket(socketUrl);
@@ -26,7 +30,7 @@ asyncTest('mock sockets sends double messages', function() {
   };
 
   setTimeout(function () {
-    equal(num_messages_received, num_messages_sent);
-    start();
+    assert.equal(num_messages_received, num_messages_sent);
+    assert.start();
   }, 500);
 });
