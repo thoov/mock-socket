@@ -126,16 +126,23 @@ require('./path/to/mocksocket/src/main');
 ### Ember-CLI wrapper
 [@yratanov](https://github.com/yratanov) has been gracious to create a mock-sockets wrapper for websocket applications running in [ember-cli](https://github.com/yratanov/ember-cli-mock-socket).
 
-## Building from source / Running tests
+### Building from source
 
-```
+```shell
 git clone git@github.com:thoov/mock-socket.git
 cd mock-socket
 npm i
-npm i -g gulp
-gulp
-npm t
+npm i -g broccoli-cli
+npm run serve # this will auto build the project when you change the files
 ```
+
+### Running test
+
+```shell
+npm test
+```
+
+Or you can open the tests/index.html file in a browser to view the tests as well.
 
 **NOTE:** If you make any changes to the src files you will need to run `npm run build` to generate the new
 dist files
