@@ -1,25 +1,12 @@
 {
-  /*
-   * ENVIRONMENTS
-   * =================
-   */
-
   // Define globals exposed by modern browsers.
   "browser": true,
-
-  // Define globals exposed by jQuery.
-  "jquery": true,
 
   // Define globals exposed by Node.js.
   "node": true,
 
   // Allow ES6.
   "esnext": true,
-
-  /*
-   * ENFORCING OPTIONS
-   * =================
-   */
 
   // Force all variable names to use either camelCase style or UPPER_CASE
   // with underscores.
@@ -34,8 +21,8 @@
   // Prohibit use of a variable before it is defined.
   "latedef": true,
 
-  // Enforce line length to 80 characters
-  "maxlen": 80,
+  // Enforce line length to 120 characters
+  "maxlen": 120,
 
   // Require capitalized names for constructor functions.
   "newcap": true,
@@ -43,19 +30,11 @@
   // Enforce use of single quotation marks for strings.
   "quotmark": "single",
 
-  // Enforce placing 'use strict' at the top function scope
-  "strict": false,
-
   // Prohibit use of explicitly undeclared variables.
   "undef": true,
 
   // Warn when variables are defined but never used.
   "unused": true,
-
-  /*
-   * RELAXING OPTIONS
-   * =================
-   */
 
   // Suppress warnings about == null comparisons.
   "eqnull": true

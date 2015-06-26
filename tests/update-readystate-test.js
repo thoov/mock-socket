@@ -1,17 +1,21 @@
-module('Mock Socket Update Readystate Test', {
+import QUnit from 'qunit';
+import MockServer from './src/mock-server';
+import MockSocket from './src/mock-socket';
+
+QUnit.module('Mock Socket Update Readystate Test', {
   setup: function() {
     var mockServer = new MockServer('ws://localhost:8080');
   }
 });
 
-test('that ready state can only be set to 0-4', function() {
+QUnit.test('that ready state can only be set to 0-4', function(assert) {
   var mockSockets = new MockSocket('ws://localhost:8080');
 
-  expect(3);
+  assert.expect(3);
 
-  equal(mockSockets.readyState, 0);
+  assert.equal(mockSockets.readyState, 0);
   mockSockets._updateReadyState(5);
-  equal(mockSockets.readyState, 0);
+  assert.equal(mockSockets.readyState, 0);
   mockSockets._updateReadyState(4);
-  equal(mockSockets.readyState, 4);
+  assert.equal(mockSockets.readyState, 4);
 });
