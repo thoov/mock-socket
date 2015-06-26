@@ -7,7 +7,7 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "rm -rf dist; broccoli build dist; testem ci",
+    "test": "rm -rf dist; ./node_modules/broccoli-cli/bin/broccoli build dist; testem ci",
     "build": "rm -rf dist; broccoli build dist",
     "serve": "broccoli serve"
   },
@@ -30,6 +30,7 @@
   "devDependencies": {
     "broccoli": "^0.16.3",
     "broccoli-babel-transpiler": "^5.2.3",
+    "broccoli-cli": "^1.0.0",
     "broccoli-fast-browserify": "^0.2.7",
     "broccoli-funnel": "^0.2.3",
     "broccoli-merge-trees": "^0.2.1",
