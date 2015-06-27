@@ -20,7 +20,7 @@ function MockServer(url) {
 /*
 * This URL can be used to emulate server that does not establish connection
 */
-MockServer.unresolvableURL = "ws://unresolvable_url";
+MockServer.unresolvableURL = 'ws://unresolvable_url';
 
 MockServer.prototype = {
   service: null,

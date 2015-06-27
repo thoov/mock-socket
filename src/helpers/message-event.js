@@ -13,9 +13,10 @@ function socketEventMessage(name, data, origin) {
 	var cancelable      = false;
 	var lastEventId     = '';
 	var targetPlacehold = null;
+	var messageEvent;
 
 	try {
-		var messageEvent = new MessageEvent(name);
+		messageEvent = new MessageEvent(name);
 		messageEvent.initMessageEvent(name, bubbles, cancelable, data, origin, lastEventId);
 
 		Object.defineProperties(messageEvent, {
@@ -33,7 +34,7 @@ function socketEventMessage(name, data, origin) {
 	}
 	catch (e) {
 		// We are unable to create a MessageEvent Object. This should only be happening in PhantomJS.
-		var messageEvent = {
+		messageEvent = {
 			type             : name,
 			bubbles          : bubbles,
 			cancelable       : cancelable,

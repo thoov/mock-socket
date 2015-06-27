@@ -65,7 +65,7 @@ MockSocket.prototype = {
       var self = this;
       this['on' + event] = function(eventObject) {
         self.dispatchEvent(eventObject);
-      }
+      };
     }
     this._eventHandlers[event].push(handler);
   },
