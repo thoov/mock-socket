@@ -4,27 +4,34 @@ var mergeTrees       = require('broccoli-merge-trees');
 var fastBrowserify   = require('broccoli-fast-browserify');
 var esTranspiler     = require('broccoli-babel-transpiler');
 
-var es5SrcTree = esTranspiler('src');
-var browserifiedTree = fastBrowserify(es5SrcTree, {
+/*
+* Convert all of the src files into es5 and then browserify them to be
+* used within the browser.
+*/
+var es5SrcTree          = esTranspiler('src');
+var browserifiedSrcTree = fastBrowserify(es5SrcTree, {
   bundles: {
-    'mock-sockets.js': {
+    'mock-socket.js': {
       entryPoints: ['**/main.js']
     }
   }
 });
 
-var uglyTree = funnel(uglifyJavaScript(browserifiedTree), {
+/*
+* Take the browserified file and minify / uglify it.
+*/
+var uglyTree = funnel(uglifyJavaScript(browserifiedSrcTree), {
   destDir: '/',
   getDestinationPath: function() {
-    return 'mock-sockets.min.js';
+    return 'mock-socket.min.js';
   }
 });
 
 /*
-* First is to convert all tests from es2015 to es5.
-* Second is to then browserify the main.js file which includes all of the tests
+* TestPackage is a collection of all the needed files for the tests to run. This includes
+* vendor files, the source files, the test files, and the test loader.
 */
-var allTests = mergeTrees([
+var testPackage = mergeTrees([
   // Load all vendor files needed
   funnel('node_modules/qunitjs/qunit', { include: ['qunit.js'], destDir: '/'}),
 
@@ -36,19 +43,20 @@ var allTests = mergeTrees([
   funnel('tests/bug-reports', { include: ['*-test.js'], destDir: '/bug-reports'})
 ]);
 
-var es5TestTree = esTranspiler(allTests, {
+/*
+* Convert all test files to es5 and allow lookups for 3rd party files
+*/
+var es5TestTree = esTranspiler(testPackage, {
   blacklist: ['useStrict'],
-  resolveModuleSource: function(source, file) {
+  resolveModuleSource: function(source, filepath) {
     switch(source) {
       case 'qunit':
-        var parts = file.split('/');
+        var arrayOfNestedDirs = filepath.split('/');
 
-        if(parts.length === 1) {
-          return './qunit.js';
-        }
+        if(arrayOfNestedDirs.length === 1) { return './qunit.js'; }
 
-        // TODO: support more than one level
-        return '../qunit.js';
+        // for each nested dir we place a ../ infront of qunit.js
+        return arrayOfNestedDirs.map(function() { return '../'; }).slice(0, -1) + 'qunit.js';
 
       default:
         return source;
@@ -56,12 +64,16 @@ var es5TestTree = esTranspiler(allTests, {
   }
 });
 
+/*
+* Browserify the tests so that they can be run via testem's index.html file. The test-loader's
+* job is to include the src files at the top then to include the test modules.
+*/
 var browserifiedTestTree = fastBrowserify(es5TestTree, {
   bundles: {
-    'test.js': {
+    'tests.js': {
       entryPoints: ['test-loader.js']
     }
   }
 });
 
-module.exports = mergeTrees([browserifiedTree, uglyTree, browserifiedTestTree]);
+module.exports = mergeTrees([browserifiedSrcTree, uglyTree, browserifiedTestTree]);

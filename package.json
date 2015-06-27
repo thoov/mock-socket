@@ -8,8 +8,8 @@
   },
   "scripts": {
     "test": "rm -rf dist; ./node_modules/broccoli-cli/bin/broccoli build dist; testem ci",
-    "build": "rm -rf dist; broccoli build dist",
-    "serve": "broccoli serve"
+    "build": "rm -rf dist; ./node_modules/broccoli-cli/bin/broccoli build dist",
+    "serve": "./node_modules/broccoli-cli/bin/broccoli serve"
   },
   "repository": {
     "type": "git",

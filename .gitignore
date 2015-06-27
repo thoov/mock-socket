@@ -1,4 +1,4 @@
 node_modules
 .DS_Store
 tmp
-dist/test.js
+dist/tests.js
