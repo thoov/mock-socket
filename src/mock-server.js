@@ -1,8 +1,8 @@
-var Service            = require('./service');
-var delay              = require('./helpers/delay');
-var urlTransform       = require('./helpers/url-transform');
-var socketMessageEvent = require('./helpers/message-event');
-var globalContext      = require('./helpers/global-context');
+import Service            from './service';
+import delay              from './helpers/delay';
+import urlTransform       from './helpers/url-transform';
+import socketMessageEvent from './helpers/message-event';
+import globalContext      from './helpers/global-context';
 
 function MockServer(url) {
   var service = new Service();
@@ -20,7 +20,7 @@ function MockServer(url) {
 /*
 * This URL can be used to emulate server that does not establish connection
 */
-MockServer.unresolvableURL = "ws://unresolvable_url";
+MockServer.unresolvableURL = 'ws://unresolvable_url';
 
 MockServer.prototype = {
   service: null,
@@ -81,4 +81,4 @@ MockServer.prototype = {
   }
 };
 
-module.exports = MockServer;
+export default MockServer;

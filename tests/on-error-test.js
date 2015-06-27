@@ -1,14 +1,19 @@
-module('Mocksocket onerror tests');
+import QUnit from 'qunit';
+import MockServer from './src/mock-server';
+import MockSocket from './src/mock-socket';
 
-asyncTest('that server rejects connection to unresolvable URL', function() {
+QUnit.module('Mocksocket onerror tests');
+
+QUnit.test('that server rejects connection to unresolvable URL', function(assert) {
   var mockServer = new MockServer(MockServer.unresolvableURL);
   var mockSocket = new MockSocket(MockServer.unresolvableURL);
+  var done       = assert.async();
 
-  expect(2);
+  assert.expect(2);
 
-  mockSocket.onerror = function(event) {
-    ok(true, 'mocksocket onerror fires as expected');
-    equal(this.readyState, MockSocket.CLOSED, 'the readystate is correctly set to CLOSED');
-    start();
+  mockSocket.onerror = function() {
+    assert.ok(true, 'mocksocket onerror fires as expected');
+    assert.equal(this.readyState, MockSocket.CLOSED, 'the readystate is correctly set to CLOSED');
+    done();
   };
 });

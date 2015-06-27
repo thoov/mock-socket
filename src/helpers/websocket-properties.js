@@ -14,7 +14,7 @@ function webSocketProperties(websocket) {
     return function(event) {
       event.target = websocket;
       callback.apply(websocket, arguments);
-    }
+    };
   };
 
   Object.defineProperties(websocket, {
@@ -51,6 +51,6 @@ function webSocketProperties(websocket) {
       }
     }
   });
-};
+}
 
-module.exports = webSocketProperties;
+export default webSocketProperties;

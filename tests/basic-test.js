@@ -1,6 +1,10 @@
+import QUnit from 'qunit';
+import MockServer from './src/mock-server';
+import MockSocket from './src/mock-socket';
+
 var mockServer;
 
-module('Mock Socket Tests', {
+QUnit.module('Mock Socket Tests', {
   setup: function() {
     mockServer = new MockServer('ws://localhost:8080');
     mockServer.on('connection', function(server) {
@@ -9,24 +13,26 @@ module('Mock Socket Tests', {
   }
 });
 
-asyncTest('Connection with the server happens correctly', function() {
+QUnit.test('Connection with the server happens correctly', assert => {
   var mockSocket = new MockSocket('ws://localhost:8080');
+  var done = assert.async();
 
-  expect(1);
+  assert.expect(1);
 
   mockSocket.onopen = function() {
-    ok(true, 'onopen fires as expected');
-    start();
+    assert.ok(true, 'onopen fires as expected');
+    done();
   };
 });
 
-asyncTest('On message with the server happens correctly', function() {
+QUnit.test('On message with the server happens correctly', assert => {
   var mockSocket = new MockSocket('ws://localhost:8080');
+  var done = assert.async();
 
-  expect(1);
+  assert.expect(1);
 
   mockSocket.onmessage = function() {
-    ok(true, 'onmessage fires as expected');
-    start();
+    assert.ok(true, 'onmessage fires as expected');
+    done();
   };
 });
