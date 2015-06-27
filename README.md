@@ -1,6 +1,6 @@
 # Mock Socket
 
-A javascript mocking library for [websockets](https://developer.mozilla.org/en-US/docs/WebSockets). This library aims to make testing websocket applications in the bowser, in phantomjs, or even in nodejs as simple as possible.
+A javascript mocking library for [websockets](https://developer.mozilla.org/en-US/docs/WebSockets). This library aims to make testing websocket applications in the bowser or phantomjs as simple as possible.
 
 [![Build Status](https://travis-ci.org/thoov/mock-socket.svg?branch=master)](https://travis-ci.org/thoov/mock-socket)
 [![Code Climate](https://codeclimate.com/github/thoov/mock-socket/badges/gpa.svg)](https://codeclimate.com/github/thoov/mock-socket)
@@ -113,15 +113,6 @@ asyncTest('basic test', function(){
 ```
 
 **NOTE:** It is good practice to reset the global WebSocket object back to its original object after your tests have finished.
-
-### NodeJS
-
-```js
-require('./path/to/mocksocket/src/main');
-
-// Here the objects have been set to the global
-// object and can be referenced by: MockServer and MockSocket
-```
 
 ### Ember-CLI wrapper
 [@yratanov](https://github.com/yratanov) has been gracious to create a mock-sockets wrapper for websocket applications running in [ember-cli](https://github.com/yratanov/ember-cli-mock-socket).
