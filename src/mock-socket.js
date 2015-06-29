@@ -10,6 +10,8 @@ function MockSocket(url) {
   this.readyState = globalContext.MockSocket.CONNECTING;
   this.service    = globalContext.MockSocket.services[this.url];
 
+  this._eventHandlers = {};
+
   webSocketProperties(this);
 
   delay(function() {
