@@ -58,3 +58,24 @@ QUnit.test('adding/removing "message" event listeners works', function(assert) {
 
   mockServer.close();
 });
+
+QUnit.test('sockets to different URLs should not share events', assert => {
+  let socketUrl2 = 'ws://localhost/2';
+  let mockServer2 = new MockServer(socketUrl2);
+  mockServer2.on('close', () => {
+    mockServer.close();
+  });
+  let mockSocket2 = new MockSocket(socketUrl2);
+  let eventMessage = socketEventMessage('message', 'testing', socketUrl);
+  let fired = 0;
+  let handler = () => fired++;
+
+  assert.expect(1);
+  done = assert.async();
+
+  mockSocket.addEventListener('message', handler);
+  mockSocket2.addEventListener('message', handler);
+  mockSocket.dispatchEvent(eventMessage);
+  assert.equal(fired, 1, 'only 1 handler should be executed');
+  mockServer2.close();
+});
