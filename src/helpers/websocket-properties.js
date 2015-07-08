@@ -19,6 +19,7 @@ function webSocketProperties(websocket) {
 
   Object.defineProperties(websocket, {
     onopen: {
+      configurable: true,
       enumerable: true,
       get: function() { return this._onopen; },
       set: function(callback) {
@@ -27,6 +28,7 @@ function webSocketProperties(websocket) {
       }
     },
     onmessage: {
+      configurable: true,
       enumerable: true,
       get: function() { return this._onmessage; },
       set: function(callback) {
@@ -35,6 +37,7 @@ function webSocketProperties(websocket) {
       }
     },
     onclose: {
+      configurable: true,
       enumerable: true,
       get: function() { return this._onclose; },
       set: function(callback) {
@@ -43,6 +46,7 @@ function webSocketProperties(websocket) {
       }
     },
     onerror: {
+      configurable: true,
       enumerable: true,
       get: function() { return this._onerror; },
       set: function(callback) {
