@@ -29,12 +29,9 @@ var uglyTree = funnel(uglifyJavaScript(browserifiedSrcTree), {
 
 /*
 * TestPackage is a collection of all the needed files for the tests to run. This includes
-* vendor files, the source files, the test files, and the test loader.
+* the source files, the test files, and the test loader.
 */
 var testPackage = mergeTrees([
-  // Load all vendor files needed
-  funnel('node_modules/qunitjs/qunit', { include: ['qunit.js'], destDir: '/'}),
-
   // Load all of the src files
   funnel('src', { destDir: '/src'}),
 
@@ -47,7 +44,6 @@ var testPackage = mergeTrees([
 * Convert all test files to es5 and allow lookups for 3rd party files
 */
 var es5TestTree = esTranspiler(testPackage, {
-  blacklist: ['useStrict'],
   resolveModuleSource: function(source, filepath) {
     switch(source) {
       case 'qunit':
@@ -65,10 +61,20 @@ var es5TestTree = esTranspiler(testPackage, {
 });
 
 /*
+* Collection of all files including test files in es5 and vendor files
+*/
+var es5TestFullTree = mergeTrees([
+  es5TestTree,
+
+  // Load all vendor files needed
+  funnel('node_modules/qunitjs/qunit', { include: ['qunit.js'], destDir: '/'})
+]);
+
+/*
 * Browserify the tests so that they can be run via testem's index.html file. The test-loader's
 * job is to include the src files at the top then to include the test modules.
 */
-var browserifiedTestTree = fastBrowserify(es5TestTree, {
+var browserifiedTestTree = fastBrowserify(es5TestFullTree, {
   bundles: {
     'tests.js': {
       entryPoints: ['test-loader.js']
