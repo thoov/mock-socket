@@ -8,7 +8,27 @@ var esTranspiler     = require('broccoli-babel-transpiler');
 * Convert all of the src files into es5 and then browserify them to be
 * used within the browser.
 */
-var es5SrcTree          = esTranspiler('src');
+var srcVendorPackage = mergeTrees([
+  // Load all of the src files
+  funnel('src', { destDir: '/src'}),
+  funnel('node_modules/URIjs/src', { include: ['URI.min.js', 'punycode.js', 'IPv6.js', 'SecondLevelDomains.js', 'URI.js'], destDir: '/'})
+]);
+var es5SrcTree = esTranspiler(srcVendorPackage, {
+  resolveModuleSource: function(source, filepath) {
+    switch(source) {
+      case 'urijs':
+        var arrayOfNestedDirs = filepath.split('/');
+
+        if(arrayOfNestedDirs.length === 1) { return './URI.min.js'; }
+
+        // for each nested dir we place a ../ infront of qunit.js
+        return arrayOfNestedDirs.map(function() { return '../'; }).slice(0, -1).join('') + 'URI.min.js';
+
+      default:
+        return source;
+    }
+  }
+});
 var browserifiedSrcTree = fastBrowserify(es5SrcTree, {
   bundles: {
     'mock-socket.js': {
@@ -52,7 +72,7 @@ var es5TestTree = esTranspiler(testPackage, {
         if(arrayOfNestedDirs.length === 1) { return './qunit.js'; }
 
         // for each nested dir we place a ../ infront of qunit.js
-        return arrayOfNestedDirs.map(function() { return '../'; }).slice(0, -1) + 'qunit.js';
+        return arrayOfNestedDirs.map(function() { return '../'; }).slice(0, -1).join('') + 'qunit.js';
 
       default:
         return source;

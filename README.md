@@ -145,6 +145,3 @@ If you have any feedback, encounter any bugs, or just have a question, please fe
 ### FAQ
 
 * **LICENSE**: This library falls under the [MIT license](https://github.com/thoov/mock-socket/blob/master/LICENSE.txt)
-
-### Third Party Libraries
-* [js-url](https://github.com/websanova/js-url)

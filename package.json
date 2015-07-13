@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/thoov/mock-socket",
   "devDependencies": {
+    "URIjs": "^1.15.0",
     "broccoli": "^0.16.3",
     "broccoli-babel-transpiler": "^5.2.3",
     "broccoli-cli": "^1.0.0",
