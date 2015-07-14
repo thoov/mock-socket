@@ -9,7 +9,7 @@
   "scripts": {
     "test": "rm -rf dist; ./node_modules/broccoli-cli/bin/broccoli build dist; testem ci",
     "build": "rm -rf dist; ./node_modules/broccoli-cli/bin/broccoli build dist",
-    "serve": "./node_modules/broccoli-cli/bin/broccoli serve"
+    "play": "node ./tests/playground/server.js",
   },
   "repository": {
     "type": "git",
@@ -38,6 +38,7 @@
     "broccoli-uglify-js": "^0.1.3",
     "del": "^0.1.3",
     "qunitjs": "^1.18.0",
-    "testem": "^0.6.23"
+    "testem": "^0.6.23",
+    "ws": "^0.7.2"
   }
 }

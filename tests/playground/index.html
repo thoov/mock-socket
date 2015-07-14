@@ -1,0 +1,23 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Mock Sockets Playground</title>
+</head>
+<body>
+  <script src="../../dist/mock-socket.js"></script>
+  <script>
+    /*
+    * Here is a sample playground for inspecting actual websocket objects to make sure that
+    * the mock version is correctly behaving as it should.
+    *
+    * First run: npm run-script ws
+    * Next: visit tests/intergration/index.html in your browser and open up the console
+    */
+    var sampleWS = new WebSocket('ws://localhost:8080');
+
+    sampleWS.onopen = function(event) {
+      console.log(event);
+    };
+  </script>
+</body>
+</html>
