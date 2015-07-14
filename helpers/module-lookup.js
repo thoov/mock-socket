@@ -1,6 +1,6 @@
 module.exports = {
   'urijs': {
-    'filename': 'URI.min.js'
+    'filename': 'URI.js'
   },
   'qunit': {
     'filename': 'qunit.js'

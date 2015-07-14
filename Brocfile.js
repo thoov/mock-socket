@@ -9,7 +9,6 @@ var pathNormalization = require('./helpers/module-path-normalization');
 var thirdPartyLibaries = mergeTrees([
   funnel('node_modules/URIjs/src', {
     include: [
-      'URI.min.js',
       'punycode.js',
       'IPv6.js',
       'SecondLevelDomains.js',
