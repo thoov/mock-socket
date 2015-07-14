@@ -1,6 +1,6 @@
 import QUnit from 'qunit';
-import MockServer from './src/mock-server';
-import MockSocket from './src/mock-socket';
+import MockServer from './src/server';
+import MockSocket from './src/websocket';
 import urlTransform from './src/helpers/url-transform';
 
 QUnit.module('Mocksocket onclose test');

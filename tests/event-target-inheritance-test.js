@@ -1,6 +1,6 @@
 import QUnit from 'qunit';
-import MockServer from './src/mock-server';
-import MockSocket from './src/mock-socket';
+import MockServer from './src/server';
+import MockSocket from './src/websocket';
 import socketEventMessage from './src/helpers/message-event';
 
 var socketUrl = 'ws://localhost';

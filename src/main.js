@@ -1,6 +1,6 @@
 import Service from './service';
-import MockServer from './mock-server';
-import MockSocket from './mock-socket';
+import MockServer from './server';
+import MockSocket from './websocket';
 import globalContext from './helpers/global-context';
 
 globalContext.SocketService = Service;

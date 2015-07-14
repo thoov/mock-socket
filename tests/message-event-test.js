@@ -1,6 +1,4 @@
 import QUnit from 'qunit';
-import MockServer from './src/mock-server';
-import MockSocket from './src/mock-socket';
 import socketEventMessage from './src/helpers/message-event';
 
 QUnit.module('Websocket message event Tests');
