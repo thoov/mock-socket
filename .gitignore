@@ -2,3 +2,4 @@ node_modules
 .DS_Store
 tmp
 dist/tests.js
+npm-debug.log

@@ -7,7 +7,7 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "testem ci",
+    "test": "npm i; rm -rf dist; ./node_modules/broccoli-cli/bin/broccoli build dist; testem ci",
     "build": "rm -rf dist; ./node_modules/broccoli-cli/bin/broccoli build dist",
     "serve": "./node_modules/broccoli-cli/bin/broccoli serve"
   },
