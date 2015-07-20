@@ -5,6 +5,7 @@
 </head>
 <body>
   <script src="../../dist/mock-socket.js"></script>
+  <script src="../../bower_components/jquery/dist/jquery.js"></script>
   <script>
     /*
     * Here is a sample playground for inspecting actual websocket objects to make sure that
@@ -13,11 +14,20 @@
     * First run: npm run-script ws
     * Next: visit tests/intergration/index.html in your browser and open up the console
     */
-    var sampleWS = new WebSocket('ws://localhost:8080');
+    try {
+      var sampleWS = new WebSocket('ws://localhost:1111');
 
-    sampleWS.onopen = function(event) {
-      console.log(event);
-    };
+      sampleWS.onerror = function(event) {
+        console.log(event);
+      };
+      sampleWS.onmessage = function(event) {
+        console.log(event);
+      };
+    }
+    catch(e) {
+      console.log('Errr');
+      debugger;
+    }
   </script>
 </body>
 </html>

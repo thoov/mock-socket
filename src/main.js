@@ -1,8 +1,7 @@
-import Service from './service';
-import MockServer from './server';
-import MockSocket from './websocket';
-import globalContext from './helpers/global-context';
+import Server from './server';
+import WebSocket from './websocket';
 
-globalContext.SocketService = Service;
-globalContext.MockSocket    = MockSocket;
-globalContext.MockServer    = MockServer;
+export default {
+  WebSocket,
+  Server
+};
