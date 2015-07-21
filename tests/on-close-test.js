@@ -1,3 +1,4 @@
+import URI from 'urijs';
 import QUnit from 'qunit';
 import MockServer from './src/server';
 import MockSocket from './src/websocket';
@@ -5,7 +6,7 @@ import networkBridge from './src/network-bridge';
 
 QUnit.module('Mocksocket onclose test', {
   teardown() {
-    networkBridge.flush();
+    //networkBridge.flush();
   }
 });
 
@@ -29,7 +30,7 @@ QUnit.test('that the mocksocket onclose function is called after closing mocksoc
   mockSocket.onclose = function(event) {
     assert.ok(true, 'mocksocket onclose fires as expected');
     assert.equal(this.readyState, MockSocket.CLOSE, 'the readystate is correct to closed');
-    assert.equal(event.currentTarget.url, urlTransform(socketUrl), 'onclose function receives a valid event obejct');
+    assert.equal(event.currentTarget.url, URI(socketUrl).toString(), 'onclose function receives a valid event obejct');
   };
 });
 

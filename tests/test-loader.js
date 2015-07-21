@@ -5,11 +5,11 @@
 import main from './src/main';
 
 import websocketsTest from './websockets-test';
-import networkBridgeTest from './network-bridge-test';
+import networkBridgeTest from './unit/network-bridge-test';
+import eventTargetInheritance from './unit/event-target-inheritance-test';
+import factoryTest from './unit/factory-test';
 
-//import basicTest from './basic-test';
-//import onCloseTest from './on-close-test';
-import eventTargetInheritance from './event-target-inheritance-test';
+import onCloseTest from './on-close-test';
 //import multipleClientsTest from './multiple-clients-test';
 //import onCloseTest from './on-close-test';
 //import onErrorTest from './on-error-test';

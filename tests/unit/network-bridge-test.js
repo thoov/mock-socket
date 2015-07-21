@@ -1,5 +1,5 @@
 import QUnit from 'qunit';
-import networkBridge from './src/network-bridge';
+import networkBridge from '../src/network-bridge';
 
 const fakeObject = { foo: 'bar' };
 

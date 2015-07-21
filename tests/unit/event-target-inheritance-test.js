@@ -1,13 +1,13 @@
 import QUnit from 'qunit';
 import {
   createEvent
-} from './src/factory';
-import EventTarget from './src/event-target';
+} from '../src/factory';
+import EventTarget from '../src/event-target';
 
 class Mock extends EventTarget {}
 class MockFoo extends EventTarget {}
 
-QUnit.module('WebSocket inherits EventTarget');
+QUnit.module('Unit - EventTarget');
 
 QUnit.test('has all the required methods', assert => {
   assert.expect(3);
