@@ -35,6 +35,11 @@ function createEvent(config) {
     type,
     target
   } = config;
+
+  if (!type) {
+    throw new Error(`You must specify an event type`);
+  }
+
   var event = new window.Event(type);
 
   if (!event) {
@@ -60,9 +65,13 @@ function createMessageEvent(config) {
     throw new Error(`MessageEvent is not defined in this enviornment`);
   }
 
-  extendEvent(messageEvent, target);
+  if (!type) {
+    throw new Error(`You must specify an event type`);
+  }
 
-  return messageEvent.initMessageEvent(type, false, false, data, origin, null);
+  extendEvent(messageEvent, target);
+  messageEvent.initMessageEvent(type, false, false, data, origin, null);
+  return messageEvent;
 }
 
 export {

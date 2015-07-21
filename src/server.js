@@ -1,18 +1,27 @@
+import URI from 'urijs';
+import WebSocket from './websocket';
 import EventTarget  from './event-target';
 import networkBridge from './network-bridge';
-import createEvent from './event-factory';
-import WebSocket from './websocket';
-import URI from 'urijs';
+import {
+  createEvent,
+  createMessageEvent
+} from './factory';
 
 /*
 *
 */
 class Server extends EventTarget {
-
+  /*
+  * @param {string} url
+  */
   constructor(url) {
     super();
-    this.url = URI(url).toString();
-    networkBridge.attachServer(this, this.url);
+    this.url   = URI(url).toString();
+    var server = networkBridge.attachServer(this, this.url);
+
+    if(!server) {
+      this.dispatchEvent(createEvent({type: 'error'}));
+    }
   }
 
   /*
@@ -34,35 +43,36 @@ class Server extends EventTarget {
   * @param {data: *}: Any javascript object which will be crafted into a MessageObject.
   */
   send(data) {
-    var messageEvent = createEvent({
-      type: 'message',
-      kind: 'MessageEvent',
-      data,
-      origin: this.url
-    });
+    var websockets = networkBridge.websocketsLookup(this.url);
 
-    networkBridge.broadcast(this.url, messageEvent);
+    websockets.forEach(socket => {
+      var messageEvent = createMessageEvent({
+        type: 'message',
+        data,
+        origin: this.url,
+        target: socket
+      });
+
+      socket.dispatchEvent(messageEvent);
+    });
   }
 
   /*
   * Notifies all mock clients that the server is closing and their onclose callbacks should fire.
   */
   close() {
-    var event = createEvent({
-      type: 'close'
-    });
-
-    var listeners = networkBridge.retrieveWebSockets(this.url);
+    var listeners = networkBridge.websocketsLookup(this.url);
 
     listeners.forEach(socket => {
       socket.readyState = WebSocket.CLOSE;
-      event.target = socket;
-      event.srcElement = socket;
-      event.currentTarget = socket;
-      socket.dispatchEvent(event);
+      socket.dispatchEvent(createEvent({
+        type: 'close',
+        target: socket
+      }));
     });
 
-    this.dispatchEvent(event, this);
+    this.dispatchEvent(createEvent({type: 'close'}), this);
+    networkBridge.removeServer(this.url);
   }
 }
 

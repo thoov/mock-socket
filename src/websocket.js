@@ -1,13 +1,15 @@
-import delay from './helpers/delay';
-import networkBridge from './network-bridge';
-import createEvent from './event-factory';
-import EventTarget from './event-target';
 import URI from 'urijs';
+import delay from './helpers/delay';
+import EventTarget from './event-target';
+import networkBridge from './network-bridge';
+import {
+  createEvent,
+  createMessageEvent
+} from './factory';
 
 class WebSocket extends EventTarget {
-
   /*
-  * 
+  * @param {string} url
   */
   constructor(url) {
     super();
@@ -27,32 +29,32 @@ class WebSocket extends EventTarget {
         configurable: true,
         enumerable: true,
         get: function() { return this.listeners.open; },
-        set: function(callback) {
-          this.addEventListener('open', callback);
+        set: function(listener) {
+          this.addEventListener('open', listener);
         }
       },
       onmessage: {
         configurable: true,
         enumerable: true,
         get: function() { return this.listeners.message; },
-        set: function(callback) {
-          this.addEventListener('message', callback);
+        set: function(listener) {
+          this.addEventListener('message', listener);
         }
       },
       onclose: {
         configurable: true,
         enumerable: true,
         get: function() { return this.listeners.close; },
-        set: function(callback) {
-          this.addEventListener('close', callback);
+        set: function(listener) {
+          this.addEventListener('close', listener);
         }
       },
       onerror: {
         configurable: true,
         enumerable: true,
         get: function() { return this.listeners.error; },
-        set: function(callback) {
-          this.addEventListener('error', callback);
+        set: function(listener) {
+          this.addEventListener('error', listener);
         }
       }
     });
@@ -61,19 +63,18 @@ class WebSocket extends EventTarget {
     *
     */
     delay(function() {
-      var server = networkBridge.connect(this, this.url);
-      var openEvent = createEvent({
-        type: 'open',
-        target: this
-      });
+      var server = networkBridge.attachWebSocket(this, this.url);
 
-      var openServerEvent = createEvent({
-        type: 'connection'
-      });
+      if (server) {
+        this.readyState = WebSocket.OPEN;
+        this.dispatchEvent(createEvent({type: 'open', target: this}));
+        server.dispatchEvent(createEvent({type: 'connection'}), server);
+      }
+      else {
+        this.readyState = WebSocket.CLOSED;
+        this.dispatchEvent(createEvent({ type: 'error', target: this }));
 
-      if(server) {
-        server.dispatchEvent(openServerEvent, server);
-        this.dispatchEvent(openEvent);
+        console.error(`WebSocket connection to '${this.url}' failed`);
       }
     }, this);
   }
@@ -85,15 +86,17 @@ class WebSocket extends EventTarget {
   * @param {data: *}: Any javascript object which will be crafted into a MessageObject.
   */
   send(data) {
-    var messageEvent = createEvent({
+    var messageEvent = createMessageEvent({
       type: 'message',
-      kind: 'MessageEvent',
       origin: this.url,
       data: data
     });
 
-    var server = networkBridge.connect(this, this.url);
-    server.dispatchEvent(messageEvent, data);
+    var server = networkBridge.serverLookup(this.url);
+
+    if (server) {
+      server.dispatchEvent(messageEvent, data);
+    }
   }
 
   /*
@@ -101,15 +104,17 @@ class WebSocket extends EventTarget {
   * service that it is closing the connection.
   */
   close() {
-    var closeEvent = createEvent({
-      type: 'close',
-      target: this
-    });
+    var server = networkBridge.serverLookup(this.url);
+    var closeEvent = createEvent({type: 'close', target: this});
 
-    var server = networkBridge.connect(this, this.url);
     this.readyState = WebSocket.CLOSED;
     this.dispatchEvent(closeEvent);
-    server.dispatchEvent(closeEvent, server);
+
+    if (server) {
+      server.dispatchEvent(closeEvent, server);
+    }
+
+    // TODO: remove server from network-bridge
   }
 }
 

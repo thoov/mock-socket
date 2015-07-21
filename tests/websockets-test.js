@@ -1,11 +1,11 @@
 import QUnit from 'qunit';
 import Server from './src/server';
 import WebSocket from './src/websocket';
-import networkBridge from './src/helpers/bridge';
+import networkBridge from './src/network-bridge';
 
 QUnit.module('Functional - WebSockets', {
   teardown() {
-    networkBridge.flush();
+    networkBridge.urlMap = {};
   }
 });
 

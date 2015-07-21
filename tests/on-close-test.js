@@ -1,8 +1,7 @@
 import QUnit from 'qunit';
 import MockServer from './src/server';
 import MockSocket from './src/websocket';
-import urlTransform from './src/helpers/url-transform';
-import networkBridge from './src/helpers/bridge';
+import networkBridge from './src/network-bridge';
 
 QUnit.module('Mocksocket onclose test', {
   teardown() {
