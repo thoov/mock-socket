@@ -1,7 +1,8 @@
-import EventTarget  from './helpers/event-target';
-import urlTransform from './helpers/url-transform';
-import networkBridge from './helpers/bridge';
-import createEvent from './helpers/event-factory';
+import EventTarget  from './event-target';
+import networkBridge from './network-bridge';
+import createEvent from './event-factory';
+import WebSocket from './websocket';
+import URI from 'urijs';
 
 /*
 *
@@ -10,7 +11,7 @@ class Server extends EventTarget {
 
   constructor(url) {
     super();
-    this.url = urlTransform(url);
+    this.url = URI(url).toString();
     networkBridge.attachServer(this, this.url);
   }
 
@@ -46,7 +47,23 @@ class Server extends EventTarget {
   /*
   * Notifies all mock clients that the server is closing and their onclose callbacks should fire.
   */
-  close() {}
+  close() {
+    var event = createEvent({
+      type: 'close'
+    });
+
+    var listeners = networkBridge.retrieveWebSockets(this.url);
+
+    listeners.forEach(socket => {
+      socket.readyState = WebSocket.CLOSE;
+      event.target = socket;
+      event.srcElement = socket;
+      event.currentTarget = socket;
+      socket.dispatchEvent(event);
+    });
+
+    this.dispatchEvent(event, this);
+  }
 }
 
 export default Server;

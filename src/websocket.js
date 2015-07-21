@@ -1,11 +1,14 @@
 import delay from './helpers/delay';
-import networkBridge from './helpers/bridge';
-import urlTransform from './helpers/url-transform';
-import createEvent from './helpers/event-factory';
-import EventTarget from './helpers/event-target';
+import networkBridge from './network-bridge';
+import createEvent from './event-factory';
+import EventTarget from './event-target';
+import URI from 'urijs';
 
 class WebSocket extends EventTarget {
 
+  /*
+  * 
+  */
   constructor(url) {
     super();
 
@@ -13,7 +16,7 @@ class WebSocket extends EventTarget {
     *
     */
     this.binaryType = 'blob';
-    this.url        = urlTransform(url);
+    this.url        = URI(url).toString();
     this.readyState = WebSocket.CONNECTING;
 
     /*

@@ -3,7 +3,7 @@ import Server from './src/server';
 import WebSocket from './src/websocket';
 import networkBridge from './src/helpers/bridge';
 
-QUnit.module('Funcitonal: WebSockets', {
+QUnit.module('Functional - WebSockets', {
   teardown() {
     networkBridge.flush();
   }

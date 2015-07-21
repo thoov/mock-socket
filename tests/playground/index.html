@@ -15,12 +15,13 @@
     * Next: visit tests/intergration/index.html in your browser and open up the console
     */
     try {
-      var sampleWS = new WebSocket('ws://localhost:1111');
+      var sampleWS = new WebSocket('ws://localhost:8080');
 
       sampleWS.onerror = function(event) {
         console.log(event);
       };
-      sampleWS.onmessage = function(event) {
+      sampleWS.onclose = function(event) {
+        debugger;
         console.log(event);
       };
     }

@@ -12,10 +12,6 @@ class Bridge {
     var connectionLookup = this.urlMap[url];
     if(connectionLookup && connectionLookup.server) {
 
-      if(!connectionLookup.websockets) {
-        connectionLookup.websockets = [];
-      }
-
       if(connectionLookup.websockets.indexOf(websocket) === -1) {
         connectionLookup.websockets.push(websocket);
       }
@@ -65,6 +61,10 @@ class Bridge {
       event.currentTarget = socket;
       socket.dispatchEvent(event);
     });
+  }
+
+  retrieveWebSockets(url) {
+    return this.urlMap[url].websockets || [];
   }
 
   flush() {
