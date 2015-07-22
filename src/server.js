@@ -2,9 +2,11 @@ import URI from 'urijs';
 import WebSocket from './websocket';
 import EventTarget  from './event-target';
 import networkBridge from './network-bridge';
+import CLOSE_CODES from './helpers/close-codes';
 import {
   createEvent,
-  createMessageEvent
+  createMessageEvent,
+  createCloseEvent
 } from './factory';
 
 /*
@@ -65,13 +67,14 @@ class Server extends EventTarget {
 
     listeners.forEach(socket => {
       socket.readyState = WebSocket.CLOSE;
-      socket.dispatchEvent(createEvent({
+      socket.dispatchEvent(createCloseEvent({
         type: 'close',
-        target: socket
+        target: socket,
+        code: CLOSE_CODES.CLOSE_NORMAL
       }));
     });
 
-    this.dispatchEvent(createEvent({type: 'close'}), this);
+    this.dispatchEvent(createCloseEvent({type: 'close'}), this);
     networkBridge.removeServer(this.url);
   }
 }

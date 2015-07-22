@@ -77,7 +77,34 @@ function createMessageEvent(config) {
   return messageEvent;
 }
 
+/*
+* Creates a CloseEvent object and extends it to allow full modification of
+* its properties.
+*
+* @param {object} config - within config you will need to pass type and optionally target, code, and reason
+*/
+function createCloseEvent(config) {
+  var {
+    code,
+    reason,
+    type,
+    target
+  } = config;
+
+  var closeEvent = new window.CloseEvent(type, {
+    code,
+    reason
+  });
+
+  if (!closeEvent) {
+    throw new Error(`MessageEvent is not defined in this enviornment`);
+  }
+
+  return extendEvent(closeEvent, target);
+}
+
 export {
   createEvent,
-  createMessageEvent
+  createMessageEvent,
+  createCloseEvent
 };

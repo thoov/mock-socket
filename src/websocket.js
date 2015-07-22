@@ -2,9 +2,11 @@ import URI from 'urijs';
 import delay from './helpers/delay';
 import EventTarget from './event-target';
 import networkBridge from './network-bridge';
+import CLOSE_CODES from './helpers/close-codes';
 import {
   createEvent,
-  createMessageEvent
+  createMessageEvent,
+  createCloseEvent
 } from './factory';
 
 /*
@@ -77,7 +79,7 @@ class WebSocket extends EventTarget {
       else {
         this.readyState = WebSocket.CLOSED;
         this.dispatchEvent(createEvent({ type: 'error', target: this }));
-        this.dispatchEvent(createEvent({ type: 'close', target: this }));
+        this.dispatchEvent(createCloseEvent({ type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL }));
 
         console.error(`WebSocket connection to '${this.url}' failed`);
       }
@@ -112,7 +114,7 @@ class WebSocket extends EventTarget {
     if (this.readyState !== WebSocket.OPEN) { return undefined; }
 
     var server = networkBridge.serverLookup(this.url);
-    var closeEvent = createEvent({type: 'close', target: this});
+    var closeEvent = createCloseEvent({type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL});
 
     this.readyState = WebSocket.CLOSED;
     this.dispatchEvent(closeEvent);
