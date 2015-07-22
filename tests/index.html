@@ -1,0 +1,41 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Mock Sockets Unit Tests</title>
+  <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.18.0.css">
+</head>
+<body>
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
+  <script src="../dist/tests.js"></script>
+
+  <!--
+  Note that this file will not be loaded if running outside of testem
+  and therefor will display Failed to load resource: net::ERR_FILE_NOT_FOUND
+  -->
+  <script src="/testem.js"></script>
+  <script>
+    /*
+    * Here is a sample playground for inspecting actual websocket objects to make sure that
+    * the mock version is correctly behaving as it should.
+    *
+    * First run: npm run-script ws
+    * Next: visit tests/index.html in your browser and open up the console
+    */
+    var sampleWS = new WebSocket('ws://localhost:8081');
+
+    sampleWS.onopen = function(event) {
+      debugger;
+    };
+    sampleWS.onmessage = function(event) {
+      debugger;
+    };
+    sampleWS.onclose = function(event) {
+      debugger;
+    };
+    sampleWS.onerror = function(event) {
+      debugger;
+    };
+  </script>
+</body>
+</html>
