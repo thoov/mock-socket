@@ -1,7 +1,7 @@
 import QUnit from 'qunit';
-import Server from './src/server';
-import WebSocket from './src/websocket';
-import networkBridge from './src/network-bridge';
+import Server from '../src/server';
+import WebSocket from '../src/websocket';
+import networkBridge from '../src/network-bridge';
 
 QUnit.module('Functional - WebSockets', {
   teardown() {
@@ -84,5 +84,46 @@ QUnit.test('that the server gets called when the client sends a message', assert
 
   mockSocket.onopen = function() {
     mockSocket.send('Testing');
+  };
+});
+
+QUnit.test('that the onopen function will only be called once for each client', function(assert) {
+  var socketUrl       = 'ws://localhost:8080';
+  var mockServer      = new Server(socketUrl);
+  var websocketFoo    = new WebSocket(socketUrl);
+  var websocketBar    = new WebSocket(socketUrl);
+  var done            = assert.async();
+  assert.expect(2);
+
+  websocketFoo.onopen = function() {
+    assert.ok(true, 'mocksocket onopen fires as expected');
+  };
+
+  websocketBar.onopen = function() {
+    assert.ok(true, 'mocksocket onopen fires as expected');
+    mockServer.close();
+    done();
+  };
+});
+
+QUnit.test('closing a client will only close itself and not other clients', function(assert) {
+  var mockServer      = new MockServer('ws://localhost:8080');
+  var websocketFoo    = new WebSocket('ws://localhost:8080');
+  var websocketBar    = new WebSocket('ws://localhost:8080');
+  var done            = assert.async();
+
+  assert.expect(1);
+
+  websocketFoo.onclose = function() {
+    assert.ok(false, 'mocksocket should not close');
+  };
+
+  websocketBar.onopen = function() {
+    this.close();
+  };
+
+  websocketBar.onclose = function() {
+    assert.ok(true, 'mocksocket onclose fires as expected');
+    done();
   };
 });

@@ -14,21 +14,17 @@
     * First run: npm run-script ws
     * Next: visit tests/intergration/index.html in your browser and open up the console
     */
-    try {
-      var sampleWS = new WebSocket('ws://localhost:8080');
+    var sampleWS = new WebSocket('ws://localhost:8081');
 
-      sampleWS.onerror = function(event) {
-        console.log(event);
-      };
-      sampleWS.onclose = function(event) {
-        debugger;
-        console.log(event);
-      };
-    }
-    catch(e) {
-      console.log('Errr');
+    sampleWS.onclose = function(event) {
       debugger;
-    }
+      console.log(event);
+    };
+    sampleWS.onerror = function(event) {
+      debugger;
+      console.log(event);
+    };
+
   </script>
 </body>
 </html>

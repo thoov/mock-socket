@@ -10,8 +10,9 @@ QUnit.test('that the onopen function will only be called once for each client', 
   var socketA         = new MockSocket(socketUrl);
   var socketB         = new MockSocket(socketUrl);
   var done            = assert.async();
-
   assert.expect(4);
+
+  debugger;
 
   // this should be called twice, once for both socketA and socketB
   webSocketServer.on('connection', function() {
@@ -35,12 +36,19 @@ QUnit.test('mock clients will connect to the right mock server', function(assert
   var socketA = new MockSocket('ws://localhost:8080');
   var socketB = new MockSocket('ws://localhost:8080');
   var done    = assert.async();
+  var counter = 0;
 
   assert.expect(4);
 
   // this should be called twice, once for both socketA and socketB
   serverA.on('connection', function() {
     assert.ok(true, 'mock server on connection fires as expected');
+    counter++;
+    if (counter === 2) {
+      serverA.close();
+      serverB.close();
+      done();
+    }
   });
 
   serverB.on('connection', function() {
@@ -53,7 +61,6 @@ QUnit.test('mock clients will connect to the right mock server', function(assert
 
   socketB.onopen = function() {
     assert.ok(true, 'mocksocket onopen fires as expected');
-    done();
   };
 });
 
@@ -71,6 +78,7 @@ QUnit.test('mock clients onopen functions are fired only once', function(assert)
     var socketB = new MockSocket(socketURL);
     socketB.onopen = function() {
       assert.ok(true, 'mocksocket onclose fires as expected');
+      mockServer.close();
       done();
     };
   };
@@ -84,6 +92,7 @@ QUnit.test('mock clients can send message to the right mock server', function(as
   var socketA = new MockSocket('ws://localhost:8080');
   var socketB = new MockSocket('ws://localhost:8081');
   var done    = assert.async();
+  debugger;
 
   assert.expect(6);
 

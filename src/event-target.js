@@ -61,10 +61,10 @@ class EventTarget {
 
     listeners.forEach(listener => {
       if(customArgument) {
-        listener.call(null, customArgument);
+        listener.call(this, customArgument);
       }
       else {
-        listener.call(null, event);
+        listener.call(this, event);
       }
     });
   }

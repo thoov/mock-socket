@@ -24,6 +24,7 @@ var testFiles = mergeTrees([
   funnel('tests', { include: ['*-test.js', 'test-loader.js'], destDir: '/'}),
   funnel('tests/bug-reports', { include: ['*-test.js'], destDir: '/bug-reports'}),
   funnel('tests/unit', { include: ['*-test.js'], destDir: '/unit'}),
+  funnel('tests/functional', { include: ['*-test.js'], destDir: '/functional'}),
 ]);
 
 var completeTree = mergeTrees([

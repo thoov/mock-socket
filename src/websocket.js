@@ -7,6 +7,9 @@ import {
   createMessageEvent
 } from './factory';
 
+/*
+*
+*/
 class WebSocket extends EventTarget {
   /*
   * @param {string} url
@@ -14,9 +17,10 @@ class WebSocket extends EventTarget {
   constructor(url) {
     super();
 
-    /*
-    *
-    */
+    if (!url) {
+      throw new TypeError('Failed to construct \'WebSocket\': 1 argument required, but only 0 present.');
+    }
+
     this.binaryType = 'blob';
     this.url        = URI(url).toString();
     this.readyState = WebSocket.CONNECTING;
@@ -59,20 +63,22 @@ class WebSocket extends EventTarget {
       }
     });
 
+    var server = networkBridge.attachWebSocket(this, this.url);
+
     /*
     *
     */
     delay(function() {
-      var server = networkBridge.attachWebSocket(this, this.url);
-
+      debugger;
       if (server) {
         this.readyState = WebSocket.OPEN;
-        this.dispatchEvent(createEvent({type: 'open', target: this}));
         server.dispatchEvent(createEvent({type: 'connection'}), server);
+        this.dispatchEvent(createEvent({type: 'open', target: this}));
       }
       else {
         this.readyState = WebSocket.CLOSED;
         this.dispatchEvent(createEvent({ type: 'error', target: this }));
+        this.dispatchEvent(createEvent({ type: 'close', target: this }));
 
         console.error(`WebSocket connection to '${this.url}' failed`);
       }
@@ -104,6 +110,8 @@ class WebSocket extends EventTarget {
   * service that it is closing the connection.
   */
   close() {
+    if (this.readyState !== WebSocket.OPEN) { return undefined; }
+
     var server = networkBridge.serverLookup(this.url);
     var closeEvent = createEvent({type: 'close', target: this});
 
