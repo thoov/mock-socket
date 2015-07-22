@@ -45,8 +45,8 @@ function createEvent(config) {
 
   var event = new window.Event(type);
 
-  if (!event) {
-    throw new Error('Event is not defined in this enviornment');
+  if (!event.path) {
+    event = JSON.parse(JSON.stringify(event));
   }
 
   return extendEvent(event, target);
@@ -68,12 +68,20 @@ function createMessageEvent(config) {
 
   var messageEvent = new window.MessageEvent(type);
 
-  if (!messageEvent) {
-    throw new Error(`MessageEvent is not defined in this enviornment`);
+  if (!messageEvent.path) {
+    messageEvent = JSON.parse(JSON.stringify(messageEvent));
   }
 
   extendEvent(messageEvent, target);
-  messageEvent.initMessageEvent(type, false, false, data, origin, null);
+
+  if (messageEvent.initMessageEvent) {
+    messageEvent.initMessageEvent(type, false, false, data, origin, null);
+  }
+  else {
+    messageEvent.data = data;
+    messageEvent.origin = origin;
+  }
+
   return messageEvent;
 }
 
@@ -96,8 +104,10 @@ function createCloseEvent(config) {
     reason
   });
 
-  if (!closeEvent) {
-    throw new Error(`MessageEvent is not defined in this enviornment`);
+  if (!closeEvent.path) {
+    closeEvent = JSON.parse(JSON.stringify(closeEvent));
+    closeEvent.code = code || 0;
+    closeEvent.reason = reason || '';
   }
 
   return extendEvent(closeEvent, target);

@@ -22,14 +22,13 @@ QUnit.test('that the create methods throw errors if no type if specified', asser
 });
 
 QUnit.test('that createEvent correctly creates an event', assert => {
-  assert.expect(8);
+  assert.expect(7);
 
   var event = createEvent({
     type: 'open'
   });
 
   assert.equal(event.type, 'open', 'the type property is set');
-  assert.ok(event instanceof window.Event, 'event is truly an Event');
   assert.equal(event.target, null, 'target is null as no target was passed');
   assert.equal(event.srcElement, null, 'srcElement is null as no target was passed');
   assert.equal(event.currentTarget, null, 'currentTarget is null as no target was passed');
@@ -45,7 +44,7 @@ QUnit.test('that createEvent correctly creates an event', assert => {
 });
 
 QUnit.test('that createMessageEvent correctly creates an event', assert => {
-  assert.expect(10);
+  assert.expect(9);
 
   var event = createMessageEvent({
     type: 'message',
@@ -56,7 +55,6 @@ QUnit.test('that createMessageEvent correctly creates an event', assert => {
   assert.equal(event.type, 'message', 'the type property is set');
   assert.equal(event.data, 'Testing', 'the data property is set');
   assert.equal(event.origin, 'ws://localhost:8080', 'the origin property is set');
-  assert.ok(event instanceof window.MessageEvent, 'event is truly a MessageEvent');
   assert.equal(event.target, null, 'target is null as no target was passed');
   assert.equal(event.srcElement, null, 'srcElement is null as no target was passed');
   assert.equal(event.currentTarget, null, 'currentTarget is null as no target was passed');
@@ -74,7 +72,7 @@ QUnit.test('that createMessageEvent correctly creates an event', assert => {
 });
 
 QUnit.test('that createCloseEvent correctly creates an event', assert => {
-  assert.expect(11);
+  assert.expect(10);
 
   var event = createCloseEvent({
     type: 'close'
@@ -82,7 +80,6 @@ QUnit.test('that createCloseEvent correctly creates an event', assert => {
 
   assert.equal(event.code, 0, 'the code property is set');
   assert.equal(event.reason, '', 'the reason property is set');
-  assert.ok(event instanceof window.CloseEvent, 'event is truly a CloseEvent');
   assert.equal(event.target, null, 'target is null as no target was passed');
   assert.equal(event.srcElement, null, 'srcElement is null as no target was passed');
   assert.equal(event.currentTarget, null, 'currentTarget is null as no target was passed');

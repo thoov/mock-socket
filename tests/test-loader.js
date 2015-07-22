@@ -5,7 +5,7 @@
 import main from './src/main';
 
 import networkBridgeTest from './unit/network-bridge-test';
-import eventTargetInheritance from './unit/event-target-inheritance-test';
+import eventTargetInheritance from './unit/event-target-test';
 import factoryTest from './unit/factory-test';
 import websocketTest from './unit/websocket-test';
 
