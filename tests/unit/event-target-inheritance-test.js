@@ -66,3 +66,17 @@ QUnit.test('events to different object should not share events', assert => {
   mock.dispatchEvent(event);
   mockFoo.dispatchEvent(event);
 });
+
+QUnit.test('that adding the same function twice for the same event type is only added once', assert => {
+  assert.expect(1);
+
+  var mock        = new Mock();
+  var fooListener = (event) => { assert.equal(event.type, 'message'); };
+  var barListener = (event) => { assert.equal(event.type, 'message'); };
+
+  mock.addEventListener('message', fooListener);
+  mock.addEventListener('message', fooListener);
+  mock.addEventListener('message', barListener);
+
+  assert.equal(mock.listeners.message.length, 2);
+});

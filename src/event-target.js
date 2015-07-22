@@ -1,5 +1,6 @@
 import {
-  reject
+  reject,
+  filter
 } from './helpers/array-helpers';
 
 /*
@@ -25,11 +26,14 @@ class EventTarget {
   addEventListener(type, listener /*, useCapture */) {
     if(typeof listener === 'function') {
 
-      if(!Array.isArray(this.listeners[type])) {
+      if (!Array.isArray(this.listeners[type])) {
         this.listeners[type] = [];
       }
 
-      this.listeners[type].push(listener);
+      // Only add the same function once
+      if (filter(this.listeners[type], item => item.toString() === listener.toString()).length === 0) {
+        this.listeners[type].push(listener);
+      }
     }
   }
 
@@ -55,12 +59,12 @@ class EventTarget {
     var eventName = event.type;
     var listeners = this.listeners[eventName];
 
-    if(!Array.isArray(listeners)) {
+    if (!Array.isArray(listeners)) {
       return false;
     }
 
     listeners.forEach(listener => {
-      if(customArgument) {
+      if (customArgument) {
         listener.call(this, customArgument);
       }
       else {

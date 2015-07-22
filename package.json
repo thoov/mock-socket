@@ -9,7 +9,7 @@
   "scripts": {
     "test": "rm -rf dist; ./node_modules/broccoli-cli/bin/broccoli build dist; testem ci",
     "build": "rm -rf dist; ./node_modules/broccoli-cli/bin/broccoli build dist",
-    "play": "node ./tests/playground/server.js"
+    "play": "node ./helpers/test-server.js"
   },
   "repository": {
     "type": "git",

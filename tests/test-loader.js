@@ -11,5 +11,5 @@ import websocketTest from './unit/websocket-test';
 
 import websocketsTest from './functional/websockets-test';
 
-//import issue13 from './bug-reports/issue-13-test';
-//import issue19 from './bug-reports/issue-19-test';
+import issue13 from './bug-reports/issue-13-test';
+import issue19 from './bug-reports/issue-19-test';

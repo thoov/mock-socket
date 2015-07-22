@@ -83,7 +83,7 @@ QUnit.test('that the server gets called when the client sends a message', assert
   var mockSocket = new WebSocket('ws://localhost:8080');
 
   mockSocket.onopen = function() {
-    mockSocket.send('Testing');
+    this.send('Testing');
   };
 });
 
@@ -107,7 +107,7 @@ QUnit.test('that the onopen function will only be called once for each client', 
 });
 
 QUnit.test('closing a client will only close itself and not other clients', function(assert) {
-  var mockServer      = new MockServer('ws://localhost:8080');
+  new Server('ws://localhost:8080');
   var websocketFoo    = new WebSocket('ws://localhost:8080');
   var websocketBar    = new WebSocket('ws://localhost:8080');
   var done            = assert.async();
@@ -125,5 +125,44 @@ QUnit.test('closing a client will only close itself and not other clients', func
   websocketBar.onclose = function() {
     assert.ok(true, 'mocksocket onclose fires as expected');
     done();
+  };
+});
+
+QUnit.test('mock clients can send messages to the right mock server', function(assert) {
+  var serverFoo = new Server('ws://localhost:8080');
+  var serverBar = new Server('ws://localhost:8081');
+  var dataFoo   = 'foo';
+  var dataBar   = 'bar';
+  var socketFoo = new WebSocket('ws://localhost:8080');
+  var socketBar = new WebSocket('ws://localhost:8081');
+  var done    = assert.async();
+
+  assert.expect(6);
+
+  serverFoo.on('connection', function(server) {
+    assert.ok(true, 'mock server on connection fires as expected');
+
+    server.on('message', function(data) {
+      assert.equal(data, dataFoo);
+    });
+  });
+
+  serverBar.on('connection', function(server) {
+    assert.ok(true, 'mock server on connection fires as expected');
+
+    server.on('message', function(data) {
+      assert.equal(data, dataBar);
+      done();
+    });
+  });
+
+  socketFoo.onopen = function() {
+    assert.ok(true, 'mocksocket onopen fires as expected');
+    this.send(dataFoo);
+  };
+
+  socketBar.onopen = function() {
+    assert.ok(true, 'mocksocket onopen fires as expected');
+    this.send(dataBar);
   };
 });

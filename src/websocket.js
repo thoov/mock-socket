@@ -69,7 +69,6 @@ class WebSocket extends EventTarget {
     *
     */
     delay(function() {
-      debugger;
       if (server) {
         this.readyState = WebSocket.OPEN;
         server.dispatchEvent(createEvent({type: 'connection'}), server);
