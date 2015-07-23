@@ -72,7 +72,7 @@ QUnit.test('that createMessageEvent correctly creates an event', assert => {
 });
 
 QUnit.test('that createCloseEvent correctly creates an event', assert => {
-  assert.expect(10);
+  assert.expect(12);
 
   var event = createCloseEvent({
     type: 'close'
@@ -81,6 +81,7 @@ QUnit.test('that createCloseEvent correctly creates an event', assert => {
   assert.equal(event.code, 0, 'the code property is set');
   assert.equal(event.reason, '', 'the reason property is set');
   assert.equal(event.target, null, 'target is null as no target was passed');
+  assert.equal(event.wasClean, false, 'wasClean is false as the code is not 1000');
   assert.equal(event.srcElement, null, 'srcElement is null as no target was passed');
   assert.equal(event.currentTarget, null, 'currentTarget is null as no target was passed');
 
@@ -96,4 +97,11 @@ QUnit.test('that createCloseEvent correctly creates an event', assert => {
   assert.deepEqual(event.target, fakeObject, 'target is set to fakeObject');
   assert.deepEqual(event.srcElement, fakeObject, 'srcElement is set to fakeObject');
   assert.deepEqual(event.currentTarget, fakeObject, 'currentTarget is set to fakeObject');
+
+  event = createCloseEvent({
+    type: 'close',
+    code: 1000,
+  });
+
+  assert.equal(event.wasClean, true, 'wasClean is true as the code is 1000');
 });

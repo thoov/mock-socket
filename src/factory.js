@@ -96,12 +96,18 @@ function createCloseEvent(config) {
     code,
     reason,
     type,
-    target
+    target,
+    wasClean
   } = config;
+
+  if (!wasClean) {
+    wasClean = (code === 1000);
+  }
 
   var closeEvent = new window.CloseEvent(type, {
     code,
-    reason
+    reason,
+    wasClean
   });
 
   if (!closeEvent.path) {

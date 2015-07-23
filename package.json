@@ -9,7 +9,7 @@
   "scripts": {
     "test": "rm -rf dist; ./node_modules/broccoli-cli/bin/broccoli build dist; testem ci",
     "build": "rm -rf dist; ./node_modules/broccoli-cli/bin/broccoli build dist",
-    "play": "node ./helpers/test-server.js"
+    "play": "rm -rf dist; ./node_modules/broccoli-cli/bin/broccoli build dist; node ./index.js"
   },
   "repository": {
     "type": "git",
@@ -37,6 +37,7 @@
     "broccoli-merge-trees": "^0.2.1",
     "broccoli-uglify-js": "^0.1.3",
     "del": "^0.1.3",
+    "express": "^4.13.1",
     "qunitjs": "^1.18.0",
     "testem": "^0.6.23",
     "ws": "^0.7.2"

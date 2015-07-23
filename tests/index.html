@@ -14,28 +14,4 @@
   and therefor will display Failed to load resource: net::ERR_FILE_NOT_FOUND
   -->
   <script src="/testem.js"></script>
-  <script>
-    /*
-    * Here is a sample playground for inspecting actual websocket objects to make sure that
-    * the mock version is correctly behaving as it should.
-    *
-    * First run: npm run-script ws
-    * Next: visit tests/index.html in your browser and open up the console
-    */
-    var sampleWS = new WebSocket('ws://localhost:8080');
-
-    sampleWS.onopen = function(event) {
-      debugger;
-    };
-    sampleWS.onmessage = function(event) {
-      debugger;
-    };
-    sampleWS.onclose = function(event) {
-      debugger;
-    };
-    sampleWS.onerror = function(event) {
-      debugger;
-    };
-  </script>
-</body>
 </html>

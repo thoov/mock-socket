@@ -1,0 +1,46 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Mock Sockets Unit Tests</title>
+</head>
+<body>
+  <script src="dist/mock-socket.js"></script>
+  <script>
+    /*
+    * Here is a sample playground for inspecting actual websocket objects to make sure that
+    * the mock version is correctly behaving as it should.
+    *
+    * First run: npm run-script ws
+    * Next: visit tests/index.html in your browser and open up the console
+    */
+    var sampleWS = new WebSocket('ws://localhost:8080');
+
+    sampleWS.onopen = function(event) {
+      debugger;
+      this.close();
+    };
+    sampleWS.onmessage = function(event) {
+      debugger;
+    };
+    sampleWS.onclose = function(event) {
+      debugger;
+    };
+    sampleWS.onerror = function(event) {
+      debugger;
+    };
+
+    var mockServer = new MockServer('ws://localhost:8081');
+
+
+    var mockSocket = new MockSocket('ws://localhost:8081');
+
+    mockSocket.onopen = function(event) {
+      this.close();
+    }
+
+    mockSocket.onclose = function(event) {
+      debugger;
+    }
+  </script>
+</body>
+</html>
