@@ -75,7 +75,7 @@ function createMessageEvent(config) {
   extendEvent(messageEvent, target);
 
   if (messageEvent.initMessageEvent) {
-    messageEvent.initMessageEvent(type, false, false, data, origin, null);
+    messageEvent.initMessageEvent(type, false, false, data, origin, '');
   }
   else {
     messageEvent.data = data;

@@ -44,7 +44,7 @@ QUnit.test('that createEvent correctly creates an event', assert => {
 });
 
 QUnit.test('that createMessageEvent correctly creates an event', assert => {
-  assert.expect(9);
+  assert.expect(11);
 
   var event = createMessageEvent({
     type: 'message',
@@ -56,6 +56,7 @@ QUnit.test('that createMessageEvent correctly creates an event', assert => {
   assert.equal(event.data, 'Testing', 'the data property is set');
   assert.equal(event.origin, 'ws://localhost:8080', 'the origin property is set');
   assert.equal(event.target, null, 'target is null as no target was passed');
+  assert.equal(event.lastEventId, '', 'lastEventId is an empty string');
   assert.equal(event.srcElement, null, 'srcElement is null as no target was passed');
   assert.equal(event.currentTarget, null, 'currentTarget is null as no target was passed');
 
@@ -66,6 +67,7 @@ QUnit.test('that createMessageEvent correctly creates an event', assert => {
     target: fakeObject
   });
 
+  assert.equal(event.lastEventId, '', 'lastEventId is an empty string');
   assert.deepEqual(event.target, fakeObject, 'target is set to fakeObject');
   assert.deepEqual(event.srcElement, fakeObject, 'srcElement is set to fakeObject');
   assert.deepEqual(event.currentTarget, fakeObject, 'currentTarget is set to fakeObject');
