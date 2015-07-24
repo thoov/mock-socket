@@ -166,3 +166,24 @@ QUnit.test('mock clients can send messages to the right mock server', function(a
     this.send(dataBar);
   };
 });
+
+QUnit.test('that closing a websocket removes it from the network bridge', function(assert) {
+  assert.expect(3);
+  var server = new Server('ws://localhost:8080');
+  var socket = new WebSocket('ws://localhost:8080');
+  var done   = assert.async();
+
+  socket.onopen = function() {
+    var urlMap = networkBridge.urlMap['ws://localhost:8080/'];
+    assert.equal(urlMap.websockets.length, 1, 'the websocket is in the network bridge');
+    assert.deepEqual(urlMap.websockets[0], this, 'the websocket is in the network bridge');
+    this.close();
+  };
+
+  socket.onclose = function() {
+    var urlMap = networkBridge.urlMap['ws://localhost:8080/'];
+    assert.equal(urlMap.websockets.length, 0, 'the websocket was removed from the network bridge');
+    server.close();
+    done();
+  };
+});

@@ -10,13 +10,16 @@ import {
 } from './factory';
 
 /*
+* The main websocket class which is designed to mimick the native WebSocket class as close
+* as possible.
 *
+* https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
 */
 class WebSocket extends EventTarget {
   /*
   * @param {string} url
   */
-  constructor(url) {
+  constructor(url, protocol='') {
     super();
 
     if (!url) {
@@ -26,6 +29,14 @@ class WebSocket extends EventTarget {
     this.binaryType = 'blob';
     this.url        = URI(url).toString();
     this.readyState = WebSocket.CONNECTING;
+    this.protocol = '';
+
+    if (typeof protocol === 'string') {
+      this.protocol = protocol;
+    }
+    else if (Array.isArray(protocol) && protocol.length > 0) {
+      this.protocol = protocol[0];
+    }
 
     /*
     *
@@ -68,7 +79,18 @@ class WebSocket extends EventTarget {
     var server = networkBridge.attachWebSocket(this, this.url);
 
     /*
+    * This delay is needed so that we dont trigger an event before the callbacks have been
+    * setup. For example:
     *
+    * var socket = new WebSocket('ws://localhost');
+    *
+    * // If we dont have the delay then the event would be triggered right here and this is
+    * // before the onopen had a chance to register itself.
+    *
+    * socket.onopen = () => { // this would never be called };
+    *
+    * // and with the delay the event gets triggered here after all of the callbacks have been
+    * // registered :-)
     */
     delay(function() {
       if (server) {
@@ -87,12 +109,15 @@ class WebSocket extends EventTarget {
   }
 
   /*
-  * This is a mock for the native send function found on the WebSocket object. It notifies the
-  * service that it has sent a message.
+  * Transmits data to the server over the WebSocket connection.
   *
-  * @param {data: *}: Any javascript object which will be crafted into a MessageObject.
+  * https://developer.mozilla.org/en-US/docs/Web/API/WebSocket#send()
   */
   send(data) {
+    if (this.readyState !== WebSocket.OPEN) {
+      throw 'WebSocket is already in CLOSING or CLOSED state';
+    }
+
     var messageEvent = createMessageEvent({
       type: 'message',
       origin: this.url,
@@ -107,14 +132,22 @@ class WebSocket extends EventTarget {
   }
 
   /*
-  * This is a mock for the native close function found on the WebSocket object. It notifies the
-  * service that it is closing the connection.
+  * Closes the WebSocket connection or connection attempt, if any.
+  * If the connection is already CLOSED, this method does nothing.
+  *
+  * https://developer.mozilla.org/en-US/docs/Web/API/WebSocket#close()
   */
   close() {
     if (this.readyState !== WebSocket.OPEN) { return undefined; }
 
     var server = networkBridge.serverLookup(this.url);
-    var closeEvent = createCloseEvent({type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL});
+    var closeEvent = createCloseEvent({
+      type: 'close',
+      target: this,
+      code: CLOSE_CODES.CLOSE_NORMAL
+    });
+
+    networkBridge.removeWebSocket(this, this.url);
 
     this.readyState = WebSocket.CLOSED;
     this.dispatchEvent(closeEvent);
@@ -122,8 +155,6 @@ class WebSocket extends EventTarget {
     if (server) {
       server.dispatchEvent(closeEvent, server);
     }
-
-    // TODO: remove server from network-bridge
   }
 }
 

@@ -1,8 +1,11 @@
 import {
   reject
 } from './helpers/array-helpers';
+
 /*
-*
+* The network bridge is a way for the mock websocket object to 'communicate' with
+* all avalible servers. This is a singleton object so it is important that you
+* clean up urlMap whenever you are finished.
 */
 class NetworkBridge {
   constructor() {
@@ -19,12 +22,12 @@ class NetworkBridge {
   attachWebSocket(websocket, url) {
     var connectionLookup = this.urlMap[url];
 
-    if (connectionLookup && connectionLookup.server) {
+    if (connectionLookup &&
+        connectionLookup.server &&
+        connectionLookup.websockets.indexOf(websocket) === -1) {
 
-      if (connectionLookup.websockets.indexOf(websocket) === -1) {
-        connectionLookup.websockets.push(websocket);
-        return connectionLookup.server;
-      }
+      connectionLookup.websockets.push(websocket);
+      return connectionLookup.server;
     }
   }
 
@@ -70,11 +73,7 @@ class NetworkBridge {
   websocketsLookup(url) {
     var connectionLookup = this.urlMap[url];
 
-    if (connectionLookup) {
-      return connectionLookup.websockets;
-    }
-
-    return [];
+    return connectionLookup ? connectionLookup.websockets : [];
   }
 
   /*
@@ -101,4 +100,4 @@ class NetworkBridge {
   }
 }
 
-export default new NetworkBridge();
+export default new NetworkBridge(); // Note: this is a singleton

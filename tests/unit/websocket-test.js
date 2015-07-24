@@ -44,3 +44,22 @@ QUnit.test('that on(open, message, error, and close) can be set', assert => {
   assert.equal(listeners.close.length, 1);
   assert.equal(listeners.error.length, 1);
 });
+
+QUnit.test('that passing protocols into the constructor works', assert => {
+  assert.expect(2);
+
+  var mySocket = new WebSocket('ws://not-real', 'foo');
+  var myOtherSocket = new WebSocket('ws://not-real', ['bar']);
+
+  assert.equal(mySocket.protocol, 'foo', 'the correct protocol is set when it was passed in as a string');
+  assert.equal(myOtherSocket.protocol, 'bar', 'the correct protocol is set when it was passed in as an array');
+});
+
+QUnit.test('that sending when the socket is closed throws an expection', assert => {
+  assert.expect(1);
+
+  var mySocket = new WebSocket('ws://not-real', 'foo');
+  assert.throws(function() {
+    mySocket.send('testing');
+  }, 'WebSocket is already in CLOSING or CLOSED state', 'an expection is thrown when sending while closed');
+});
