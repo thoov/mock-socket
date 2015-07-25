@@ -21,7 +21,7 @@ class Server extends EventTarget {
     this.url   = URI(url).toString();
     var server = networkBridge.attachServer(this, this.url);
 
-    if(!server) {
+    if (!server) {
       this.dispatchEvent(createEvent({type: 'error'}));
     }
   }
@@ -60,9 +60,14 @@ class Server extends EventTarget {
   }
 
   /*
-  * Notifies all mock clients that the server is closing and their onclose callbacks should fire.
+  *
   */
-  close() {
+  close(options={}) {
+    var {
+      code,
+      reason,
+      wasClean
+    } = options;
     var listeners = networkBridge.websocketsLookup(this.url);
 
     listeners.forEach(socket => {
@@ -70,7 +75,9 @@ class Server extends EventTarget {
       socket.dispatchEvent(createCloseEvent({
         type: 'close',
         target: socket,
-        code: CLOSE_CODES.CLOSE_NORMAL
+        code: code || CLOSE_CODES.CLOSE_NORMAL,
+        reason: reason || '',
+        wasClean
       }));
     });
 

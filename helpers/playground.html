@@ -13,7 +13,7 @@
     * First run: npm run-script ws
     * Next: visit tests/index.html in your browser and open up the console
     */
-    var sampleWS = new WebSocket('ws://localhost:8080');
+    var sampleWS = new WebSocket('ws://localhost:8080', ['testing5', 'testing2']);
 
     sampleWS.onopen = function(event) {
       debugger;
@@ -24,6 +24,7 @@
     };
     sampleWS.onclose = function(event) {
       debugger;
+      this.close();
     };
     sampleWS.onerror = function(event) {
       debugger;
@@ -31,15 +32,21 @@
 
     var mockServer = new MockServer('ws://localhost:8081');
 
+    mockServer.on('connection', function() {
+      mockServer.send('testing');
+    });
+
 
     var mockSocket = new MockSocket('ws://localhost:8081');
 
     mockSocket.onopen = function(event) {
+      debugger;
       this.close();
     }
 
     mockSocket.onclose = function(event) {
       debugger;
+      this.close();
     }
   </script>
 </body>
