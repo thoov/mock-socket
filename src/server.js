@@ -10,7 +10,7 @@ import {
 } from './factory';
 
 /*
-*
+* https://github.com/websockets/ws#server-example
 */
 class Server extends EventTarget {
   /*
@@ -23,6 +23,7 @@ class Server extends EventTarget {
 
     if (!server) {
       this.dispatchEvent(createEvent({type: 'error'}));
+      throw new Error('A mock server is already listening on this url');
     }
   }
 
@@ -31,8 +32,8 @@ class Server extends EventTarget {
   *
   * ie: mockServer.on('connection', function() { console.log('a mock client connected'); });
   *
-  * @param {type: string}: The event key to subscribe to. Valid keys are: connection, message, and close.
-  * @param {callback: function}: The callback which should be called when a certain event is fired.
+  * @param {string} type - The event key to subscribe to. Valid keys are: connection, message, and close.
+  * @param {function} callback - The callback which should be called when a certain event is fired.
   */
   on(type, callback) {
     this.addEventListener(type, callback);
@@ -42,25 +43,44 @@ class Server extends EventTarget {
   * This send function will notify all mock clients via their onmessage callbacks that the server
   * has a message for them.
   *
-  * @param {data: *}: Any javascript object which will be crafted into a MessageObject.
+  * @param {*} data - Any javascript object which will be crafted into a MessageObject.
   */
-  send(data) {
+  send(data, options={}) {
+    var {
+      websocket
+    } = options;
+
+    if (websocket) {
+      return websocket.dispatchEvent(
+        createMessageEvent({
+          type: 'message',
+          data,
+          origin: this.url,
+          target: websocket
+        })
+      );
+    }
+
     var websockets = networkBridge.websocketsLookup(this.url);
 
     websockets.forEach(socket => {
-      var messageEvent = createMessageEvent({
-        type: 'message',
-        data,
-        origin: this.url,
-        target: socket
-      });
-
-      socket.dispatchEvent(messageEvent);
+      socket.dispatchEvent(
+        createMessageEvent({
+          type: 'message',
+          data,
+          origin: this.url,
+          target: socket
+        })
+      );
     });
   }
 
   /*
+  * Closes the connection and triggers the onclose method of all listening
+  * websockets. After that it removes itself from the urlMap so another server
+  * could add itself to the url.
   *
+  * @param {object} options
   */
   close(options={}) {
     var {
@@ -83,6 +103,13 @@ class Server extends EventTarget {
 
     this.dispatchEvent(createCloseEvent({type: 'close'}), this);
     networkBridge.removeServer(this.url);
+  }
+
+  /*
+  * Returns an array of websockets which are listening to this server
+  */
+  clients() {
+    return networkBridge.websocketsLookup(this.url);
   }
 }
 

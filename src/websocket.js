@@ -39,7 +39,12 @@ class WebSocket extends EventTarget {
     }
 
     /*
+    * In order to capture the callback function we need to define custom setters.
+    * To illustrate: 
+    *   mySocket.onopen = function() { alert(true) };
     *
+    * The only way to capture that function and hold onto it for later is with the
+    * below code:
     */
     Object.defineProperties(this, {
       onopen: {
@@ -95,7 +100,7 @@ class WebSocket extends EventTarget {
     delay(function() {
       if (server) {
         this.readyState = WebSocket.OPEN;
-        server.dispatchEvent(createEvent({type: 'connection'}), server);
+        server.dispatchEvent(createEvent({type: 'connection'}), server, this);
         this.dispatchEvent(createEvent({type: 'open', target: this}));
       }
       else {

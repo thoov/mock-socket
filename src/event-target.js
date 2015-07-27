@@ -55,7 +55,7 @@ class EventTarget {
   *
   * @param {object} event - event object which will be passed to all listeners of the event.type property
   */
-  dispatchEvent(event, customArgument) {
+  dispatchEvent(event, ...customArguments) {
     var eventName = event.type;
     var listeners = this.listeners[eventName];
 
@@ -64,8 +64,8 @@ class EventTarget {
     }
 
     listeners.forEach(listener => {
-      if (customArgument) {
-        listener.call(this, customArgument);
+      if (customArguments.length > 0) {
+        listener.apply(this, customArguments);
       }
       else {
         listener.call(this, event);
