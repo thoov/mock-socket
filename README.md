@@ -34,35 +34,25 @@ function Chat() {
 * Below here is a simple test for the above app
 */
 
-
-// Set the global WebSocket object to our MockSocket object. This allows us to
-// do: new WebSocket and create a MockSocket object instead of a native WebSocket object.
 window.WebSocket = MockWebSocket;
-
-module('Simple Chat Test');
 
 test('basic test', function(){
   assert.expect(2);
   var done = assert.async();
 
-  // NOTE: you must create a new MockServer before you create
-  // a new MockSocket object. It is a good idea to place this
-  // logic either at the top of your test or in a setup function.
+  // NOTE: you must create a new MockServer before you create a new MockSocket object.
   var mockServer = new MockServer('ws://localhost:8080');
-  mockServer.on('connection', function(server, clientThatHasConnected) {
-
+  mockServer.on('connection', function(server) {
     mockServer.send('test message 1');
     mockServer.send('test message 2');
-
   });
 
   // Note that instead of creating a native websocket object this will instead create
   // a MockWebSocket object because we did: window.WebSocket = MockWebSocket; in the setup function
-
   var chatApp = new Chat();
 
   setTimeout(function() {
-    assert.equal(chatApp.messages, 2, '2 test messages where sent from the mock server');
+    assert.equal(chatApp.messages.length, 2, '2 test messages where sent from the mock server');
     done();
   }, 100);
 });
