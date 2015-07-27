@@ -4,11 +4,12 @@ A javascript mocking library for [websockets](https://developer.mozilla.org/en-U
 
 [![Build Status](https://travis-ci.org/thoov/mock-socket.svg?branch=master)](https://travis-ci.org/thoov/mock-socket)
 [![Code Climate](https://codeclimate.com/github/thoov/mock-socket/badges/gpa.svg)](https://codeclimate.com/github/thoov/mock-socket)
+[![npm version](https://badge.fury.io/js/mock-socket.svg)](http://badge.fury.io/js/mock-socket)
 
 ## Installation
 
 ```shell
-bower install mock-socket --save-dev # or npm i mock-socket --save-dev
+bower install mock-socket --save-dev
 ```
 
 Then include the dist file into your application:
@@ -34,22 +35,18 @@ function Chat() {
 * Below here is a simple test for the above app
 */
 
-window.WebSocket = MockWebSocket;
-
 test('basic test', function(){
-  assert.expect(2);
+  assert.expect(1);
   var done = assert.async();
 
-  // NOTE: you must create a new MockServer before you create a new MockSocket object.
   var mockServer = new MockServer('ws://localhost:8080');
   mockServer.on('connection', function(server) {
     mockServer.send('test message 1');
     mockServer.send('test message 2');
   });
 
-  // Note that instead of creating a native websocket object this will instead create
-  // a MockWebSocket object because we did: window.WebSocket = MockWebSocket; in the setup function
-  var chatApp = new Chat();
+  window.WebSocket = MockWebSocket;
+  var chatApp = new Chat(); // Now when Chat tries to do new WebSocket it will create a MockWebSocket object
 
   setTimeout(function() {
     assert.equal(chatApp.messages.length, 2, '2 test messages where sent from the mock server');
