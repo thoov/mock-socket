@@ -1,148 +1,171 @@
-import delay               from './helpers/delay';
-import urlTransform        from './helpers/url-transform';
-import socketMessageEvent  from './helpers/message-event';
-import globalContext       from './helpers/global-context';
-import webSocketProperties from './helpers/websocket-properties';
+import URI from 'urijs';
+import delay from './helpers/delay';
+import EventTarget from './event-target';
+import networkBridge from './network-bridge';
+import CLOSE_CODES from './helpers/close-codes';
+import {
+  createEvent,
+  createMessageEvent,
+  createCloseEvent
+} from './factory';
 
-function MockSocket(url) {
-  this.binaryType = 'blob';
-  this.url        = urlTransform(url);
-  this.readyState = globalContext.MockSocket.CONNECTING;
-  this.service    = globalContext.MockSocket.services[this.url];
-
-  this._eventHandlers = {};
-
-  webSocketProperties(this);
-
-  delay(function() {
-    // Let the service know that we are both ready to change our ready state and that
-    // this client is connecting to the mock server.
-    this.service.clientIsConnecting(this, this._updateReadyState);
-  }, this);
-}
-
-MockSocket.CONNECTING = 0;
-MockSocket.OPEN       = 1;
-MockSocket.CLOSING    = 2;
-MockSocket.CLOSED     = 3;
-MockSocket.services   = {};
-
-MockSocket.prototype = {
-
+/*
+* The main websocket class which is designed to mimick the native WebSocket class as close
+* as possible.
+*
+* https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
+*/
+class WebSocket extends EventTarget {
   /*
-  * Holds the on*** callback functions. These are really just for the custom
-  * getters that are defined in the helpers/websocket-properties. Accessing these properties is not advised.
+  * @param {string} url
   */
-  _onopen    : null,
-  _onmessage : null,
-  _onerror   : null,
-  _onclose   : null,
+  constructor(url, protocol='') {
+    super();
 
-  /*
-  * This holds reference to the service object. The service object is how we can
-  * communicate with the backend via the pub/sub model.
-  *
-  * The service has properties which we can use to observe or notifiy with.
-  * this.service.notify('foo') & this.service.observe('foo', callback, context)
-  */
-  service: null,
-
-  /*
-  * Internal storage for event handlers. Basically, there could be more than one
-  * handler per event so we store them all in array.
-  */
-  _eventHandlers: {},
-
-  /*
-  * This is a mock for EventTarget's addEventListener method. A bit naive and
-  * doesn't implement third useCapture parameter but should be enough for most
-  * (if not all) cases.
-  *
-  * @param {event: string}: Event name.
-  * @param {handler: function}: Any callback function for event handling.
-  */
-  addEventListener: function(event, handler) {
-    if(!this._eventHandlers[event]) {
-      this._eventHandlers[event] = [];
-      var self = this;
-      this['on' + event] = function(eventObject) {
-        self.dispatchEvent(eventObject);
-      };
+    if (!url) {
+      throw new TypeError('Failed to construct \'WebSocket\': 1 argument required, but only 0 present.');
     }
-    this._eventHandlers[event].push(handler);
-  },
 
-  /*
-  * This is a mock for EventTarget's removeEventListener method. A bit naive and
-  * doesn't implement third useCapture parameter but should be enough for most
-  * (if not all) cases.
-  *
-  * @param {event: string}: Event name.
-  * @param {handler: function}: Any callback function for event handling. Should
-  * be one of the functions used in the previous calls of addEventListener method.
-  */
-  removeEventListener: function(event, handler) {
-    if(!this._eventHandlers[event]) {
-      return;
-    }
-    var handlers = this._eventHandlers[event];
-    handlers.splice(handlers.indexOf(handler), 1);
-    if(!handlers.length) {
-      delete this._eventHandlers[event];
-      delete this['on' + event];
-    }
-  },
+    this.binaryType = 'blob';
+    this.url        = URI(url).toString();
+    this.readyState = WebSocket.CONNECTING;
+    this.protocol = '';
 
-  /*
-  * This is a mock for EventTarget's dispatchEvent method.
-  *
-  * @param {event: MessageEvent}: Some event, either native MessageEvent or an object
-  * returned by require('./helpers/message-event')
-  */
-  dispatchEvent: function(event) {
-    var handlers = this._eventHandlers[event.type];
-    if(!handlers) {
-      return;
+    if (typeof protocol === 'string') {
+      this.protocol = protocol;
     }
-    for(var i = 0; i < handlers.length; i++) {
-      handlers[i].call(this, event);
+    else if (Array.isArray(protocol) && protocol.length > 0) {
+      this.protocol = protocol[0];
     }
-  },
 
-  /*
-  * This is a mock for the native send function found on the WebSocket object. It notifies the
-  * service that it has sent a message.
-  *
-  * @param {data: *}: Any javascript object which will be crafted into a MessageObject.
-  */
-  send: function(data) {
+    /*
+    * In order to capture the callback function we need to define custom setters.
+    * To illustrate: 
+    *   mySocket.onopen = function() { alert(true) };
+    *
+    * The only way to capture that function and hold onto it for later is with the
+    * below code:
+    */
+    Object.defineProperties(this, {
+      onopen: {
+        configurable: true,
+        enumerable: true,
+        get: function() { return this.listeners.open; },
+        set: function(listener) {
+          this.addEventListener('open', listener);
+        }
+      },
+      onmessage: {
+        configurable: true,
+        enumerable: true,
+        get: function() { return this.listeners.message; },
+        set: function(listener) {
+          this.addEventListener('message', listener);
+        }
+      },
+      onclose: {
+        configurable: true,
+        enumerable: true,
+        get: function() { return this.listeners.close; },
+        set: function(listener) {
+          this.addEventListener('close', listener);
+        }
+      },
+      onerror: {
+        configurable: true,
+        enumerable: true,
+        get: function() { return this.listeners.error; },
+        set: function(listener) {
+          this.addEventListener('error', listener);
+        }
+      }
+    });
+
+    var server = networkBridge.attachWebSocket(this, this.url);
+
+    /*
+    * This delay is needed so that we dont trigger an event before the callbacks have been
+    * setup. For example:
+    *
+    * var socket = new WebSocket('ws://localhost');
+    *
+    * // If we dont have the delay then the event would be triggered right here and this is
+    * // before the onopen had a chance to register itself.
+    *
+    * socket.onopen = () => { // this would never be called };
+    *
+    * // and with the delay the event gets triggered here after all of the callbacks have been
+    * // registered :-)
+    */
     delay(function() {
-      this.service.sendMessageToServer(socketMessageEvent('message', data, this.url));
+      if (server) {
+        this.readyState = WebSocket.OPEN;
+        server.dispatchEvent(createEvent({type: 'connection'}), server, this);
+        this.dispatchEvent(createEvent({type: 'open', target: this}));
+      }
+      else {
+        this.readyState = WebSocket.CLOSED;
+        this.dispatchEvent(createEvent({ type: 'error', target: this }));
+        this.dispatchEvent(createCloseEvent({ type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL }));
+
+        console.error(`WebSocket connection to '${this.url}' failed`);
+      }
     }, this);
-  },
+  }
 
   /*
-  * This is a mock for the native close function found on the WebSocket object. It notifies the
-  * service that it is closing the connection.
-  */
-  close: function() {
-    delay(function() {
-      this.service.closeConnectionFromClient(socketMessageEvent('close', null, this.url), this);
-    }, this);
-  },
-
-  /*
-  * This is a private method that can be used to change the readyState. This is used
-  * like this: this.protocol.subject.observe('updateReadyState', this._updateReadyState, this);
-  * so that the service and the server can change the readyState simply be notifing a namespace.
+  * Transmits data to the server over the WebSocket connection.
   *
-  * @param {newReadyState: number}: The new ready state. Must be 0-4
+  * https://developer.mozilla.org/en-US/docs/Web/API/WebSocket#send()
   */
-  _updateReadyState: function(newReadyState) {
-    if(newReadyState >= 0 && newReadyState <= 4) {
-      this.readyState = newReadyState;
+  send(data) {
+    if (this.readyState !== WebSocket.OPEN) {
+      throw 'WebSocket is already in CLOSING or CLOSED state';
+    }
+
+    var messageEvent = createMessageEvent({
+      type: 'message',
+      origin: this.url,
+      data: data
+    });
+
+    var server = networkBridge.serverLookup(this.url);
+
+    if (server) {
+      server.dispatchEvent(messageEvent, data);
     }
   }
-};
 
-export default MockSocket;
+  /*
+  * Closes the WebSocket connection or connection attempt, if any.
+  * If the connection is already CLOSED, this method does nothing.
+  *
+  * https://developer.mozilla.org/en-US/docs/Web/API/WebSocket#close()
+  */
+  close() {
+    if (this.readyState !== WebSocket.OPEN) { return undefined; }
+
+    var server = networkBridge.serverLookup(this.url);
+    var closeEvent = createCloseEvent({
+      type: 'close',
+      target: this,
+      code: CLOSE_CODES.CLOSE_NORMAL
+    });
+
+    networkBridge.removeWebSocket(this, this.url);
+
+    this.readyState = WebSocket.CLOSED;
+    this.dispatchEvent(closeEvent);
+
+    if (server) {
+      server.dispatchEvent(closeEvent, server);
+    }
+  }
+}
+
+WebSocket.CONNECTING = 0;
+WebSocket.OPEN       = 1;
+WebSocket.CLOSING    = 2;
+WebSocket.CLOSED     = 3;
+
+export default WebSocket;
