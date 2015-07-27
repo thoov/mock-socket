@@ -16,106 +16,57 @@ Then include the dist file into your application:
 <script src="bower_components/mock-socket/dist/mock-socket.min.js"></script>
 ```
 
-## Background
-
-This library is comprised of 2 main parts. A mock "server" object called **MockServer** and a mock "WebSockets" object
-called **MockSocket**. It is with these 2 mock objects that we are able to test the actual business logic of our code.
-
-### MockServer
-
-MockServer is a global object which you can use to create a fake websocket server instance. Here
-is where you would "mock" your server side application logic. Below is an example of this in action:
-
+## Example
 ```js
-var mockServer = new MockServer('ws://localhost:8080');
-mockServer.on('connection', function(server) {
+/*
+* Here is a very simple app
+*/
+function Chat() {
+  var chatSocket = new WebSocket('ws://localhost:8080');
+  this.messages = [];
 
-    server.on('message', function(data) {
-        server.send('hello');
-    });
-});
-```
+  chatSocket.onmessage = event => {
+    this.messages.push(event.data);
+  };
+}
 
-**NOTE:** This should look very familiar if you are using a node framework such as [ws](https://github.com/einaros/ws).
+/*
+* Below here is a simple test for the above app
+*/
 
-### MockSocket
 
-MockSocket is a drop in replacement for the standard [WebSockets global](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
-found in all browsers. The goal is to be able to do the following and not notice anything different:
-
-```js
-window.WebSockets = MockSocket;
-```
-
-Notice that if our application uses WebSocket it will instead start to use the mock object.
-This is what allows us to test how our application handles events from the socket instead of stubbing
-out the code that interacts with the socket.
-
-```js
-// Anything referencing WebSockets will now use the MockSocket object and
-// will communicate with the MockSocket server.
-window.WebSockets = MockSocket;
-var mockSocket = new WebSocket('ws://localhost:8080');
-
-mockSocket.onopen = function(e) {
-    // this will trigger the mock server's on message callback
-    this.send('some data');
-};
-mockSocket.onmessage = function(e) {
-    var data = e.data; // the message is stored in the event's data property
-};
-mockSocket.onclose = function(e) {};
-mockSocket.onerror = function(e) {};
-```
-
-## Examples
-
-### Browser / PhantomJS
-
-Here is an example of how to start using mock-sockets inside of your test suite running in the browser or in PhantomJS. Below is
-a qunit test but this could easily be incorporated into most suites:
-
-```js
 // Set the global WebSocket object to our MockSocket object. This allows us to
 // do: new WebSocket and create a MockSocket object instead of a native WebSocket object.
-window.WebSocket = MockSocket;
+window.WebSocket = MockWebSocket;
 
-module('Simple Test',
-  setup: function() {
-    // NOTE: you must create a new MockServer before you create
-    // a new MockSocket object. It is a good idea to place this
-    // logic either at the top of your test or in a setup function.
-    var mockServer = new MockServer('ws://localhost:8080');
-    mockServer.on('connection', function(server) {
-      server.on('message', function(data) {
-        server.send('hello');
-      });
-    });
-  }
-);
+module('Simple Chat Test');
 
-asyncTest('basic test', function(){
-    // This is creating a MockSocket object and not a WebSocket object
-    var mockSocket = new WebSocket('ws://localhost:8080');
-    expect(2);
+test('basic test', function(){
+  assert.expect(2);
+  var done = assert.async();
 
-    mockSocket.onopen = function(e) {
-        equal(true, true, 'onopen fires as expected');
-    };
+  // NOTE: you must create a new MockServer before you create
+  // a new MockSocket object. It is a good idea to place this
+  // logic either at the top of your test or in a setup function.
+  var mockServer = new MockServer('ws://localhost:8080');
+  mockServer.on('connection', function(server, clientThatHasConnected) {
 
-    mockSocket.onmessage = function(data) {
-        equal(true, true, 'onmessage fires as expected');
-        start();
-    };
+    mockServer.send('test message 1');
+    mockServer.send('test message 2');
 
-    mockSocket.send('world');
+  });
+
+  // Note that instead of creating a native websocket object this will instead create
+  // a MockWebSocket object because we did: window.WebSocket = MockWebSocket; in the setup function
+
+  var chatApp = new Chat();
+
+  setTimeout(function() {
+    assert.equal(chatApp.messages, 2, '2 test messages where sent from the mock server');
+    done();
+  }, 100);
 });
 ```
-
-**NOTE:** It is good practice to reset the global WebSocket object back to its original object after your tests have finished.
-
-### Ember-CLI wrapper
-[@yratanov](https://github.com/yratanov) has been gracious to create a mock-sockets wrapper for websocket applications running in [ember-cli](https://github.com/yratanov/ember-cli-mock-socket).
 
 ### Building from source
 
