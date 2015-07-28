@@ -1,4 +1,6 @@
 var funnel            = require('broccoli-funnel');
+var jsHint            = require('broccoli-jshint');
+var concat            = require('broccoli-concat');
 var uglifyJavaScript  = require('broccoli-uglify-js');
 var mergeTrees        = require('broccoli-merge-trees');
 var moduleLookupHash  = require('./helpers/module-lookup');
@@ -29,7 +31,7 @@ var testFiles = mergeTrees([
 
 var completeTree = mergeTrees([
   thirdPartyLibaries,
-  funnel('src', { destDir: '/src'}),
+  funnel('src', {destDir: '/src'}),
   testFiles
 ]);
 
@@ -58,4 +60,21 @@ var minifiedTree = uglifyJavaScript(funnel(browserifiedTree, {
   }
 }));
 
-module.exports = mergeTrees([browserifiedTree, minifiedTree]);
+var jshintTree = concat(jsHint(
+    mergeTrees([
+        funnel('src', {destDir: '/src'}),
+        funnel('./', {include: ['.jshintrc']})
+    ])
+  ), {
+  inputFiles: [
+    '**/*.jshint.js'
+  ],
+  outputFile: '/jshint-loader.js'
+});
+
+module.exports = mergeTrees([
+  browserifiedTree,
+  minifiedTree,
+  funnel('helpers', { include: ['playground.html'], getDestinationPath: function() { return 'index.html'; } }),
+  jshintTree
+]);
