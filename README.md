@@ -9,19 +9,11 @@ A javascript mocking library for [websockets](https://developer.mozilla.org/en-U
 ## Installation
 
 ```shell
-bower install mock-socket --save-dev
-```
-
-Then include the dist file into your application:
-```html
-<script src="bower_components/mock-socket/dist/mock-socket.min.js"></script>
+bower install mock-socket
 ```
 
 ## Example
 ```js
-/*
-* Here is a very simple app
-*/
 function Chat() {
   var chatSocket = new WebSocket('ws://localhost:8080');
   this.messages = [];
@@ -30,10 +22,6 @@ function Chat() {
     this.messages.push(event.data);
   };
 }
-
-/*
-* Below here is a simple test for the above app
-*/
 
 test('basic test', function(){
   assert.expect(1);
