@@ -1,6 +1,7 @@
 var funnel            = require('broccoli-funnel');
 var uglifyJavaScript  = require('broccoli-uglify-js');
 var mergeTrees        = require('broccoli-merge-trees');
+var renameFiles       = require('broccoli-rename-files');
 var moduleLookupHash  = require('./helpers/module-lookup');
 var fastBrowserify    = require('broccoli-fast-browserify');
 var babelTransform    = require('broccoli-babel-transpiler');
@@ -58,4 +59,14 @@ var minifiedTree = uglifyJavaScript(funnel(browserifiedTree, {
   }
 }));
 
-module.exports = mergeTrees([browserifiedTree, minifiedTree]);
+var renamedFiles = renameFiles(funnel('helpers', { include: ['playground.html'], destDir: '/'}), {
+  transformFilename: function() {
+    return 'index.html';
+  }
+});
+
+module.exports = mergeTrees([
+  browserifiedTree,
+  minifiedTree,
+  renamedFiles
+]);

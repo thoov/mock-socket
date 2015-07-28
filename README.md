@@ -43,31 +43,47 @@ test('basic test', function(){
 });
 ```
 
-### Building from source
+## Building from source
 
 ```shell
 git clone git@github.com:thoov/mock-socket.git
 cd mock-socket
 npm i
-npm i -g broccoli-cli
-npm run serve # this will auto build the project when you change the files
+npm run build
 ```
 
-### Running test
+## Running tests
+
+### 1) Via PhantomJS 2.0+
+
+Simply run:
 
 ```shell
 npm test
 ```
 
-Or you can open the tests/index.html file in a browser to view the tests as well.
+**NOTE:** that this only works in PhantomJS 2.0+.
 
-**NOTE:** If you make any changes to the src files you will need to run `npm run build` to generate the new
-dist files
+### 2) Via the browser
 
-### Feedback / Issues
+```shell
+  npm run browser
+```
+
+Then visit: [http://localhost:7357/](http://localhost:7357/) in your browser.
+
+### 3) Manual tests
+
+The point of the manual tests are to compare a MockWebSocket object vs the native WebSocket object.
+Running the below command brings up a blank webpage that has both a MockWebSocket object and a
+Native WebSocket object define with debuggers in place so you can quickly start debugging any inconsistencies.
+
+```shell
+  npm start
+```
+
+Then visit: [http://localhost:4200](http://localhost:4200) in your browser.
+
+## Feedback / Issues
 
 If you have any feedback, encounter any bugs, or just have a question, please feel free to create a [github issue](https://github.com/thoov/mock-socket/issues/new) or send me a tweet at [@thoov](https://twitter.com/thoov).
-
-### FAQ
-
-* **LICENSE**: This library falls under the [MIT license](https://github.com/thoov/mock-socket/blob/master/LICENSE.txt)
