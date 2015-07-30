@@ -5,6 +5,7 @@ A javascript mocking library for [websockets](https://developer.mozilla.org/en-U
 [![Build Status](https://travis-ci.org/thoov/mock-socket.svg?branch=master)](https://travis-ci.org/thoov/mock-socket)
 [![Code Climate](https://codeclimate.com/github/thoov/mock-socket/badges/gpa.svg)](https://codeclimate.com/github/thoov/mock-socket)
 [![npm version](https://badge.fury.io/js/mock-socket.svg)](http://badge.fury.io/js/mock-socket)
+[![bower version](https://img.shields.io/bower/v/mock-socket.svg)](https://img.shields.io/bower/v/mock-socket.svg)
 
 ## Installation
 
