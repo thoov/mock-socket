@@ -46,6 +46,13 @@ class Server extends EventTarget {
   * @param {*} data - Any javascript object which will be crafted into a MessageObject.
   */
   send(data, options={}) {
+    this.emit('message', data, options);
+  }
+
+  /*
+  * Sends a generic message event to all mock clients.
+  */
+  emit(event, data, options={}) {
     var {
       websocket
     } = options;
@@ -53,10 +60,10 @@ class Server extends EventTarget {
     if (websocket) {
       return websocket.dispatchEvent(
         createMessageEvent({
-          type: 'message',
+          type: event,
           data,
           origin: this.url,
-          target: websocket
+          target: websocket,
         })
       );
     }
@@ -66,10 +73,10 @@ class Server extends EventTarget {
     websockets.forEach(socket => {
       socket.dispatchEvent(
         createMessageEvent({
-          type: 'message',
+          type: event,
           data,
           origin: this.url,
-          target: socket
+          target: socket,
         })
       );
     });
