@@ -3,7 +3,7 @@ import {
   createEvent,
   createMessageEvent,
   createCloseEvent
-} from '../src/factory';
+} from '../src/event-factory';
 
 const fakeObject = {foo: 'bar'};
 
