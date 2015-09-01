@@ -7,7 +7,7 @@ import {
   createEvent,
   createMessageEvent,
   createCloseEvent
-} from './factory';
+} from './event-factory';
 
 /*
 * The main websocket class which is designed to mimick the native WebSocket class as close

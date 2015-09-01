@@ -1,3 +1,6 @@
+import NodeEvent from './helpers/event-object';
+import environment from './helpers/environment-check';
+
 /*
 * Natively you cannot set or modify the properties: target, srcElement, and currentTarget on Event or
 * MessageEvent objects. So in order to set them to the correct values we "overwrite" them to the same
@@ -32,6 +35,20 @@ function extendEvent(event, target) {
 }
 
 /*
+ * This will return either the native Event/MessageEvent/CloseEvent
+ * if we are in the browser or it will return the mocked event.
+ */
+function eventFactory(eventClassName, type, config) {
+  if (!environment.globalContext[eventClassName])
+    return new NodeEvent({type});
+
+  if (!config)
+    return new environment.globalContext[eventClassName](type);
+
+  return new environment.globalContext[eventClassName](type, config);
+}
+
+/*
 * Creates an Event object and extends it to allow full modification of
 * its properties.
 *
@@ -43,7 +60,7 @@ function createEvent(config) {
     target
   } = config;
 
-  var event = new window.Event(type);
+  var event = eventFactory('Event', type);
 
   if (!event.path) {
     event = JSON.parse(JSON.stringify(event));
@@ -66,7 +83,7 @@ function createMessageEvent(config) {
     target
   } = config;
 
-  var messageEvent = new window.MessageEvent(type);
+  var messageEvent = eventFactory('MessageEvent', type);
 
   if (!messageEvent.path) {
     messageEvent = JSON.parse(JSON.stringify(messageEvent));
@@ -104,16 +121,17 @@ function createCloseEvent(config) {
     wasClean = (code === 1000);
   }
 
-  var closeEvent = new window.CloseEvent(type, {
+  var closeEvent = eventFactory('CloseEvent', type, {
     code,
     reason,
     wasClean
   });
 
-  if (!closeEvent.path) {
+  if (!closeEvent.path || !closeEvent.code) {
     closeEvent = JSON.parse(JSON.stringify(closeEvent));
     closeEvent.code = code || 0;
     closeEvent.reason = reason || '';
+    closeEvent.wasClean = wasClean;
   }
 
   return extendEvent(closeEvent, target);

@@ -1,11 +1,11 @@
 module('JSHint - src');
-test('src/event-target.js should pass jshint', function() { 
-  ok(true, 'src/event-target.js should pass jshint.'); 
+test('src/event-factory.js should pass jshint', function() { 
+  ok(true, 'src/event-factory.js should pass jshint.'); 
 });
 
 module('JSHint - src');
-test('src/factory.js should pass jshint', function() { 
-  ok(true, 'src/factory.js should pass jshint.'); 
+test('src/event-target.js should pass jshint', function() { 
+  ok(true, 'src/event-target.js should pass jshint.'); 
 });
 
 module('JSHint - src/helpers');
@@ -21,6 +21,16 @@ test('src/helpers/close-codes.js should pass jshint', function() {
 module('JSHint - src/helpers');
 test('src/helpers/delay.js should pass jshint', function() { 
   ok(true, 'src/helpers/delay.js should pass jshint.'); 
+});
+
+module('JSHint - src/helpers');
+test('src/helpers/environment-check.js should pass jshint', function() { 
+  ok(true, 'src/helpers/environment-check.js should pass jshint.'); 
+});
+
+module('JSHint - src/helpers');
+test('src/helpers/event-object.js should pass jshint', function() { 
+  ok(true, 'src/helpers/event-object.js should pass jshint.'); 
 });
 
 module('JSHint - src');

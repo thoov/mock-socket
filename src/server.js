@@ -7,7 +7,7 @@ import {
   createEvent,
   createMessageEvent,
   createCloseEvent
-} from './factory';
+} from './event-factory';
 
 /*
 * https://github.com/websockets/ws#server-example

@@ -1,7 +1,7 @@
 import QUnit from 'qunit';
 import {
   createEvent
-} from '../src/factory';
+} from '../src/event-factory';
 import EventTarget from '../src/event-target';
 
 class Mock extends EventTarget {}
