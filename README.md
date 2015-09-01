@@ -55,15 +55,13 @@ npm run build
 
 ## Running tests
 
-### 1) Via PhantomJS 2.0+
+### 1) Via PhantomJS
 
 Simply run:
 
 ```shell
 npm test
 ```
-
-**NOTE:** that this only works in PhantomJS 2.0+.
 
 ### 2) Via the browser
 
