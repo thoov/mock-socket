@@ -45,10 +45,11 @@ class SocketIO extends EventTarget {
       if (server) {
         this.readyState = SocketIO.OPEN;
         server.dispatchEvent(createEvent({type: 'connection'}), server, this);
+        server.dispatchEvent(createEvent({type: 'connect'}), server, this); // alias
         this.dispatchEvent(createEvent({type: 'connect', target: this}));
       } else {
         this.readyState = SocketIO.CLOSED;
-        this.dispatchEvent(createEvent({ type: 'connect_error', target: this }));
+        this.dispatchEvent(createEvent({ type: 'error', target: this }));
         this.dispatchEvent(createCloseEvent({
           type: 'close',
           target: this,
@@ -58,6 +59,17 @@ class SocketIO extends EventTarget {
         console.error(`Socket.io connection to '${this.url}' failed`);
       }
     }, this);
+
+    /**
+      Add an aliased event listener for close / disconnect
+     */
+    this.addEventListener('close', event => {
+      this.dispatchEvent(createCloseEvent({
+        type: 'disconnect',
+        target: event.target,
+        code: event.code,
+      }));
+    });
   }
 
   /*
@@ -68,19 +80,21 @@ class SocketIO extends EventTarget {
     if (this.readyState !== SocketIO.OPEN) { return undefined; }
 
     var server = networkBridge.serverLookup(this.url);
-    var closeEvent = createCloseEvent({
-      type: 'close',
-      target: this,
-      code: CLOSE_CODES.CLOSE_NORMAL,
-    });
-
     networkBridge.removeWebSocket(this, this.url);
 
     this.readyState = SocketIO.CLOSED;
-    this.dispatchEvent(closeEvent);
+    this.dispatchEvent(createCloseEvent({
+      type: 'close',
+      target: this,
+      code: CLOSE_CODES.CLOSE_NORMAL,
+    }));
 
     if (server) {
-      server.dispatchEvent(closeEvent, server);
+      server.dispatchEvent(createCloseEvent({
+        type: 'disconnect',
+        target: this,
+        code: CLOSE_CODES.CLOSE_NORMAL,
+      }), server);
     }
   }
 

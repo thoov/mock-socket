@@ -1,7 +1,6 @@
 import QUnit from 'qunit';
 import io from '../src/socket-io';
 import Server from '../src/server';
-import networkBridge from '../src/network-bridge';
 
 QUnit.module('Functional - SocketIO');
 
@@ -12,6 +11,20 @@ QUnit.test('client triggers the server connection event', assert => {
   var socket = io('foobar');
 
   server.on('connection', function() {
+    assert.ok(true);
+    socket.disconnect();
+    server.close();
+    done();
+  });
+});
+
+QUnit.test('client triggers the server connect event', assert => {
+  assert.expect(1);
+  var done = assert.async();
+  var server = new Server('foobar');
+  var socket = io('foobar');
+
+  server.on('connect', function() {
     assert.ok(true);
     socket.disconnect();
     server.close();
@@ -33,7 +46,19 @@ QUnit.test('server triggers the client connect event', assert => {
   });
 });
 
-QUnit.test('client receives an event', assert => {
+QUnit.test('no connection triggers the client error event', assert => {
+  assert.expect(1);
+  var done = assert.async();
+  var socket = io('foobar');
+
+  socket.on('error', function() {
+    assert.ok(true);
+    socket.disconnect();
+    done();
+  });
+});
+
+QUnit.test('client and server receive an event', assert => {
   assert.expect(1);
   var done = assert.async();
 
@@ -52,5 +77,73 @@ QUnit.test('client receives an event', assert => {
 
   socket.on('connect', () => {
     socket.emit('client-event', 'payload');
+  });
+});
+
+QUnit.test('Server closing triggers the client disconnect event', assert => {
+  assert.expect(1);
+  var done = assert.async();
+
+  var server = new Server('foobar');
+  server.on('connect', () => {
+    server.close();
+  });
+
+  var socket = io('foobar');
+  socket.on('disconnect', () => {
+    assert.ok(true);
+    socket.disconnect();
+    done();
+  });
+});
+
+QUnit.test('Server receives disconnect when socket is closed', assert => {
+  assert.expect(1);
+  var done = assert.async();
+
+  var server = new Server('foobar');
+  server.on('disconnect', () => {
+    assert.ok(true);
+    server.close();
+    done();
+  });
+
+  var socket = io('foobar');
+  socket.on('connect', () => {
+    socket.disconnect();
+  });
+});
+
+QUnit.test('Client can submit an event without a payload', assert => {
+  assert.expect(1);
+  var done = assert.async();
+
+  var server = new Server('foobar');
+  server.on('client-event', () => {
+    assert.ok(true);
+    server.close();
+    done();
+  });
+
+  var socket = io('foobar');
+  socket.on('connect', () => {
+    socket.emit('client-event');
+  });
+});
+
+QUnit.test('Client also has the send method available', assert => {
+  assert.expect(1);
+  var done = assert.async();
+
+  var server = new Server('foobar');
+  server.on('message', (data) => {
+    assert.equal(data, 'hullo!');
+    server.close();
+    done();
+  });
+
+  var socket = io('foobar');
+  socket.on('connect', () => {
+    socket.send('hullo!');
   });
 });
