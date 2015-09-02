@@ -32,6 +32,24 @@ class NetworkBridge {
   }
 
   /*
+  * Attaches a websocket to a room
+  */
+  addMembershipToRoom(websocket, room) {
+    var connectionLookup = this.urlMap[websocket.url];
+
+    if (connectionLookup &&
+        connectionLookup.server &&
+        connectionLookup.websockets.indexOf(websocket) !== -1) {
+
+      if (connectionLookup.roomMemberships[room] == null) {
+        connectionLookup.roomMemberships[room] = [];
+      }
+
+      connectionLookup.roomMemberships[room].push(websocket);
+    }
+  }
+
+  /*
   * Attaches a server object to the urlMap hash so that it can find a websockets
   * which are connected to it and so that websockets can in turn can find it.
   *
@@ -45,7 +63,8 @@ class NetworkBridge {
 
       this.urlMap[url] = {
         server,
-        websockets: []
+        websockets: [],
+        roomMemberships: {},
       };
 
       return server;
@@ -69,11 +88,21 @@ class NetworkBridge {
   * Finds all websockets which is 'listening' on the given url.
   *
   * @param {string} url - the url to use to find all websockets which are associated with it
+  * @param {string} room - if a room is provided, will only return sockets in this room
   */
-  websocketsLookup(url) {
+  websocketsLookup(url, room) {
     var connectionLookup = this.urlMap[url];
 
-    return connectionLookup ? connectionLookup.websockets : [];
+    if (!connectionLookup) {
+      return [];
+    }
+
+    if (room) {
+      var members = connectionLookup.roomMemberships[room];
+      return members ? members : [];
+    } else {
+      return connectionLookup.websockets;
+    }
   }
 
   /*
@@ -96,6 +125,20 @@ class NetworkBridge {
 
     if (connectionLookup) {
       connectionLookup.websockets = reject(connectionLookup.websockets, socket => socket === websocket);
+    }
+  }
+
+  /*
+  * Removes a websocket from a room
+  */
+  removeMembershipFromRoom(websocket, room) {
+    var connectionLookup = this.urlMap[websocket.url];
+    var memberships = connectionLookup.roomMemberships[room];
+
+    if (connectionLookup && memberships != null) {
+      connectionLookup.roomMemberships[room] = reject(memberships, socket => {
+        return socket === websocket;
+      });
     }
   }
 }

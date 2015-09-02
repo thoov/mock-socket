@@ -46,30 +46,28 @@ class Server extends EventTarget {
   * @param {*} data - Any javascript object which will be crafted into a MessageObject.
   */
   send(data, options={}) {
+    this.emit('message', data, options);
+  }
+
+  /*
+  * Sends a generic message event to all mock clients.
+  */
+  emit(event, data, options={}) {
     var {
-      websocket
+      websockets
     } = options;
 
-    if (websocket) {
-      return websocket.dispatchEvent(
-        createMessageEvent({
-          type: 'message',
-          data,
-          origin: this.url,
-          target: websocket
-        })
-      );
+    if (!websockets) {
+      websockets = networkBridge.websocketsLookup(this.url);
     }
-
-    var websockets = networkBridge.websocketsLookup(this.url);
 
     websockets.forEach(socket => {
       socket.dispatchEvent(
         createMessageEvent({
-          type: 'message',
+          type: event,
           data,
           origin: this.url,
-          target: socket
+          target: socket,
         })
       );
     });
@@ -111,6 +109,30 @@ class Server extends EventTarget {
   clients() {
     return networkBridge.websocketsLookup(this.url);
   }
+
+  /*
+  * Prepares a method to submit an event to members of the room
+  *
+  * e.g. server.to('my-room').emit('hi!');
+  */
+  to(room) {
+    var _this = this;
+    var websockets = networkBridge.websocketsLookup(this.url, room);
+    return {
+      emit(event, data) {
+        _this.emit(event, data, { websockets: websockets });
+      },
+    };
+  }
 }
+
+/*
+ * Alternative constructor to support namespaces in socket.io
+ *
+ * http://socket.io/docs/rooms-and-namespaces/#custom-namespaces
+ */
+Server.of = function(url) {
+  return new Server(url);
+};
 
 export default Server;

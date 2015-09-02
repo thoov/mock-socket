@@ -12,11 +12,15 @@ import eventTargetInheritance from './unit/event-target-test';
 import factoryTest from './unit/factory-test';
 import websocketTest from './unit/websocket-test';
 import serverTest from './unit/server-test';
+import socketIOTest from './unit/socket-io-test';
 
 import websocketFunctionalTest from './functional/websockets-test';
+import socketIOFunctionalTest from './functional/socket-io-test';
 
 import issue13 from './bug-reports/issue-13-test';
 import issue19 from './bug-reports/issue-19-test';
+
+QUnit.config.testTimeout = 10000;
 
 window.QUnit = QUnit;
 /* jshint ignore:end */
