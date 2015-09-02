@@ -3,6 +3,7 @@ import delay from './helpers/delay';
 import EventTarget from './event-target';
 import networkBridge from './network-bridge';
 import CLOSE_CODES from './helpers/close-codes';
+
 import {
   createEvent,
   createMessageEvent,
@@ -143,10 +144,13 @@ class SocketIO extends EventTarget {
   * For registering events to be received from the server
   *
   * Regular WebSockets expect a MessageEvent but Socketio.io just wants raw data
+  *
+  * payload instanceof MessageEvent works, but you can't isntance of NodeEvent
+  * for now we detect if the output has data defined on it
   */
   on(type, callback) {
     this.addEventListener(type, payload => {
-      if (payload instanceof MessageEvent) {
+      if (payload.data) {
         callback(payload.data);
       } else {
         callback(payload);
