@@ -1,11 +1,11 @@
 QUnit.module('JSHint - src');
-QUnit.test('src/event-target.js should pass jshint', function(assert) { 
-  assert.ok(true, 'src/event-target.js should pass jshint.'); 
+QUnit.test('src/event-factory.js should pass jshint', function(assert) { 
+  assert.ok(true, 'src/event-factory.js should pass jshint.'); 
 });
 
 QUnit.module('JSHint - src');
-QUnit.test('src/factory.js should pass jshint', function(assert) { 
-  assert.ok(true, 'src/factory.js should pass jshint.'); 
+QUnit.test('src/event-target.js should pass jshint', function(assert) { 
+  assert.ok(true, 'src/event-target.js should pass jshint.'); 
 });
 
 QUnit.module('JSHint - src/helpers');
@@ -21,6 +21,16 @@ QUnit.test('src/helpers/close-codes.js should pass jshint', function(assert) {
 QUnit.module('JSHint - src/helpers');
 QUnit.test('src/helpers/delay.js should pass jshint', function(assert) { 
   assert.ok(true, 'src/helpers/delay.js should pass jshint.'); 
+});
+
+QUnit.module('JSHint - src/helpers');
+QUnit.test('src/helpers/environment-check.js should pass jshint', function(assert) { 
+  assert.ok(true, 'src/helpers/environment-check.js should pass jshint.'); 
+});
+
+QUnit.module('JSHint - src/helpers');
+QUnit.test('src/helpers/event-object.js should pass jshint', function(assert) { 
+  assert.ok(true, 'src/helpers/event-object.js should pass jshint.'); 
 });
 
 QUnit.module('JSHint - src');

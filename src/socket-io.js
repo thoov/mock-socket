@@ -7,7 +7,7 @@ import {
   createEvent,
   createMessageEvent,
   createCloseEvent
-} from './factory';
+} from './event-factory';
 
 /*
 * The socket-io class is designed to mimick the real API as closely as possible.
