@@ -147,3 +147,22 @@ QUnit.test('Client also has the send method available', assert => {
     socket.send('hullo!');
   });
 });
+
+QUnit.test('a socket can join and leave a room', assert => {
+  assert.expect(1);
+  var done = assert.async();
+
+  var server = new Server('ws://roomy');
+  var socket = io('ws://roomy');
+
+  socket.on('good-response', () => {
+    assert.ok(true);
+    server.close();
+    done();
+  });
+
+  socket.on('connect', () => {
+    socket.join('room');
+    server.to('room').emit('good-response');
+  });
+});

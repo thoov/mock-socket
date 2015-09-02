@@ -153,6 +153,24 @@ class SocketIO extends EventTarget {
       }
     });
   }
+
+  /*
+   * Join a room on a server
+   *
+   * http://socket.io/docs/rooms-and-namespaces/#joining-and-leaving
+   */
+  join(room) {
+    networkBridge.addMembershipToRoom(this, room);
+  }
+
+  /*
+   * Get the websocket to leave the room
+   *
+   * http://socket.io/docs/rooms-and-namespaces/#joining-and-leaving
+   */
+  leave(room) {
+    networkBridge.removeMembershipFromRoom(this, room);
+  }
 }
 
 SocketIO.CONNECTING = 0;

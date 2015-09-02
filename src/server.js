@@ -54,21 +54,12 @@ class Server extends EventTarget {
   */
   emit(event, data, options={}) {
     var {
-      websocket
+      websockets
     } = options;
 
-    if (websocket) {
-      return websocket.dispatchEvent(
-        createMessageEvent({
-          type: event,
-          data,
-          origin: this.url,
-          target: websocket,
-        })
-      );
+    if (!websockets) {
+      websockets = networkBridge.websocketsLookup(this.url);
     }
-
-    var websockets = networkBridge.websocketsLookup(this.url);
 
     websockets.forEach(socket => {
       socket.dispatchEvent(
@@ -117,6 +108,21 @@ class Server extends EventTarget {
   */
   clients() {
     return networkBridge.websocketsLookup(this.url);
+  }
+
+  /*
+  * Prepares a method to submit an event to members of the room
+  *
+  * e.g. server.to('my-room').emit('hi!');
+  */
+  to(room) {
+    var _this = this;
+    var websockets = networkBridge.websocketsLookup(this.url, room);
+    return {
+      emit(event, data) {
+        _this.emit(event, data, { websockets: websockets });
+      },
+    };
   }
 }
 

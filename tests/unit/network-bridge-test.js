@@ -106,3 +106,27 @@ QUnit.test('that removing server and websockets works correctly', assert => {
   networkBridge.removeServer('ws://localhost:8080');
   assert.deepEqual(networkBridge.urlMap, {}, 'Url map is back in its default state');
 });
+
+QUnit.test('a socket can join and leave a room', assert => {
+  assert.expect(4);
+
+  var fakeSocket = { url: 'ws://roomy' };
+
+  networkBridge.attachServer(fakeObject, 'ws://roomy');
+  networkBridge.attachWebSocket(fakeSocket, 'ws://roomy');
+
+  var inRoom;
+  inRoom = networkBridge.websocketsLookup('ws://roomy', 'room');
+  assert.equal(inRoom.length, 0, 'there are no sockets in the room to start with');
+
+  networkBridge.addMembershipToRoom(fakeSocket, 'room');
+
+  inRoom = networkBridge.websocketsLookup('ws://roomy', 'room');
+  assert.equal(inRoom.length, 1, 'there is 1 socket in the room after joining');
+  assert.deepEqual(inRoom[0], fakeSocket);
+
+  networkBridge.removeMembershipFromRoom(fakeSocket, 'room');
+
+  inRoom = networkBridge.websocketsLookup('ws://roomy', 'room');
+  assert.equal(inRoom.length, 0, 'there are no sockets in the room after leaving');
+});
