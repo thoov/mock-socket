@@ -107,3 +107,14 @@ QUnit.test('that calling close will trigger the onclose of websockets', assert =
     done();
   };
 });
+
+QUnit.test('a namespaced server is added to the network bridge', assert => {
+  assert.expect(2);
+
+  var myServer = Server.of('/my-namespace');
+  var urlMap = networkBridge.urlMap['/my-namespace'];
+
+  assert.deepEqual(urlMap.server, myServer, 'server was correctly added to the urlMap');
+  myServer.close();
+  assert.deepEqual(networkBridge.urlMap, {}, 'the urlMap was cleared after the close call');
+});

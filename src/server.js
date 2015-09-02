@@ -120,4 +120,13 @@ class Server extends EventTarget {
   }
 }
 
+/*
+ * Alternative constructor to support namespaces in socket.io
+ *
+ * http://socket.io/docs/rooms-and-namespaces/#custom-namespaces
+ */
+Server.of = function(url) {
+  return new Server(url);
+};
+
 export default Server;
