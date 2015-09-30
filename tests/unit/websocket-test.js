@@ -59,6 +59,7 @@ QUnit.test('that sending when the socket is closed throws an expection', assert 
   assert.expect(1);
 
   var mySocket = new WebSocket('ws://not-real', 'foo');
+  mySocket.readyState = WebSocket.CLOSED;
   assert.throws(function() {
     mySocket.send('testing');
   }, 'WebSocket is already in CLOSING or CLOSED state', 'an expection is thrown when sending while closed');
