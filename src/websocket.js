@@ -40,7 +40,7 @@ class WebSocket extends EventTarget {
 
     /*
     * In order to capture the callback function we need to define custom setters.
-    * To illustrate: 
+    * To illustrate:
     *   mySocket.onopen = function() { alert(true) };
     *
     * The only way to capture that function and hold onto it for later is with the
@@ -119,7 +119,7 @@ class WebSocket extends EventTarget {
   * https://developer.mozilla.org/en-US/docs/Web/API/WebSocket#send()
   */
   send(data) {
-    if (this.readyState !== WebSocket.OPEN) {
+    if (this.readyState === WebSocket.CLOSING || this.readyState === WebSocket.CLOSED) {
       throw 'WebSocket is already in CLOSING or CLOSED state';
     }
 
