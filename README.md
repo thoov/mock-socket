@@ -11,6 +11,10 @@ A javascript mocking library for [websockets](https://developer.mozilla.org/en-U
 
 ```shell
 bower install mock-socket
+
+or
+
+npm install mock-socket
 ```
 
 ## Example
