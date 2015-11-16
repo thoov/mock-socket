@@ -10,3 +10,9 @@ globalContext.MockServer    = Server;
 globalContext.MockSocket    = WebSocket; // TODO: remove this as we want people to use MockWebSocket
 globalContext.MockWebSocket = WebSocket;
 globalContext.MockSocketIO = SocketIO;
+
+export default {
+  Server,
+  WebSocket,
+  SocketIO
+};
