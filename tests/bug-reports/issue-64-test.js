@@ -2,7 +2,7 @@ import QUnit from 'qunit';
 import Server from '../src/server';
 import io from '../src/socket-io';
 
-QUnit.module('Issue #65: `on` allows multiple handlers for the same event');
+QUnit.module('Issue #64: `on` allows multiple handlers for the same event');
 
 QUnit.test('mock sockets invokes each handler', function(assert) {
   var socketUrl         = 'ws://roomy';
