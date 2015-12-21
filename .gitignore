@@ -4,3 +4,4 @@ tmp
 dist/tests.js
 dist/index.html
 npm-debug.log
+.idea

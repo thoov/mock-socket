@@ -142,20 +142,9 @@ class SocketIO extends EventTarget {
 
   /*
   * For registering events to be received from the server
-  *
-  * Regular WebSockets expect a MessageEvent but Socketio.io just wants raw data
-  *
-  * payload instanceof MessageEvent works, but you can't isntance of NodeEvent
-  * for now we detect if the output has data defined on it
   */
   on(type, callback) {
-    this.addEventListener(type, payload => {
-      if (payload.data) {
-        callback(payload.data);
-      } else {
-        callback(payload);
-      }
-    });
+    this.addEventListener(type, callback);
   }
 
   /*
@@ -174,6 +163,33 @@ class SocketIO extends EventTarget {
    */
   leave(room) {
     networkBridge.removeMembershipFromRoom(this, room);
+  }
+
+  /*
+   * Invokes all listener functions that are listening to the given event.type property. Each
+   * listener will be passed the event as the first argument.
+   *
+   * @param {object} event - event object which will be passed to all listeners of the event.type property
+   */
+  dispatchEvent(event, ...customArguments) {
+    var eventName = event.type;
+    var listeners = this.listeners[eventName];
+
+    if (!Array.isArray(listeners)) {
+      return false;
+    }
+
+    listeners.forEach(listener => {
+      if (customArguments.length > 0) {
+        listener.apply(this, customArguments);
+      }
+      else {
+        // Regular WebSockets expect a MessageEvent but Socketio.io just wants raw data
+        //  payload instanceof MessageEvent works, but you can't isntance of NodeEvent
+        //  for now we detect if the output has data defined on it
+        listener.call(this,event.data?event.data:event);
+      }
+    });
   }
 }
 
