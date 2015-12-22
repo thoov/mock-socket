@@ -20,6 +20,7 @@ import socketIOFunctionalTest from './functional/socket-io-test';
 import issue13 from './bug-reports/issue-13-test';
 import issue19 from './bug-reports/issue-19-test';
 import issue64 from './bug-reports/issue-64-test';
+import issue65 from './bug-reports/issue-65-test';
 
 QUnit.config.testTimeout = 10000;
 

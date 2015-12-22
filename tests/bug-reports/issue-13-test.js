@@ -14,10 +14,14 @@ QUnit.test('mock sockets sends double messages', function(assert) {
   var numMessagesSent     = 0;
   var numMessagesReceived = 0;
 
-  mockServer.on('connection', function(socket) {
-      socket.on('message', function() {
-          numMessagesReceived++;
-      });
+  var serverMessageHandler = function() {
+    numMessagesReceived++;
+  };
+  var connectionsCreated  = 0;
+
+  mockServer.on('connection', function(server,socket) {
+    connectionsCreated++;
+    server.on('message', serverMessageHandler);
   });
 
   mockSocketA.onopen = function() {
@@ -31,6 +35,7 @@ QUnit.test('mock sockets sends double messages', function(assert) {
   };
 
   setTimeout(function() {
+    assert.equal(connectionsCreated,2);
     assert.equal(numMessagesReceived, numMessagesSent);
     mockServer.close();
     done();
