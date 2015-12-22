@@ -1,6 +1,6 @@
 {
   "name": "mock-socket",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A mocking library for WebSockets",
   "main": "./dist/mock-socket",
   "directories": {
@@ -10,7 +10,6 @@
     "start": "./node_modules/broccoli-cli/bin/broccoli serve",
     "test": "BABEL_ENV=test babel-node ./node_modules/.bin/isparta cover _mocha",
     "build": "rm -rf dist; broccoli build dist",
-    "browser": "npm run build; ./node_modules/testem/testem.js",
     "lint": "eslint src tests",
     "publish_coverage": "CODECLIMATE_REPO_TOKEN=81e42661a39fae978969b4a10f6cc0a629f613a3d88faaf8fa36750a02f00fa0 codeclimate-test-reporter < coverage/lcov.info"
   },
