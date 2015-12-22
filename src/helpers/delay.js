@@ -7,8 +7,8 @@
 * @parma {context: object} the context in which to invoke the function
 */
 function delay(callback, context) {
-  setTimeout(function(context) {
-    callback.call(context);
+  setTimeout(function timeout(timeoutContext) {
+    callback.call(timeoutContext);
   }, 4, context);
 }
 

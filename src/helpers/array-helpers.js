@@ -1,6 +1,6 @@
 export function reject(array, callback) {
-  var results = [];
-  array.forEach(function(itemInArray) {
+  const results = [];
+  array.forEach(itemInArray => {
     if (!callback(itemInArray)) {
       results.push(itemInArray);
     }
@@ -10,8 +10,8 @@ export function reject(array, callback) {
 }
 
 export function filter(array, callback) {
-  var results = [];
-  array.forEach(function(itemInArray) {
+  const results = [];
+  array.forEach(itemInArray => {
     if (callback(itemInArray)) {
       results.push(itemInArray);
     }

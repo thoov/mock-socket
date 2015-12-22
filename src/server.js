@@ -1,12 +1,12 @@
-import URI from 'urijs';
+import uri from 'urijs';
 import WebSocket from './websocket';
-import EventTarget  from './event-target';
+import EventTarget from './event-target';
 import networkBridge from './network-bridge';
 import CLOSE_CODES from './helpers/close-codes';
 import {
   createEvent,
   createMessageEvent,
-  createCloseEvent
+  createCloseEvent,
 } from './event-factory';
 
 /*
@@ -18,11 +18,11 @@ class Server extends EventTarget {
   */
   constructor(url) {
     super();
-    this.url   = URI(url).toString();
-    var server = networkBridge.attachServer(this, this.url);
+    this.url = uri(url).toString();
+    const server = networkBridge.attachServer(this, this.url);
 
     if (!server) {
-      this.dispatchEvent(createEvent({type: 'error'}));
+      this.dispatchEvent(createEvent({ type: 'error' }));
       throw new Error('A mock server is already listening on this url');
     }
   }
@@ -45,17 +45,15 @@ class Server extends EventTarget {
   *
   * @param {*} data - Any javascript object which will be crafted into a MessageObject.
   */
-  send(data, options={}) {
+  send(data, options = {}) {
     this.emit('message', data, options);
   }
 
   /*
   * Sends a generic message event to all mock clients.
   */
-  emit(event, data, options={}) {
-    var {
-      websockets
-    } = options;
+  emit(event, data, options = {}) {
+    let { websockets } = options;
 
     if (!websockets) {
       websockets = networkBridge.websocketsLookup(this.url);
@@ -80,13 +78,13 @@ class Server extends EventTarget {
   *
   * @param {object} options
   */
-  close(options={}) {
-    var {
+  close(options = {}) {
+    const {
       code,
       reason,
-      wasClean
+      wasClean,
     } = options;
-    var listeners = networkBridge.websocketsLookup(this.url);
+    const listeners = networkBridge.websocketsLookup(this.url);
 
     listeners.forEach(socket => {
       socket.readyState = WebSocket.CLOSE;
@@ -95,11 +93,11 @@ class Server extends EventTarget {
         target: socket,
         code: code || CLOSE_CODES.CLOSE_NORMAL,
         reason: reason || '',
-        wasClean
+        wasClean,
       }));
     });
 
-    this.dispatchEvent(createCloseEvent({type: 'close'}), this);
+    this.dispatchEvent(createCloseEvent({ type: 'close' }), this);
     networkBridge.removeServer(this.url);
   }
 
@@ -116,11 +114,11 @@ class Server extends EventTarget {
   * e.g. server.to('my-room').emit('hi!');
   */
   to(room) {
-    var _this = this;
-    var websockets = networkBridge.websocketsLookup(this.url, room);
+    const _this = this;
+    const websockets = networkBridge.websocketsLookup(this.url, room);
     return {
       emit(event, data) {
-        _this.emit(event, data, { websockets: websockets });
+        _this.emit(event, data, { websockets });
       },
     };
   }
@@ -131,7 +129,7 @@ class Server extends EventTarget {
  *
  * http://socket.io/docs/rooms-and-namespaces/#custom-namespaces
  */
-Server.of = function(url) {
+Server.of = function of(url) {
   return new Server(url);
 };
 

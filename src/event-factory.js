@@ -11,18 +11,18 @@ import environment from './helpers/environment-check';
 */
 function extendEvent(event, target) {
   Object.defineProperties(event, {
-    target:  {
+    target: {
       configurable: true,
-      writable: true
+      writable: true,
     },
     srcElement: {
       configurable: true,
-      writable: true
+      writable: true,
     },
     currentTarget: {
       configurable: true,
-      writable: true
-    }
+      writable: true,
+    },
   });
 
   if (target) {
@@ -39,11 +39,13 @@ function extendEvent(event, target) {
  * if we are in the browser or it will return the mocked event.
  */
 function eventFactory(eventClassName, type, config) {
-  if (!environment.globalContext[eventClassName])
-    return new NodeEvent({type});
+  if (!environment.globalContext[eventClassName]) {
+    return new NodeEvent({ type });
+  }
 
-  if (!config)
+  if (!config) {
     return new environment.globalContext[eventClassName](type);
+  }
 
   return new environment.globalContext[eventClassName](type, config);
 }
@@ -55,12 +57,12 @@ function eventFactory(eventClassName, type, config) {
 * @param {object} config - within config you will need to pass type and optionally target
 */
 function createEvent(config) {
-  var {
+  const {
     type,
-    target
+    target,
   } = config;
 
-  var event = eventFactory('Event', type);
+  let event = eventFactory('Event', type);
 
   if (!event.path) {
     event = JSON.parse(JSON.stringify(event));
@@ -76,14 +78,14 @@ function createEvent(config) {
 * @param {object} config - within config you will need to pass type, origin, data and optionally target
 */
 function createMessageEvent(config) {
-  var {
+  const {
     type,
     origin,
     data,
-    target
+    target,
   } = config;
 
-  var messageEvent = eventFactory('MessageEvent', type);
+  let messageEvent = eventFactory('MessageEvent', type);
 
   if (!messageEvent.path) {
     messageEvent = JSON.parse(JSON.stringify(messageEvent));
@@ -93,8 +95,7 @@ function createMessageEvent(config) {
 
   if (messageEvent.initMessageEvent) {
     messageEvent.initMessageEvent(type, false, false, data, origin, '');
-  }
-  else {
+  } else {
     messageEvent.data = data;
     messageEvent.origin = origin;
   }
@@ -109,22 +110,23 @@ function createMessageEvent(config) {
 * @param {object} config - within config you will need to pass type and optionally target, code, and reason
 */
 function createCloseEvent(config) {
-  var {
+  const {
     code,
     reason,
     type,
     target,
-    wasClean
   } = config;
+
+  let { wasClean } = config;
 
   if (!wasClean) {
     wasClean = (code === 1000);
   }
 
-  var closeEvent = eventFactory('CloseEvent', type, {
+  let closeEvent = eventFactory('CloseEvent', type, {
     code,
     reason,
-    wasClean
+    wasClean,
   });
 
   if (!closeEvent.path || !closeEvent.code) {
@@ -140,5 +142,5 @@ function createCloseEvent(config) {
 export {
   createEvent,
   createMessageEvent,
-  createCloseEvent
+  createCloseEvent,
 };

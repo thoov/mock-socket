@@ -1,4 +1,4 @@
-import URI from 'urijs';
+import uri from 'urijs';
 import delay from './helpers/delay';
 import EventTarget from './event-target';
 import networkBridge from './network-bridge';
@@ -6,7 +6,7 @@ import CLOSE_CODES from './helpers/close-codes';
 import {
   createEvent,
   createMessageEvent,
-  createCloseEvent
+  createCloseEvent,
 } from './event-factory';
 
 /*
@@ -19,7 +19,7 @@ class WebSocket extends EventTarget {
   /*
   * @param {string} url
   */
-  constructor(url, protocol='') {
+  constructor(url, protocol = '') {
     super();
 
     if (!url) {
@@ -27,14 +27,13 @@ class WebSocket extends EventTarget {
     }
 
     this.binaryType = 'blob';
-    this.url        = URI(url).toString();
+    this.url = uri(url).toString();
     this.readyState = WebSocket.CONNECTING;
     this.protocol = '';
 
     if (typeof protocol === 'string') {
       this.protocol = protocol;
-    }
-    else if (Array.isArray(protocol) && protocol.length > 0) {
+    } else if (Array.isArray(protocol) && protocol.length > 0) {
       this.protocol = protocol[0];
     }
 
@@ -50,38 +49,38 @@ class WebSocket extends EventTarget {
       onopen: {
         configurable: true,
         enumerable: true,
-        get: function() { return this.listeners.open; },
-        set: function(listener) {
+        get() { return this.listeners.open; },
+        set(listener) {
           this.addEventListener('open', listener);
-        }
+        },
       },
       onmessage: {
         configurable: true,
         enumerable: true,
-        get: function() { return this.listeners.message; },
-        set: function(listener) {
+        get() { return this.listeners.message; },
+        set(listener) {
           this.addEventListener('message', listener);
-        }
+        },
       },
       onclose: {
         configurable: true,
         enumerable: true,
-        get: function() { return this.listeners.close; },
-        set: function(listener) {
+        get() { return this.listeners.close; },
+        set(listener) {
           this.addEventListener('close', listener);
-        }
+        },
       },
       onerror: {
         configurable: true,
         enumerable: true,
-        get: function() { return this.listeners.error; },
-        set: function(listener) {
+        get() { return this.listeners.error; },
+        set(listener) {
           this.addEventListener('error', listener);
-        }
-      }
+        },
+      },
     });
 
-    var server = networkBridge.attachWebSocket(this, this.url);
+    const server = networkBridge.attachWebSocket(this, this.url);
 
     /*
     * This delay is needed so that we dont trigger an event before the callbacks have been
@@ -97,13 +96,12 @@ class WebSocket extends EventTarget {
     * // and with the delay the event gets triggered here after all of the callbacks have been
     * // registered :-)
     */
-    delay(function() {
+    delay(function delayCallback() {
       if (server) {
         this.readyState = WebSocket.OPEN;
-        server.dispatchEvent(createEvent({type: 'connection'}), server, this);
-        this.dispatchEvent(createEvent({type: 'open', target: this}));
-      }
-      else {
+        server.dispatchEvent(createEvent({ type: 'connection' }), server, this);
+        this.dispatchEvent(createEvent({ type: 'open', target: this }));
+      } else {
         this.readyState = WebSocket.CLOSED;
         this.dispatchEvent(createEvent({ type: 'error', target: this }));
         this.dispatchEvent(createCloseEvent({ type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL }));
@@ -120,16 +118,16 @@ class WebSocket extends EventTarget {
   */
   send(data) {
     if (this.readyState === WebSocket.CLOSING || this.readyState === WebSocket.CLOSED) {
-      throw 'WebSocket is already in CLOSING or CLOSED state';
+      throw new Error('WebSocket is already in CLOSING or CLOSED state');
     }
 
-    var messageEvent = createMessageEvent({
+    const messageEvent = createMessageEvent({
       type: 'message',
       origin: this.url,
-      data: data
+      data,
     });
 
-    var server = networkBridge.serverLookup(this.url);
+    const server = networkBridge.serverLookup(this.url);
 
     if (server) {
       server.dispatchEvent(messageEvent, data);
@@ -145,11 +143,11 @@ class WebSocket extends EventTarget {
   close() {
     if (this.readyState !== WebSocket.OPEN) { return undefined; }
 
-    var server = networkBridge.serverLookup(this.url);
-    var closeEvent = createCloseEvent({
+    const server = networkBridge.serverLookup(this.url);
+    const closeEvent = createCloseEvent({
       type: 'close',
       target: this,
-      code: CLOSE_CODES.CLOSE_NORMAL
+      code: CLOSE_CODES.CLOSE_NORMAL,
     });
 
     networkBridge.removeWebSocket(this, this.url);
@@ -164,8 +162,8 @@ class WebSocket extends EventTarget {
 }
 
 WebSocket.CONNECTING = 0;
-WebSocket.OPEN       = 1;
-WebSocket.CLOSING    = 2;
-WebSocket.CLOSED     = 3;
+WebSocket.OPEN = 1;
+WebSocket.CLOSING = 2;
+WebSocket.CLOSED = 3;
 
 export default WebSocket;

@@ -1,4 +1,4 @@
-import URI from 'urijs';
+import uri from 'urijs';
 import delay from './helpers/delay';
 import EventTarget from './event-target';
 import networkBridge from './network-bridge';
@@ -7,7 +7,7 @@ import CLOSE_CODES from './helpers/close-codes';
 import {
   createEvent,
   createMessageEvent,
-  createCloseEvent
+  createCloseEvent,
 } from './event-factory';
 
 /*
@@ -19,15 +19,11 @@ class SocketIO extends EventTarget {
   /*
   * @param {string} url
   */
-  constructor(url, protocol='') {
+  constructor(url = 'socket.io', protocol = '') {
     super();
 
-    if (!url) {
-      url = 'socket.io';
-    }
-
     this.binaryType = 'blob';
-    this.url        = URI(url).toString();
+    this.url = uri(url).toString();
     this.readyState = SocketIO.CONNECTING;
     this.protocol = '';
 
@@ -37,17 +33,17 @@ class SocketIO extends EventTarget {
       this.protocol = protocol[0];
     }
 
-    var server = networkBridge.attachWebSocket(this, this.url);
+    const server = networkBridge.attachWebSocket(this, this.url);
 
     /*
     * Delay triggering the connection events so they can be defined in time.
     */
-    delay(function() {
+    delay(function delayCallback() {
       if (server) {
         this.readyState = SocketIO.OPEN;
-        server.dispatchEvent(createEvent({type: 'connection'}), server, this);
-        server.dispatchEvent(createEvent({type: 'connect'}), server, this); // alias
-        this.dispatchEvent(createEvent({type: 'connect', target: this}));
+        server.dispatchEvent(createEvent({ type: 'connection' }), server, this);
+        server.dispatchEvent(createEvent({ type: 'connect' }), server, this); // alias
+        this.dispatchEvent(createEvent({ type: 'connect', target: this }));
       } else {
         this.readyState = SocketIO.CLOSED;
         this.dispatchEvent(createEvent({ type: 'error', target: this }));
@@ -80,7 +76,7 @@ class SocketIO extends EventTarget {
   close() {
     if (this.readyState !== SocketIO.OPEN) { return undefined; }
 
-    var server = networkBridge.serverLookup(this.url);
+    const server = networkBridge.serverLookup(this.url);
     networkBridge.removeWebSocket(this, this.url);
 
     this.readyState = SocketIO.CLOSED;
@@ -113,16 +109,16 @@ class SocketIO extends EventTarget {
   */
   emit(event, data) {
     if (this.readyState !== SocketIO.OPEN) {
-      throw 'SocketIO is already in CLOSING or CLOSED state';
+      throw new Error('SocketIO is already in CLOSING or CLOSED state');
     }
 
-    var messageEvent = createMessageEvent({
+    const messageEvent = createMessageEvent({
       type: event,
       origin: this.url,
-      data: data,
+      data,
     });
 
-    var server = networkBridge.serverLookup(this.url);
+    const server = networkBridge.serverLookup(this.url);
 
     if (server) {
       server.dispatchEvent(messageEvent, data);
@@ -172,8 +168,8 @@ class SocketIO extends EventTarget {
    * @param {object} event - event object which will be passed to all listeners of the event.type property
    */
   dispatchEvent(event, ...customArguments) {
-    var eventName = event.type;
-    var listeners = this.listeners[eventName];
+    const eventName = event.type;
+    const listeners = this.listeners[eventName];
 
     if (!Array.isArray(listeners)) {
       return false;
@@ -182,34 +178,35 @@ class SocketIO extends EventTarget {
     listeners.forEach(listener => {
       if (customArguments.length > 0) {
         listener.apply(this, customArguments);
-      }
-      else {
+      } else {
         // Regular WebSockets expect a MessageEvent but Socketio.io just wants raw data
         //  payload instanceof MessageEvent works, but you can't isntance of NodeEvent
         //  for now we detect if the output has data defined on it
-        listener.call(this,event.data?event.data:event);
+        listener.call(this, event.data ? event.data : event);
       }
     });
   }
 }
 
 SocketIO.CONNECTING = 0;
-SocketIO.OPEN       = 1;
-SocketIO.CLOSING    = 2;
-SocketIO.CLOSED     = 3;
+SocketIO.OPEN = 1;
+SocketIO.CLOSING = 2;
+SocketIO.CLOSED = 3;
 
 /*
 * Static constructor methods for the IO Socket
 */
-var IO = function(url) {
+const IO = function ioConstructor(url) {
   return new SocketIO(url);
 };
 
 /*
 * Alias the raw IO() constructor
 */
-IO.connect = function(url) {
+IO.connect = function ioConnect(url) {
+  /* eslint-disable new-cap */
   return IO(url);
+  /* eslint-enable new-cap */
 };
 
 export default IO;
