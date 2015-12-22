@@ -37,7 +37,7 @@ class NetworkBridge {
     if (connectionLookup &&
         connectionLookup.server &&
         connectionLookup.websockets.indexOf(websocket) !== -1) {
-      if (connectionLookup.roomMemberships[room] === null) {
+      if (!connectionLookup.roomMemberships[room]) {
         connectionLookup.roomMemberships[room] = [];
       }
 
