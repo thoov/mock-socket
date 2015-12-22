@@ -19,10 +19,10 @@ To use within a node environment you can simply import or require the files dire
 option is great for phatomjs or CI environments.
 
 ```js
-var mockWebSocket = require('mock-socket/websocket');
-var mockServer = require('mock-socket/server');
+var mockWebSocket = require('mock-socket/dist/websocket');
+var mockServer = require('mock-socket/dist/server');
 
-// var socketIO = require('mock-socket/socket-io');
+// var socketIO = require('mock-socket/dist/socket-io');
 ```
 
 To use within a browser environment you can include the bundled script file directly onto your
