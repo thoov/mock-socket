@@ -1,0 +1,5 @@
+---
+  globals:
+    it: true
+    describe: true
+    afterEach: true
