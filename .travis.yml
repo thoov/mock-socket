@@ -6,7 +6,7 @@ sudo: false
 cache:
   directories:
     - node_modules
-before_install:
+before_script:
   - npm run lint
 install:
   - npm install
