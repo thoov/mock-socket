@@ -29,7 +29,7 @@ To use within a browser environment you can include the bundled script file dire
 page and reference the global objects from there.
 
 ```html
-<script src="./node_modules/mock-socket/mock-socket.min.js"></script>
+<script src="./node_modules/mock-socket/dist/mock-socket.min.js"></script>
 <script>
 // window.MockServer
 // window.MockWebSocket
