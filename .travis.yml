@@ -1,23 +1,25 @@
----
 language: node_js
-
 node_js:
-  - "0.12"
-
+  - "iojs"
+  - "node"
 sudo: false
-
 cache:
   directories:
     - node_modules
-
-before_install:
-  - mkdir travis-phantomjs
-  - wget https://s3.amazonaws.com/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -O $PWD/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2
-  - tar -xvf $PWD/travis-phantomjs/phantomjs-2.0.0-ubuntu-12.04.tar.bz2 -C $PWD/travis-phantomjs
-  - export PATH=$PWD/travis-phantomjs:$PATH
-
+before_script:
+  - npm run lint
 install:
   - npm install
-
 script:
   - npm test
+deploy:
+  provider: npm
+  email: thoov7@gmail.com
+  api_key:
+    secure: HrsDNZJrHUscxmUICRn9QdM35OBvByDnsDji1IyFmn0hfQR0hOFsLg+8y46HYZ40L3BIN9XTjoQsUxsBaipAmpmFbKDzCDom2BLPmHRA3JULSWDz6w2R3iaDk9cZuCZwVk1KdYt4pIcbDTI+AyGcqg3oA1oBV2EORhW+rsVx5fg=
+  skip_cleanup: true
+  on:
+    tags: true
+
+after_success:
+  - npm run publish_coverage

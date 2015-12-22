@@ -1,6 +1,6 @@
 import {
   reject,
-  filter
+  filter,
 } from './helpers/array-helpers';
 
 /*
@@ -23,9 +23,8 @@ class EventTarget {
   * @param {function} listener - the callback function to invoke whenever a event is dispatched matching the given type
   * @param {boolean} useCapture - N/A TODO: implement useCapture functionality
   */
-  addEventListener(type, listener /*, useCapture */) {
-    if(typeof listener === 'function') {
-
+  addEventListener(type, listener /* , useCapture */) {
+    if (typeof listener === 'function') {
       if (!Array.isArray(this.listeners[type])) {
         this.listeners[type] = [];
       }
@@ -44,8 +43,8 @@ class EventTarget {
   * @param {function} listener - the callback function to invoke whenever a event is dispatched matching the given type
   * @param {boolean} useCapture - N/A TODO: implement useCapture functionality
   */
-  removeEventListener(type, removingListener /*, useCapture */) {
-    var arrayOfListeners = this.listeners[type];
+  removeEventListener(type, removingListener /* , useCapture */) {
+    const arrayOfListeners = this.listeners[type];
     this.listeners[type] = reject(arrayOfListeners, listener => listener === removingListener);
   }
 
@@ -56,8 +55,8 @@ class EventTarget {
   * @param {object} event - event object which will be passed to all listeners of the event.type property
   */
   dispatchEvent(event, ...customArguments) {
-    var eventName = event.type;
-    var listeners = this.listeners[eventName];
+    const eventName = event.type;
+    const listeners = this.listeners[eventName];
 
     if (!Array.isArray(listeners)) {
       return false;
@@ -66,8 +65,7 @@ class EventTarget {
     listeners.forEach(listener => {
       if (customArguments.length > 0) {
         listener.apply(this, customArguments);
-      }
-      else {
+      } else {
         listener.call(this, event);
       }
     });

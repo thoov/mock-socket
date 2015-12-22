@@ -1,6 +1,4 @@
-import {
-  reject
-} from './helpers/array-helpers';
+import { reject } from './helpers/array-helpers';
 
 /*
 * The network bridge is a way for the mock websocket object to 'communicate' with
@@ -20,12 +18,11 @@ class NetworkBridge {
   * @param {string} url
   */
   attachWebSocket(websocket, url) {
-    var connectionLookup = this.urlMap[url];
+    const connectionLookup = this.urlMap[url];
 
     if (connectionLookup &&
         connectionLookup.server &&
         connectionLookup.websockets.indexOf(websocket) === -1) {
-
       connectionLookup.websockets.push(websocket);
       return connectionLookup.server;
     }
@@ -35,13 +32,12 @@ class NetworkBridge {
   * Attaches a websocket to a room
   */
   addMembershipToRoom(websocket, room) {
-    var connectionLookup = this.urlMap[websocket.url];
+    const connectionLookup = this.urlMap[websocket.url];
 
     if (connectionLookup &&
         connectionLookup.server &&
         connectionLookup.websockets.indexOf(websocket) !== -1) {
-
-      if (connectionLookup.roomMemberships[room] == null) {
+      if (!connectionLookup.roomMemberships[room]) {
         connectionLookup.roomMemberships[room] = [];
       }
 
@@ -57,10 +53,9 @@ class NetworkBridge {
   * @param {string} url
   */
   attachServer(server, url) {
-    var connectionLookup = this.urlMap[url];
+    const connectionLookup = this.urlMap[url];
 
     if (!connectionLookup) {
-
       this.urlMap[url] = {
         server,
         websockets: [],
@@ -77,7 +72,7 @@ class NetworkBridge {
   * @param {string} url - the url to use to find which server is running on it
   */
   serverLookup(url) {
-    var connectionLookup = this.urlMap[url];
+    const connectionLookup = this.urlMap[url];
 
     if (connectionLookup) {
       return connectionLookup.server;
@@ -91,18 +86,18 @@ class NetworkBridge {
   * @param {string} room - if a room is provided, will only return sockets in this room
   */
   websocketsLookup(url, room) {
-    var connectionLookup = this.urlMap[url];
+    const connectionLookup = this.urlMap[url];
 
     if (!connectionLookup) {
       return [];
     }
 
     if (room) {
-      var members = connectionLookup.roomMemberships[room];
+      const members = connectionLookup.roomMemberships[room];
       return members ? members : [];
-    } else {
-      return connectionLookup.websockets;
     }
+
+    return connectionLookup.websockets;
   }
 
   /*
@@ -121,7 +116,7 @@ class NetworkBridge {
   * @param {string} url
   */
   removeWebSocket(websocket, url) {
-    var connectionLookup = this.urlMap[url];
+    const connectionLookup = this.urlMap[url];
 
     if (connectionLookup) {
       connectionLookup.websockets = reject(connectionLookup.websockets, socket => socket === websocket);
@@ -132,10 +127,10 @@ class NetworkBridge {
   * Removes a websocket from a room
   */
   removeMembershipFromRoom(websocket, room) {
-    var connectionLookup = this.urlMap[websocket.url];
-    var memberships = connectionLookup.roomMemberships[room];
+    const connectionLookup = this.urlMap[websocket.url];
+    const memberships = connectionLookup.roomMemberships[room];
 
-    if (connectionLookup && memberships != null) {
+    if (connectionLookup && memberships !== null) {
       connectionLookup.roomMemberships[room] = reject(memberships, socket => {
         return socket === websocket;
       });

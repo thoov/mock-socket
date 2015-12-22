@@ -1,5 +1,6 @@
 {
-	"framework": "qunit",
+	"framework": "mocha",
+	"launch_in_dev": ["PhantomJS", "Chrome", "Firefox", "Safari"],
 	"launch_in_ci": ["PhantomJS"],
-	"test_page": "tests/index.html"
+	"test_page": "test/index.html"
 }

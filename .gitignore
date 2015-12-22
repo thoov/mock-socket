@@ -1,7 +1,10 @@
+# Folders to exclude
 node_modules
-.DS_Store
+coverage
 tmp
-dist/tests.js
-dist/index.html
+dist
+
+# Individual files to exclude
+.DS_Store
 npm-debug.log
 .idea
