@@ -10,18 +10,9 @@ install:
   - npm install
 before_script:
   - npm run lint
-  - npm run build
 script:
   - npm test
 before_deploy:
   - npm run build
-deploy:
-  provider: npm
-  email: thoov7@gmail.com
-  api_key:
-    secure: HrsDNZJrHUscxmUICRn9QdM35OBvByDnsDji1IyFmn0hfQR0hOFsLg+8y46HYZ40L3BIN9XTjoQsUxsBaipAmpmFbKDzCDom2BLPmHRA3JULSWDz6w2R3iaDk9cZuCZwVk1KdYt4pIcbDTI+AyGcqg3oA1oBV2EORhW+rsVx5fg=
-  skip_cleanup: true
-  on:
-    tags: true
 after_success:
   - npm run publish_coverage
