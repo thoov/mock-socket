@@ -21,7 +21,7 @@ class EventTarget {
   *
   * @param {string} type - the type of event (ie: 'open', 'message', etc.)
   * @param {function} listener - the callback function to invoke whenever a event is dispatched matching the given type
-  * @param {boolean} useCapture - N/A TODO: implement useCapture functionallity
+  * @param {boolean} useCapture - N/A TODO: implement useCapture functionality
   */
   addEventListener(type, listener /* , useCapture */) {
     if (typeof listener === 'function') {
@@ -30,7 +30,7 @@ class EventTarget {
       }
 
       // Only add the same function once
-      if (filter(this.listeners[type], item => item.toString() === listener.toString()).length === 0) {
+      if (filter(this.listeners[type], item => item === listener).length === 0) {
         this.listeners[type].push(listener);
       }
     }
@@ -41,7 +41,7 @@ class EventTarget {
   *
   * @param {string} type - the type of event (ie: 'open', 'message', etc.)
   * @param {function} listener - the callback function to invoke whenever a event is dispatched matching the given type
-  * @param {boolean} useCapture - N/A TODO: implement useCapture functionallity
+  * @param {boolean} useCapture - N/A TODO: implement useCapture functionality
   */
   removeEventListener(type, removingListener /* , useCapture */) {
     const arrayOfListeners = this.listeners[type];

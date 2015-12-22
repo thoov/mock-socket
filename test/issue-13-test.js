@@ -11,11 +11,15 @@ describe('Issue #13: Sockets send messages multiple times', function issueTest()
 
     let numMessagesSent = 0;
     let numMessagesReceived = 0;
+    let connectionsCreated = 0;
 
-    mockServer.on('connection', socket => {
-      socket.on('message', () => {
-        numMessagesReceived++;
-      });
+    const serverMessageHandler = function handlerFunc() {
+      numMessagesReceived++;
+    };
+
+    mockServer.on('connection', function connectionFunc(server) {
+      connectionsCreated++;
+      server.on('message', serverMessageHandler);
     });
 
     mockSocketA.onopen = function open() {
