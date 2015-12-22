@@ -15,3 +15,4 @@ import '../functional-socket-io-test';
 import '../issue-13-test';
 import '../issue-19-test';
 import '../issue-64-test';
+import '../issue-65-test';
