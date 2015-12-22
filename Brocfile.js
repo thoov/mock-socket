@@ -20,7 +20,7 @@ var transpiledNodeModuleTree = babel('src');
   Browser Module
 
   supports:
-   - <script src="./node_modules/mock-socket"></script>
+   - <script src="./node_modules/mock-socket/mock-socket.min.js"></script>
    - window.MockServer
    - window.MockWebSocket
    - window.MockSocketIO
@@ -39,6 +39,15 @@ var minifiedBrowserTree = uglify(funnel(browserifiedSourceTree, {
   },
 }));
 
+/*
+  Test Module
+
+  supports:
+     - <script src="./node_modules/mock-socket/tests.js"></script>
+     - window.MockServer
+     - window.MockWebSocket
+     - window.MockSocketIO
+*/
 var transpiledTestTree = babel(mergeTrees([
   funnel('src', { destDir: '/src' }),
   funnel('test', { destDir: '/test' }),

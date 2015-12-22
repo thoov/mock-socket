@@ -17,6 +17,31 @@ or
 npm install mock-socket
 ```
 
+
+## Usage
+
+To use within a node environment you can simply import or require the files directly. This
+option is great for CI tests.
+
+```js
+var mockWebSocket = require('mock-socket/websocket');
+var mockServer = require('mock-socket/server');
+
+// var socketIO = require('mock-socket/socket-io');
+```
+
+To use within a browser environment you can include the bundled script file directly onto your
+page and reference the global objects.
+
+```html
+<script src="./node_modules/mock-socket/mock-socket.min.js"></script>
+<script>
+  // window.MockServer
+  // window.MockWebSocket
+  // window.MockSocketIO
+</script>
+```
+
 ## Example
 ```js
 function Chat() {
@@ -48,46 +73,9 @@ test('basic test', function(){
 });
 ```
 
-## Building from source
+## Working with the source code
 
-```shell
-git clone git@github.com:thoov/mock-socket.git
-cd mock-socket
-npm i
-npm run build
-```
-
-## Running tests
-
-### 1) Via PhantomJS 2.0+
-
-Simply run:
-
-```shell
-npm test
-```
-
-**NOTE:** that this only works in PhantomJS 2.0+.
-
-### 2) Via the browser
-
-```shell
-  npm run browser
-```
-
-Then visit: [http://localhost:7357/](http://localhost:7357/) in your browser.
-
-### 3) Manual tests
-
-The point of the manual tests are to compare a MockWebSocket object vs the native WebSocket object.
-Running the below command brings up a blank webpage that has both a MockWebSocket object and a
-Native WebSocket object define with debuggers in place so you can quickly start debugging any inconsistencies.
-
-```shell
-  npm start
-```
-
-Then visit: [http://localhost:4200](http://localhost:4200) in your browser.
+// TODO
 
 ## Feedback / Issues
 
