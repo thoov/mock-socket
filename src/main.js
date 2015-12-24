@@ -1,12 +1,14 @@
-import Server from './server';
-import WebSocket from './websocket';
-import SocketIO from './socket-io';
-
+import MockServer from './server';
+import MockWebSocket from './websocket';
+import MockSocketIO from './socket-io';
 import environment from './helpers/environment-check';
 
 const { globalContext } = environment;
 
-globalContext.MockServer = Server;
-globalContext.MockSocket = WebSocket; // TODO: remove this as we want people to use MockWebSocket
-globalContext.MockWebSocket = WebSocket;
-globalContext.MockSocketIO = SocketIO;
+globalContext.MockServer = MockServer;
+globalContext.MockWebSocket = MockWebSocket;
+globalContext.MockSocketIO = MockSocketIO;
+
+export const Server = MockServer;
+export const WebSocket = MockWebSocket;
+export const SocketIO = MockSocketIO;
