@@ -19,10 +19,10 @@ To use within a node environment you can simply import or require the files dire
 option is great for phatomjs or CI environments.
 
 ```js
-var mockWebSocket = require('mock-socket/dist/websocket');
-var mockServer = require('mock-socket/dist/server');
+var mockWebSocket = require('mock-socket').WebSocket;
+var mockServer = require('mock-socket').Server;
 
-// var socketIO = require('mock-socket/dist/socket-io');
+// var socketIO = require('mock-socket').SocketIO;
 ```
 
 To use within a browser environment you can include the bundled script file directly onto your
@@ -52,12 +52,11 @@ function Chat() {
 
 ```js
 // chat-test.js
-import MockServer from 'mock-socket/server';
-import MockWebSocket from 'mock-socket/websocket';
+import { WebSocket, Server } from 'mock-socket';
 
 describe('Chat Unit Test', function() {
   it('basic test', done => {
-    const mockServer = new MockServer('ws://localhost:8080');
+    const mockServer = new Server('ws://localhost:8080');
     mockServer.on('connection', server => {
       mockServer.send('test message 1');
       mockServer.send('test message 2');
@@ -69,7 +68,7 @@ describe('Chat Unit Test', function() {
       about this is that our actual code did not need to change and
       thus is agnostic to how we test it.
     */
-    window.WebSocket = MockWebSocket;
+    window.WebSocket = WebSocket;
 
     // Now when Chat tries to do new WebSocket() it
     // will create a MockWebSocket object
@@ -100,12 +99,11 @@ function Chat() {
 
 ```js
 // chat-test.js
-import MockServer from 'mock-socket/server';
-import MockIO from 'mock-socket/socket-io';
+import { SocketIO, Server } from 'mock-socket';
 
 describe('Chat Unit Test', function() {
   it('basic test', done => {
-    const mockServer = new MockServer('http://localhost:8080');
+    const mockServer = new Server('http://localhost:8080');
     mockServer.on('connection', server => {
       mockServer.emit('chat-message', 'test message 1');
       mockServer.emit('chat-message', 'test message 2');
@@ -117,7 +115,7 @@ describe('Chat Unit Test', function() {
       about this is that our actual code did not need to change and
       thus is agnostic to how we test it.
     */
-    window.io = MockIO;
+    window.io = SocketIO;
 
     // Now when Chat tries to do io() or io.connect()
     // it will use MockSocketIO object

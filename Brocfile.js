@@ -9,9 +9,10 @@ var browserify = require('broccoli-fast-browserify');
   Node Module
 
   supports:
-   - require('mock-socket/websocket');
-   - require('mock-socket/server');
-   - require('mock-socket/socket-io');
+   - require('mock-socket').WebSocket
+   - require('mock-socket/dist/websocket');
+   - require('mock-socket/dist/server');
+   - require('mock-socket/dist/socket-io');
 */
 
 var transpiledNodeModuleTree = babel('src');
@@ -20,7 +21,7 @@ var transpiledNodeModuleTree = babel('src');
   Browser Module
 
   supports:
-   - <script src="./node_modules/mock-socket/mock-socket.min.js"></script>
+   - <script src="./node_modules/mock-socket/dist/mock-socket.min.js"></script>
    - window.MockServer
    - window.MockWebSocket
    - window.MockSocketIO
@@ -43,7 +44,7 @@ var minifiedBrowserTree = uglify(funnel(browserifiedSourceTree, {
   Test Module
 
   supports:
-     - <script src="./node_modules/mock-socket/tests.js"></script>
+     - <script src="./node_modules/mock-socket/dist/tests.js"></script>
      - window.MockServer
      - window.MockWebSocket
      - window.MockSocketIO
