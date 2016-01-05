@@ -1,9 +1,8 @@
 {
   "name": "mock-socket",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "homepage": "https://github.com/thoov/mock-socket",
   "main": "./dist/mock-socket.min.js",
-  "moduleType": "es6",
   "authors": [
     "Travis Hoover <thoov7@gmail.com>"
   ],
