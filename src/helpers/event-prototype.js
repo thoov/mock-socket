@@ -1,0 +1,16 @@
+
+export default class EventPrototype {
+  // Noops
+  stopPropagation() {}
+  stopImmediatePropagation() {}
+
+  // if no arguments are passed then the type is set to "undefined" on
+  // chrome and safari.
+  initEvent(type = 'undefined', bubbles = false, cancelable = false) {
+    Object.assign(this, {
+      type: String(type),
+      bubbles: Boolean(bubbles),
+      cancelable: Boolean(cancelable),
+    });
+  }
+}

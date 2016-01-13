@@ -10,23 +10,19 @@ var _server = require('./server');
 
 var _server2 = _interopRequireDefault(_server);
 
-var _websocket = require('./websocket');
-
-var _websocket2 = _interopRequireDefault(_websocket);
-
 var _socketIo = require('./socket-io');
 
 var _socketIo2 = _interopRequireDefault(_socketIo);
 
-var _helpersEnvironmentCheck = require('./helpers/environment-check');
+var _websocket = require('./websocket');
 
-var _helpersEnvironmentCheck2 = _interopRequireDefault(_helpersEnvironmentCheck);
+var _websocket2 = _interopRequireDefault(_websocket);
 
-var globalContext = _helpersEnvironmentCheck2['default'].globalContext;
-
-globalContext.MockServer = _server2['default'];
-globalContext.MockWebSocket = _websocket2['default'];
-globalContext.MockSocketIO = _socketIo2['default'];
+if (typeof window !== 'undefined') {
+  window.MockServer = _server2['default'];
+  window.MockWebSocket = _websocket2['default'];
+  window.MockSocketIO = _socketIo2['default'];
+}
 
 var Server = _server2['default'];
 exports.Server = Server;

@@ -1,54 +1,6 @@
-import NodeEvent from './helpers/event-object';
-import environment from './helpers/environment-check';
-
-/*
-* Natively you cannot set or modify the properties: target, srcElement, and currentTarget on Event or
-* MessageEvent objects. So in order to set them to the correct values we "overwrite" them to the same
-* property but without the restriction of not writable.
-*
-* @param {object} event - an event object to extend
-* @param {object} target - the value that should be set for target, srcElement, and currentTarget
-*/
-function extendEvent(event, target) {
-  Object.defineProperties(event, {
-    target: {
-      configurable: true,
-      writable: true,
-    },
-    srcElement: {
-      configurable: true,
-      writable: true,
-    },
-    currentTarget: {
-      configurable: true,
-      writable: true,
-    },
-  });
-
-  if (target) {
-    event.target = target;
-    event.srcElement = target;
-    event.currentTarget = target;
-  }
-
-  return event;
-}
-
-/*
- * This will return either the native Event/MessageEvent/CloseEvent
- * if we are in the browser or it will return the mocked event.
- */
-function eventFactory(eventClassName, type, config) {
-  if (!environment.globalContext[eventClassName]) {
-    return new NodeEvent({ type });
-  }
-
-  if (!config) {
-    return new environment.globalContext[eventClassName](type);
-  }
-
-  return new environment.globalContext[eventClassName](type, config);
-}
+import Event from './helpers/event';
+import MessageEvent from './helpers/message-event';
+import CloseEvent from './helpers/close-event';
 
 /*
 * Creates an Event object and extends it to allow full modification of
@@ -57,18 +9,16 @@ function eventFactory(eventClassName, type, config) {
 * @param {object} config - within config you will need to pass type and optionally target
 */
 function createEvent(config) {
-  const {
-    type,
-    target,
-  } = config;
+  const { type, target } = config;
+  let eventObject = new Event(type);
 
-  let event = eventFactory('Event', type);
-
-  if (!event.path) {
-    event = JSON.parse(JSON.stringify(event));
+  if (target) {
+    eventObject.target = target;
+    eventObject.srcElement = target;
+    eventObject.currentTarget = target;
   }
 
-  return extendEvent(event, target);
+  return eventObject;
 }
 
 /*
@@ -78,26 +28,16 @@ function createEvent(config) {
 * @param {object} config - within config you will need to pass type, origin, data and optionally target
 */
 function createMessageEvent(config) {
-  const {
-    type,
-    origin,
+  const { type, origin, data, target } = config;
+  let messageEvent = new MessageEvent(type, {
     data,
-    target,
-  } = config;
+    origin,
+  });
 
-  let messageEvent = eventFactory('MessageEvent', type);
-
-  if (!messageEvent.path) {
-    messageEvent = JSON.parse(JSON.stringify(messageEvent));
-  }
-
-  extendEvent(messageEvent, target);
-
-  if (messageEvent.initMessageEvent) {
-    messageEvent.initMessageEvent(type, false, false, data, origin, '');
-  } else {
-    messageEvent.data = data;
-    messageEvent.origin = origin;
+  if (target) {
+    messageEvent.target = target;
+    messageEvent.srcElement = target;
+    messageEvent.currentTarget = target;
   }
 
   return messageEvent;
@@ -110,33 +50,26 @@ function createMessageEvent(config) {
 * @param {object} config - within config you will need to pass type and optionally target, code, and reason
 */
 function createCloseEvent(config) {
-  const {
-    code,
-    reason,
-    type,
-    target,
-  } = config;
-
+  const { code, reason, type, target } = config;
   let { wasClean } = config;
 
   if (!wasClean) {
     wasClean = (code === 1000);
   }
 
-  let closeEvent = eventFactory('CloseEvent', type, {
+  let closeEvent = new CloseEvent(type, {
     code,
     reason,
     wasClean,
   });
 
-  if (!closeEvent.path || !closeEvent.code) {
-    closeEvent = JSON.parse(JSON.stringify(closeEvent));
-    closeEvent.code = code || 0;
-    closeEvent.reason = reason || '';
-    closeEvent.wasClean = wasClean;
+  if (target) {
+    closeEvent.target = target;
+    closeEvent.srcElement = target;
+    closeEvent.currentTarget = target;
   }
 
-  return extendEvent(closeEvent, target);
+  return closeEvent;
 }
 
 export {

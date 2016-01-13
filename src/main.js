@@ -1,13 +1,12 @@
 import MockServer from './server';
-import MockWebSocket from './websocket';
 import MockSocketIO from './socket-io';
-import environment from './helpers/environment-check';
+import MockWebSocket from './websocket';
 
-const { globalContext } = environment;
-
-globalContext.MockServer = MockServer;
-globalContext.MockWebSocket = MockWebSocket;
-globalContext.MockSocketIO = MockSocketIO;
+if (typeof window !== 'undefined') {
+  window.MockServer = MockServer;
+  window.MockWebSocket = MockWebSocket;
+  window.MockSocketIO = MockSocketIO;
+}
 
 export const Server = MockServer;
 export const WebSocket = MockWebSocket;

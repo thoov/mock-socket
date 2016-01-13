@@ -1,7 +1,4 @@
-import {
-  reject,
-  filter,
-} from './helpers/array-helpers';
+import { reject, filter } from './helpers/array-helpers';
 
 /*
 * EventTarget is an interface implemented by objects that can
