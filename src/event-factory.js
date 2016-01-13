@@ -10,7 +10,7 @@ import CloseEvent from './helpers/close-event';
 */
 function createEvent(config) {
   const { type, target } = config;
-  let eventObject = new Event(type);
+  const eventObject = new Event(type);
 
   if (target) {
     eventObject.target = target;
@@ -29,7 +29,7 @@ function createEvent(config) {
 */
 function createMessageEvent(config) {
   const { type, origin, data, target } = config;
-  let messageEvent = new MessageEvent(type, {
+  const messageEvent = new MessageEvent(type, {
     data,
     origin,
   });
@@ -57,7 +57,7 @@ function createCloseEvent(config) {
     wasClean = (code === 1000);
   }
 
-  let closeEvent = new CloseEvent(type, {
+  const closeEvent = new CloseEvent(type, {
     code,
     reason,
     wasClean,

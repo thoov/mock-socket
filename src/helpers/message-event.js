@@ -31,7 +31,7 @@ export default class MessageEvent extends EventPrototype {
       eventPhase: 0,
       defaultPrevented: false,
       currentTarget: null,
-      cancelable: cancelable ? Boolean(cancelable) :false,
+      cancelable: cancelable ? Boolean(cancelable) : false,
       canncelBubble: false,
       bubbles: bubbles ? Boolean(bubbles) : false,
       origin: origin ? String(origin) : '',
