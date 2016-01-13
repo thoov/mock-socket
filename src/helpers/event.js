@@ -14,19 +14,17 @@ export default class Event extends EventPrototype {
 
     const { bubbles, cancelable } = eventInitConfig;
 
-    Object.assign(this, {
-      type: String(type),
-      timeStamp: Date.now(),
-      target: null,
-      srcElement: null,
-      returnValue: true,
-      isTrusted: false,
-      eventPhase: 0,
-      defaultPrevented: false,
-      currentTarget: null,
-      cancelable: cancelable ? Boolean(cancelable) : false,
-      canncelBubble: false,
-      bubbles: bubbles ? Boolean(bubbles) : false,
-    });
+    this.type = String(type);
+    this.timeStamp = Date.now();
+    this.target = null;
+    this.srcElement = null;
+    this.returnValue = true;
+    this.isTrusted = false;
+    this.eventPhase = 0;
+    this.defaultPrevented = false;
+    this.currentTarget = null;
+    this.cancelable = cancelable ? Boolean(cancelable) : false;
+    this.canncelBubble = false;
+    this.bubbles = bubbles ? Boolean(bubbles) : false;
   }
 }
