@@ -1,9 +1,5 @@
 import assert from 'assert';
-import {
-  createEvent,
-  createMessageEvent,
-  createCloseEvent,
-} from '../src/event-factory';
+import { createEvent, createMessageEvent, createCloseEvent } from '../src/event-factory';
 
 const fakeObject = { foo: 'bar' };
 

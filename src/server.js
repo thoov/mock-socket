@@ -3,11 +3,7 @@ import WebSocket from './websocket';
 import EventTarget from './event-target';
 import networkBridge from './network-bridge';
 import CLOSE_CODES from './helpers/close-codes';
-import {
-  createEvent,
-  createMessageEvent,
-  createCloseEvent,
-} from './event-factory';
+import { createEvent, createMessageEvent, createCloseEvent } from './event-factory';
 
 /*
 * https://github.com/websockets/ws#server-example
