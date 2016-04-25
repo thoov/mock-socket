@@ -1,26 +1,26 @@
 language: node_js
 node_js:
-  - "iojs"
-  - "node"
+- iojs
+- node
 sudo: false
 cache:
   directories:
-    - node_modules
+  - node_modules
 install:
-  - npm install
+- npm install
 before_script:
-  - npm run lint
+- npm run lint
 script:
-  - npm test
+- npm test
 deploy:
   provider: npm
   email: thoov7@gmail.com
   api_key:
-    secure: HrsDNZJrHUscxmUICRn9QdM35OBvByDnsDji1IyFmn0hfQR0hOFsLg+8y46HYZ40L3BIN9XTjoQsUxsBaipAmpmFbKDzCDom2BLPmHRA3JULSWDz6w2R3iaDk9cZuCZwVk1KdYt4pIcbDTI+AyGcqg3oA1oBV2EORhW+rsVx5fg=
+    secure: SRvEyZ8o3jv1L+OSddzLiDSdgva7uJJpYrPY5fDbrQa4C4WQfQ7uCkbqfigAEYxyOQ7EpKp79lK8KDuRv2jkH/LfA/vKna9tc0DQAf3hkqcpv0dMenq1hrRjZ3Y01oN4JKLJSLGnFIa6NLkNj+jeBrQSiW1oa7/6+k2R1SuPkxM=
   skip_cleanup: true
   on:
     tags: true
 before_deploy:
-  - npm run build
+- npm run build
 after_success:
-  - npm run publish_coverage
+- npm run publish_coverage
