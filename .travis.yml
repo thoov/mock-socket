@@ -16,7 +16,7 @@ deploy:
   provider: npm
   email: thoov7@gmail.com
   api_key:
-    secure: SRvEyZ8o3jv1L+OSddzLiDSdgva7uJJpYrPY5fDbrQa4C4WQfQ7uCkbqfigAEYxyOQ7EpKp79lK8KDuRv2jkH/LfA/vKna9tc0DQAf3hkqcpv0dMenq1hrRjZ3Y01oN4JKLJSLGnFIa6NLkNj+jeBrQSiW1oa7/6+k2R1SuPkxM=
+    secure: UT8oKPvt+CtWb/wwSzxqGuKXadUQr7QkXTTSf88aXLv9wAT1BwGTXe4I3yA2/ZKlNKDPwq0/NpdDiFDEYHpCtvFITGRT177m2DNYSrmFOWFMS+MU19gEqUGwntTFkInIFncBMRo3PD2K6WxySBopCKG9aLiV6699b/lcphOq+sc=
   skip_cleanup: true
   on:
     tags: true
