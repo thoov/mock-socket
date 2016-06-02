@@ -1,8 +1,8 @@
-import uri from 'urijs';
 import WebSocket from './websocket';
 import EventTarget from './event-target';
 import networkBridge from './network-bridge';
 import CLOSE_CODES from './helpers/close-codes';
+import normalize from './helpers/normalize-url';
 import { createEvent, createMessageEvent, createCloseEvent } from './event-factory';
 
 /*
@@ -14,13 +14,30 @@ class Server extends EventTarget {
   */
   constructor(url) {
     super();
-    this.url = uri(url).toString();
+    this.url = normalize(url);
     const server = networkBridge.attachServer(this, this.url);
 
     if (!server) {
       this.dispatchEvent(createEvent({ type: 'error' }));
       throw new Error('A mock server is already listening on this url');
     }
+
+    if (typeof window !== 'undefined') {
+      this.__originalWebSocket = window.WebSocket;
+      window.WebSocket = WebSocket;
+    } else {
+      global.WebSocket = WebSocket;
+    }
+  }
+
+  stop() {
+    if (typeof window !== 'undefined') {
+      window.WebSocket = this.__originalWebSocket;
+    } else {
+      delete global.WebSocket;
+    }
+
+    networkBridge.removeServer(this.url);
   }
 
   /*

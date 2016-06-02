@@ -29,9 +29,6 @@
     "url": "https://github.com/thoov/mock-socket/issues"
   },
   "homepage": "https://github.com/thoov/mock-socket",
-  "dependencies": {
-    "urijs": "~1.17.0"
-  },
   "devDependencies": {
     "babel-cli": "~6.3.17",
     "babel-core": "~6.3.21",

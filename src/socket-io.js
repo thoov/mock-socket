@@ -1,8 +1,8 @@
-import uri from 'urijs';
 import delay from './helpers/delay';
 import EventTarget from './event-target';
 import networkBridge from './network-bridge';
 import CLOSE_CODES from './helpers/close-codes';
+import normalize from './helpers/normalize-url';
 import { createEvent, createMessageEvent, createCloseEvent } from './event-factory';
 
 /*
@@ -18,7 +18,7 @@ class SocketIO extends EventTarget {
     super();
 
     this.binaryType = 'blob';
-    this.url = uri(url).toString();
+    this.url = normalize(url);
     this.readyState = SocketIO.CONNECTING;
     this.protocol = '';
 
