@@ -145,7 +145,7 @@ npm link mock-socket
 from within your other projects folder. Make sure that after any changes you run `npm run build`!
 
 ### Tests
-This project uses mocha as its test framework. Tests are located in /test and have 1 of 3 file name prefixes (functional-, issue-#, or unit-). If you create a new test make sure that you add it to /test/helpers/test-loader.js.
+This project uses mocha as its test framework. Tests are located in /test and have 1 of 3 file name prefixes (functional-, issue-#, or unit-).
 
 ```shell
 npm test
