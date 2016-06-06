@@ -1,9 +1,13 @@
-import uri from 'urijs';
 import WebSocket from './websocket';
 import EventTarget from './event-target';
 import networkBridge from './network-bridge';
 import CLOSE_CODES from './helpers/close-codes';
+import normalize from './helpers/normalize-url';
 import { createEvent, createMessageEvent, createCloseEvent } from './event-factory';
+
+function isBrowser() {
+  return (typeof Window !== 'undefined');
+}
 
 /*
 * https://github.com/websockets/ws#server-example
@@ -14,13 +18,35 @@ class Server extends EventTarget {
   */
   constructor(url) {
     super();
-    this.url = uri(url).toString();
+    this.url = normalize(url);
     const server = networkBridge.attachServer(this, this.url);
 
     if (!server) {
       this.dispatchEvent(createEvent({ type: 'error' }));
       throw new Error('A mock server is already listening on this url');
     }
+
+    this.start();
+  }
+
+  start() {
+    if (!isBrowser()) {
+      this.__originalWebSocket = global.WebSocket;
+      global.WebSocket = WebSocket;
+    } else {
+      this.__originalWebSocket = window.WebSocket;
+      window.WebSocket = WebSocket;
+    }
+  }
+
+  stop() {
+    if (!isBrowser()) {
+      global.WebSocket = this.__originalWebSocket;
+    } else {
+      window.WebSocket = this.__originalWebSocket;
+    }
+
+    networkBridge.removeServer(this.url);
   }
 
   /*

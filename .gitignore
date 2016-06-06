@@ -2,6 +2,7 @@
 node_modules
 coverage
 tmp
+dist
 
 # Individual files to exclude
 .DS_Store

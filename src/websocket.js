@@ -1,8 +1,8 @@
-import uri from 'urijs';
 import delay from './helpers/delay';
 import EventTarget from './event-target';
 import networkBridge from './network-bridge';
 import CLOSE_CODES from './helpers/close-codes';
+import normalize from './helpers/normalize-url';
 import { createEvent, createMessageEvent, createCloseEvent } from './event-factory';
 
 /*
@@ -23,7 +23,7 @@ class WebSocket extends EventTarget {
     }
 
     this.binaryType = 'blob';
-    this.url = uri(url).toString();
+    this.url = normalize(url);
     this.readyState = WebSocket.CONNECTING;
     this.protocol = '';
 
@@ -102,7 +102,9 @@ class WebSocket extends EventTarget {
         this.dispatchEvent(createEvent({ type: 'error', target: this }));
         this.dispatchEvent(createCloseEvent({ type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL }));
 
+        /* eslint-disable no-console */
         console.error(`WebSocket connection to '${this.url}' failed`);
+        /* eslint-enable no-console */
       }
     }, this);
   }

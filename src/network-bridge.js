@@ -2,7 +2,7 @@ import { reject } from './helpers/array-helpers';
 
 /*
 * The network bridge is a way for the mock websocket object to 'communicate' with
-* all avalible servers. This is a singleton object so it is important that you
+* all available servers. This is a singleton object so it is important that you
 * clean up urlMap whenever you are finished.
 */
 class NetworkBridge {
