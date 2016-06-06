@@ -5,6 +5,10 @@ import CLOSE_CODES from './helpers/close-codes';
 import normalize from './helpers/normalize-url';
 import { createEvent, createMessageEvent, createCloseEvent } from './event-factory';
 
+function isBrowser() {
+  return (typeof Window !== 'undefined');
+}
+
 /*
 * https://github.com/websockets/ws#server-example
 */
@@ -22,19 +26,24 @@ class Server extends EventTarget {
       throw new Error('A mock server is already listening on this url');
     }
 
-    if (typeof window !== 'undefined') {
+    this.start();
+  }
+
+  start() {
+    if (!isBrowser()) {
+      this.__originalWebSocket = global.WebSocket;
+      global.WebSocket = WebSocket;
+    } else {
       this.__originalWebSocket = window.WebSocket;
       window.WebSocket = WebSocket;
-    } else {
-      global.WebSocket = WebSocket;
     }
   }
 
   stop() {
-    if (typeof window !== 'undefined') {
-      window.WebSocket = this.__originalWebSocket;
+    if (!isBrowser()) {
+      global.WebSocket = this.__originalWebSocket;
     } else {
-      delete global.WebSocket;
+      window.WebSocket = this.__originalWebSocket;
     }
 
     networkBridge.removeServer(this.url);

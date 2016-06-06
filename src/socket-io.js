@@ -48,7 +48,9 @@ class SocketIO extends EventTarget {
           code: CLOSE_CODES.CLOSE_NORMAL,
         }));
 
+        /* eslint-disable no-console */
         console.error(`Socket.io connection to '${this.url}' failed`);
+        /* eslint-enable no-console */
       }
     }, this);
 

@@ -1,6 +1,6 @@
 # Mock Socket
 
-Javascript mocking library for [websockets](https://developer.mozilla.org/en-US/docs/WebSockets) and [socket.io](http://socket.io/)
+Javascript mocking library for [websockets](https://developer.mozilla.org/en-US/docs/WebSockets) and [socket.io](http://socket.io/).
 
 [![Build Status](https://travis-ci.org/thoov/mock-socket.svg?branch=master)](https://travis-ci.org/thoov/mock-socket)
 <a href="https://codeclimate.com/github/thoov/mock-socket/coverage"><img src="https://codeclimate.com/github/thoov/mock-socket/badges/coverage.svg" /></a>
@@ -16,35 +16,27 @@ npm install mock-socket
 ## Usage
 
 To use within a node environment you can simply import or require the files directly. This
-option is great for phatomjs or CI environments.
+option is great for phantomjs or CI environments.
 
 ```js
+// ES 2015:
+const { MockWebSocket, MockServer, MockSocketIO } from 'mock-socket';
+
+// ES5:
 var mockWebSocket = require('mock-socket').WebSocket;
 var mockServer = require('mock-socket').Server;
-
-// var socketIO = require('mock-socket').SocketIO;
-```
-
-To use within a browser environment you can include the bundled script file directly onto your
-page and reference the global objects from there.
-
-```html
-<script src="./node_modules/mock-socket/dist/mock-socket.min.js"></script>
-<script>
-// window.MockServer
-// window.MockWebSocket
-// window.MockSocketIO
-</script>
+var socketIO = require('mock-socket').SocketIO;
 ```
 
 ## Native WebSocket Example
+
 ```js
 // chat.js
 function Chat() {
   const chatSocket = new WebSocket('ws://localhost:8080');
   this.messages = [];
 
-  chatSocket.onmessage = event => {
+  chatSocket.onmessage = (event) => {
     this.messages.push(event.data);
   };
 }
@@ -52,31 +44,25 @@ function Chat() {
 
 ```js
 // chat-test.js
-import { WebSocket, Server } from 'mock-socket';
+import { MockServer } from 'mock-socket';
 
-describe('Chat Unit Test', function() {
-  it('basic test', done => {
-    const mockServer = new Server('ws://localhost:8080');
+describe('Chat Unit Test', () => {
+  it('basic test', (done) => {
+    const mockServer = new MockServer('ws://localhost:8080');
     mockServer.on('connection', server => {
       mockServer.send('test message 1');
       mockServer.send('test message 2');
     });
 
-    /*
-      This step is very important! It tells our chat app to use the mocked
-      websocket object instead of the native one. The great thing
-      about this is that our actual code did not need to change and
-      thus is agnostic to how we test it.
-    */
-    window.WebSocket = WebSocket;
-
     // Now when Chat tries to do new WebSocket() it
-    // will create a MockWebSocket object
+    // will create a MockWebSocket object \
     var chatApp = new Chat();
 
     setTimeout(() => {
       const messageLen = chatApp.messages.length;
       assert.equal(messageLen, 2, '2 messages where sent from the s server');
+
+      mockServer.stop();
       done();
     }, 100);
   });
@@ -101,8 +87,8 @@ function Chat() {
 // chat-test.js
 import { SocketIO, Server } from 'mock-socket';
 
-describe('Chat Unit Test', function() {
-  it('basic test', done => {
+describe('Chat Unit Test', () => {
+  it('basic test', (done) => {
     const mockServer = new Server('http://localhost:8080');
     mockServer.on('connection', server => {
       mockServer.emit('chat-message', 'test message 1');
