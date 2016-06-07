@@ -6,7 +6,11 @@ import normalize from './helpers/normalize-url';
 import { createEvent, createMessageEvent, createCloseEvent } from './event-factory';
 
 function isBrowser() {
-  return (typeof Window !== 'undefined');
+  return (typeof window !== 'undefined');
+}
+
+function isNode() {
+  return (typeof global !== 'undefined');
 }
 
 /*
@@ -29,21 +33,27 @@ class Server extends EventTarget {
     this.start();
   }
 
+  /*
+  * Attaches the mock websocket object to the window or global object.
+  */
   start() {
-    if (!isBrowser()) {
-      this.__originalWebSocket = global.WebSocket;
-      global.WebSocket = WebSocket;
-    } else {
+    if (isBrowser()) {
       this.__originalWebSocket = window.WebSocket;
       window.WebSocket = WebSocket;
+    } else if (isNode()) {
+      this.__originalWebSocket = global.WebSocket;
+      global.WebSocket = WebSocket;
     }
   }
 
+  /*
+  * Removes the mock websocket object from the window
+  */
   stop() {
-    if (!isBrowser()) {
-      global.WebSocket = this.__originalWebSocket;
-    } else {
+    if (isBrowser()) {
       window.WebSocket = this.__originalWebSocket;
+    } else if (isNode()) {
+      global.WebSocket = this.__originalWebSocket;
     }
 
     networkBridge.removeServer(this.url);
