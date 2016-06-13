@@ -159,7 +159,7 @@ class SocketIO extends EventTarget {
       },
       in(room) {
         return server.in(room, _this);
-      }
+      },
     };
   }
 
