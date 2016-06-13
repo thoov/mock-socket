@@ -101,7 +101,6 @@ class SocketIO extends EventTarget {
     this.close();
   }
 
-
   /*
   * Submits an event to the server with a payload
   */
