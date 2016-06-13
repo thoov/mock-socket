@@ -156,7 +156,7 @@ class Server extends EventTarget {
   }
 
   /*
-   * Alias for SocketIO.to 
+   * Alias for Server.to 
    */
   in() {
     return this.to.apply(this, arguments);
