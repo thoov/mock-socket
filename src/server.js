@@ -145,9 +145,9 @@ class Server extends EventTarget {
   *
   * e.g. server.to('my-room').emit('hi!');
   */
-  to(room) {
+  to(room, broadcaster) {
     const _this = this;
-    const websockets = networkBridge.websocketsLookup(this.url, room);
+    const websockets = networkBridge.websocketsLookup(this.url, room, broadcaster);
     return {
       emit(event, data) {
         _this.emit(event, data, { websockets });

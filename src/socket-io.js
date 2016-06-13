@@ -101,6 +101,7 @@ class SocketIO extends EventTarget {
     this.close();
   }
 
+
   /*
   * Submits an event to the server with a payload
   */
@@ -131,6 +132,33 @@ class SocketIO extends EventTarget {
   */
   send(data) {
     this.emit('message', data);
+  }
+
+  /*
+  * For broadcasting events to other connected sockets.
+  *
+  * e.g. socket.broadcast.emit('hi!');
+  * e.g. socket.broadcast.to('my-room').emit('hi!');
+  */
+  get broadcast() {
+    if (this.readyState !== SocketIO.OPEN) {
+      throw new Error('SocketIO is already in CLOSING or CLOSED state');
+    }
+
+    const _this = this;
+    const server = networkBridge.serverLookup(this.url);
+    if (!server) {
+      throw new Error('SocketIO can not find a server at the specified URL (' + this.url + ')');
+    }
+
+    return {
+      emit(event, data) {
+        server.emit(event, data, { websockets: networkBridge.websocketsLookup(_this.url, null, _this) });
+      },
+      to(room) {
+        return server.to(room, _this);
+      }
+    };
   }
 
   /*
