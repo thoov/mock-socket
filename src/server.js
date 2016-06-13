@@ -154,6 +154,13 @@ class Server extends EventTarget {
       },
     };
   }
+
+  /*
+   * Alias for SocketIO.to 
+   */
+  in() {
+    return this.to.apply(this, arguments);
+  }
 }
 
 /*

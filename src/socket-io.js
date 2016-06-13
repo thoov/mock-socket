@@ -157,6 +157,9 @@ class SocketIO extends EventTarget {
       },
       to(room) {
         return server.to(room, _this);
+      },
+      in(room) {
+        return server.in(room, _this);
       }
     };
   }
