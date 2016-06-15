@@ -84,20 +84,20 @@ class NetworkBridge {
   *
   * @param {string} url - the url to use to find all websockets which are associated with it
   * @param {string} room - if a room is provided, will only return sockets in this room
+  * @param {class} broadcaster - socket that is broadcasting and is to be excluded from the lookup
   */
-  websocketsLookup(url, room) {
+  websocketsLookup(url, room, broadcaster) {
+    let websockets;
     const connectionLookup = this.urlMap[url];
 
-    if (!connectionLookup) {
-      return [];
-    }
+    websockets = connectionLookup ? connectionLookup.websockets : [];
 
     if (room) {
       const members = connectionLookup.roomMemberships[room];
-      return members ? members : [];
+      websockets = members ? members : [];
     }
 
-    return connectionLookup.websockets;
+    return broadcaster ? websockets.filter(websocket => websocket !== broadcaster) : websockets;
   }
 
   /*
