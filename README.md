@@ -20,7 +20,7 @@ option is great for phantomjs or CI environments.
 
 ```js
 // ES 2015:
-const { MockWebSocket, MockServer, MockSocketIO } from 'mock-socket';
+const { WebSocket, Server, SocketIO } from 'mock-socket';
 
 // ES5:
 var mockWebSocket = require('mock-socket').WebSocket;
@@ -44,11 +44,11 @@ function Chat() {
 
 ```js
 // chat-test.js
-import { MockServer } from 'mock-socket';
+import { Server } from 'mock-socket';
 
 describe('Chat Unit Test', () => {
   it('basic test', (done) => {
-    const mockServer = new MockServer('ws://localhost:8080');
+    const mockServer = new Server('ws://localhost:8080');
     mockServer.on('connection', server => {
       mockServer.send('test message 1');
       mockServer.send('test message 2');
