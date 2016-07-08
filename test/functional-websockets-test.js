@@ -26,6 +26,30 @@ describe('Functional - WebSockets', function functionalTest() {
     };
   });
 
+  it('that failing the verifyClient check invokes the onerror method', done => {
+    const server = new Server('ws://localhost:8080', {
+      verifyClient: () => false
+    });
+    const mockSocket = new WebSocket('ws://localhost:8080');
+
+    mockSocket.onerror = function open(event) {
+      assert.equal(event.target.readyState, WebSocket.CLOSED, 'onerror fires as expected');
+      done();
+    };
+  });
+
+  it('that verifyClient is only invoked if it is a function', done => {
+    const server = new Server('ws://localhost:8080', {
+      verifyClient: false
+    });
+    const mockSocket = new WebSocket('ws://localhost:8080');
+
+    mockSocket.onopen = function open(event) {
+      assert.equal(event.target.readyState, WebSocket.OPEN, 'onopen fires as expected');
+      done();
+    };
+  });
+
   it('that onmessage is called after the server sends a message', done => {
     const test = new Server('ws://localhost:8080');
 

@@ -20,7 +20,7 @@ class Server extends EventTarget {
   /*
   * @param {string} url
   */
-  constructor(url) {
+  constructor(url, options = {}) {
     super();
     this.url = normalize(url);
     const server = networkBridge.attachServer(this, this.url);
@@ -29,6 +29,10 @@ class Server extends EventTarget {
       this.dispatchEvent(createEvent({ type: 'error' }));
       throw new Error('A mock server is already listening on this url');
     }
+
+    this.options = Object.assign({
+      verifiyClient: null,
+    }, options);
 
     this.start();
   }

@@ -94,9 +94,20 @@ class WebSocket extends EventTarget {
     */
     delay(function delayCallback() {
       if (server) {
-        this.readyState = WebSocket.OPEN;
-        server.dispatchEvent(createEvent({ type: 'connection' }), server, this);
-        this.dispatchEvent(createEvent({ type: 'open', target: this }));
+        if (server.options.verifyClient && typeof server.options.verifyClient === 'function' && !server.options.verifyClient()) {
+          this.readyState = WebSocket.CLOSED;
+
+          /* eslint-disable no-console */
+          console.error(`WebSocket connection to '${this.url}' failed: HTTP Authentication failed; no valid credentials available`);
+          /* eslint-enable no-console */
+
+          this.dispatchEvent(createEvent({ type: 'error', target: this }));
+          this.dispatchEvent(createCloseEvent({ type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL }));
+        } else {
+          this.readyState = WebSocket.OPEN;
+          server.dispatchEvent(createEvent({ type: 'connection' }), server, this);
+          this.dispatchEvent(createEvent({ type: 'open', target: this }));
+        }
       } else {
         this.readyState = WebSocket.CLOSED;
         this.dispatchEvent(createEvent({ type: 'error', target: this }));
