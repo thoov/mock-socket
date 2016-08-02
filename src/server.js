@@ -42,10 +42,10 @@ class Server extends EventTarget {
   */
   start() {
     if (isBrowser()) {
-      this.__originalWebSocket = window.WebSocket;
+      this._originalWebSocket = window.WebSocket;
       window.WebSocket = WebSocket;
     } else if (isNode()) {
-      this.__originalWebSocket = global.WebSocket;
+      this._originalWebSocket = global.WebSocket;
       global.WebSocket = WebSocket;
     }
   }
@@ -55,9 +55,9 @@ class Server extends EventTarget {
   */
   stop() {
     if (isBrowser()) {
-      window.WebSocket = this.__originalWebSocket;
+      window.WebSocket = this._originalWebSocket;
     } else if (isNode()) {
-      global.WebSocket = this.__originalWebSocket;
+      global.WebSocket = this._originalWebSocket;
     }
 
     networkBridge.removeServer(this.url);
@@ -162,8 +162,8 @@ class Server extends EventTarget {
   /*
    * Alias for Server.to
    */
-  in() {
-    return this.to.apply(this, arguments);
+  in(...args) {
+    return this.to.apply(null, args);
   }
 }
 

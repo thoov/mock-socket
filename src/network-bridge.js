@@ -94,7 +94,7 @@ class NetworkBridge {
 
     if (room) {
       const members = connectionLookup.roomMemberships[room];
-      websockets = members ? members : [];
+      websockets = members || [];
     }
 
     return broadcaster ? websockets.filter(websocket => websocket !== broadcaster) : websockets;
@@ -131,9 +131,7 @@ class NetworkBridge {
     const memberships = connectionLookup.roomMemberships[room];
 
     if (connectionLookup && memberships !== null) {
-      connectionLookup.roomMemberships[room] = reject(memberships, socket => {
-        return socket === websocket;
-      });
+      connectionLookup.roomMemberships[room] = reject(memberships, socket => socket === websocket);
     }
   }
 }

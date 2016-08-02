@@ -6,10 +6,6 @@
 * @param {callback: function} the callback which will be invoked after the timeout
 * @parma {context: object} the context in which to invoke the function
 */
-function delay(callback, context) {
-  setTimeout(function timeout(timeoutContext) {
-    callback.call(timeoutContext);
-  }, 4, context);
+export default function delay(callback, context) {
+  setTimeout(timeoutContext => callback.call(timeoutContext), 4, context);
 }
-
-export default delay;
