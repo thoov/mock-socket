@@ -147,7 +147,7 @@ class SocketIO extends EventTarget {
     const _this = this;
     const server = networkBridge.serverLookup(this.url);
     if (!server) {
-      throw new Error('SocketIO can not find a server at the specified URL (' + this.url + ')');
+      throw new Error(`SocketIO can not find a server at the specified URL (${this.url})`);
     }
 
     return {
