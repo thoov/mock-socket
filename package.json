@@ -1,6 +1,6 @@
 {
   "name": "mock-socket",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "description": "Javascript mocking library for websockets and socket.io",
   "main": "./dist/main.js",
   "directories": {
