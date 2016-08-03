@@ -9,3 +9,4 @@ rules:
   no-param-reassign: 0
   import/no-extraneous-dependencies: 0
   no-undef: 0
+  prefer-rest-params: 0
