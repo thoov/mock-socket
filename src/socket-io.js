@@ -104,7 +104,7 @@ class SocketIO extends EventTarget {
   /*
   * Submits an event to the server with a payload
   */
-  emit(event, data) {
+  emit(event, ...data) {
     if (this.readyState !== SocketIO.OPEN) {
       throw new Error('SocketIO is already in CLOSING or CLOSED state');
     }
@@ -118,7 +118,7 @@ class SocketIO extends EventTarget {
     const server = networkBridge.serverLookup(this.url);
 
     if (server) {
-      server.dispatchEvent(messageEvent, data);
+      server.dispatchEvent(messageEvent, ...data);
     }
   }
 
