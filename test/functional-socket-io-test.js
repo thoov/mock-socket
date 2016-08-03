@@ -139,4 +139,37 @@ describe('Functional - SocketIO', function functionalTest() {
       server.to('room').emit('good-response');
     });
   });
+
+  it('Client can emit with multiple arguments', done => {
+    const server = new Server('foobar');
+    server.on('client-event', (...data) => {
+      assert.equal(data.length, 3);
+      assert.equal(data[0], 'foo');
+      assert.equal(data[1], 'bar');
+      assert.equal(data[2], 'baz');
+      server.close();
+      done();
+    });
+
+    const socket = io('foobar');
+    socket.on('connect', () => {
+      socket.emit('client-event', 'foo', 'bar', 'baz');
+    });
+  });
+
+  it('Server can emit with multiple arguments', done => {
+    const server = new Server('foobar');
+    server.on('connection', () => {
+      server.emit('server-emit', 'foo', 'bar');
+    });
+
+    const socket = io('foobar');
+    socket.on('server-emit', (...data) => {
+      assert.equal(data.length, 2);
+      assert.equal(data[0], 'foo');
+      assert.equal(data[1], 'bar');
+      server.close();
+      done();
+    });
+  });
 });

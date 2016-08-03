@@ -95,15 +95,26 @@ class Server extends EventTarget {
       websockets = networkBridge.websocketsLookup(this.url);
     }
 
+    if (typeof options !== 'object' || arguments.length > 3) {
+      data = Array.prototype.slice.call(arguments, 1, arguments.length);
+    }
+
     websockets.forEach(socket => {
-      socket.dispatchEvent(
-        createMessageEvent({
+      if (Array.isArray(data)) {
+        socket.dispatchEvent(createMessageEvent({
           type: event,
           data,
           origin: this.url,
           target: socket,
-        })
-      );
+        }), ...data);
+      } else {
+        socket.dispatchEvent(createMessageEvent({
+          type: event,
+          data,
+          origin: this.url,
+          target: socket,
+        }));
+      }
     });
   }
 

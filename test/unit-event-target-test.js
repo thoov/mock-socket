@@ -69,4 +69,21 @@ describe('Unit - EventTarget', function unitTest() {
 
     assert.equal(mock.listeners.message.length, 2);
   });
+
+  it('that dispatching an event with multiple data arguments works correctly', () => {
+    const mock = new Mock();
+    const eventObject = createEvent({
+      type: 'message',
+    });
+
+    const fooListener = (...data) => {
+      assert.equal(data.length, 3);
+      assert.equal(data[0], 'foo');
+      assert.equal(data[1], 'bar');
+      assert.equal(data[2], 'baz');
+    };
+
+    mock.addEventListener('message', fooListener);
+    mock.dispatchEvent(eventObject, 'foo', 'bar', 'baz');
+  });
 });
