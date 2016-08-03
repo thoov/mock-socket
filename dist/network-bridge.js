@@ -102,22 +102,24 @@ var NetworkBridge = (function () {
     *
     * @param {string} url - the url to use to find all websockets which are associated with it
     * @param {string} room - if a room is provided, will only return sockets in this room
+    * @param {class} broadcaster - socket that is broadcasting and is to be excluded from the lookup
     */
   }, {
     key: 'websocketsLookup',
-    value: function websocketsLookup(url, room) {
+    value: function websocketsLookup(url, room, broadcaster) {
+      var websockets = undefined;
       var connectionLookup = this.urlMap[url];
 
-      if (!connectionLookup) {
-        return [];
-      }
+      websockets = connectionLookup ? connectionLookup.websockets : [];
 
       if (room) {
         var members = connectionLookup.roomMemberships[room];
-        return members ? members : [];
+        websockets = members || [];
       }
 
-      return connectionLookup.websockets;
+      return broadcaster ? websockets.filter(function (websocket) {
+        return websocket !== broadcaster;
+      }) : websockets;
     }
 
     /*

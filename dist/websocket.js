@@ -141,9 +141,20 @@ var WebSocket = (function (_EventTarget) {
     */
     (0, _helpersDelay2['default'])(function delayCallback() {
       if (server) {
-        this.readyState = WebSocket.OPEN;
-        server.dispatchEvent((0, _eventFactory.createEvent)({ type: 'connection' }), server, this);
-        this.dispatchEvent((0, _eventFactory.createEvent)({ type: 'open', target: this }));
+        if (server.options.verifyClient && typeof server.options.verifyClient === 'function' && !server.options.verifyClient()) {
+          this.readyState = WebSocket.CLOSED;
+
+          /* eslint-disable no-console */
+          console.error('WebSocket connection to \'' + this.url + '\' failed: HTTP Authentication failed; no valid credentials available');
+          /* eslint-enable no-console */
+
+          this.dispatchEvent((0, _eventFactory.createEvent)({ type: 'error', target: this }));
+          this.dispatchEvent((0, _eventFactory.createCloseEvent)({ type: 'close', target: this, code: _helpersCloseCodes2['default'].CLOSE_NORMAL }));
+        } else {
+          this.readyState = WebSocket.OPEN;
+          server.dispatchEvent((0, _eventFactory.createEvent)({ type: 'connection' }), server, this);
+          this.dispatchEvent((0, _eventFactory.createEvent)({ type: 'open', target: this }));
+        }
       } else {
         this.readyState = WebSocket.CLOSED;
         this.dispatchEvent((0, _eventFactory.createEvent)({ type: 'error', target: this }));

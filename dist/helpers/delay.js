@@ -11,11 +11,12 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports["default"] = delay;
+
 function delay(callback, context) {
-  setTimeout(function timeout(timeoutContext) {
-    callback.call(timeoutContext);
+  setTimeout(function (timeoutContext) {
+    return callback.call(timeoutContext);
   }, 4, context);
 }
 
-exports["default"] = delay;
 module.exports = exports["default"];

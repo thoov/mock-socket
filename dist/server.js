@@ -6,7 +6,7 @@ Object.defineProperty(exports, '__esModule', {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x4, _x5, _x6) { var _again = true; _function: while (_again) { var object = _x4, property = _x5, receiver = _x6; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x4 = parent; _x5 = property; _x6 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x5, _x6, _x7) { var _again = true; _function: while (_again) { var object = _x5, property = _x6, receiver = _x7; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x5 = parent; _x6 = property; _x7 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -37,7 +37,11 @@ var _helpersNormalizeUrl2 = _interopRequireDefault(_helpersNormalizeUrl);
 var _eventFactory = require('./event-factory');
 
 function isBrowser() {
-  return typeof Window !== 'undefined';
+  return typeof window !== 'undefined';
+}
+
+function isNode() {
+  return typeof global !== 'undefined';
 }
 
 /*
@@ -52,6 +56,8 @@ var Server = (function (_EventTarget) {
   */
 
   function Server(url) {
+    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
     _classCallCheck(this, Server);
 
     _get(Object.getPrototypeOf(Server.prototype), 'constructor', this).call(this);
@@ -63,6 +69,10 @@ var Server = (function (_EventTarget) {
       throw new Error('A mock server is already listening on this url');
     }
 
+    this.options = Object.assign({
+      verifiyClient: null
+    }, options);
+
     this.start();
   }
 
@@ -72,24 +82,32 @@ var Server = (function (_EventTarget) {
    * http://socket.io/docs/rooms-and-namespaces/#custom-namespaces
    */
 
+  /*
+  * Attaches the mock websocket object to the window or global object.
+  */
+
   _createClass(Server, [{
     key: 'start',
     value: function start() {
-      if (!isBrowser()) {
-        this.__originalWebSocket = global.WebSocket;
-        global.WebSocket = _websocket2['default'];
-      } else {
-        this.__originalWebSocket = window.WebSocket;
+      if (isBrowser()) {
+        this._originalWebSocket = window.WebSocket;
         window.WebSocket = _websocket2['default'];
+      } else if (isNode()) {
+        this._originalWebSocket = global.WebSocket;
+        global.WebSocket = _websocket2['default'];
       }
     }
+
+    /*
+    * Removes the mock websocket object from the window
+    */
   }, {
     key: 'stop',
     value: function stop() {
-      if (!isBrowser()) {
-        global.WebSocket = this.__originalWebSocket;
-      } else {
-        window.WebSocket = this.__originalWebSocket;
+      if (isBrowser()) {
+        window.WebSocket = this._originalWebSocket;
+      } else if (isNode()) {
+        global.WebSocket = this._originalWebSocket;
       }
 
       _networkBridge2['default'].removeServer(this.url);
@@ -196,14 +214,27 @@ var Server = (function (_EventTarget) {
     */
   }, {
     key: 'to',
-    value: function to(room) {
+    value: function to(room, broadcaster) {
       var _this = this;
-      var websockets = _networkBridge2['default'].websocketsLookup(this.url, room);
+      var websockets = _networkBridge2['default'].websocketsLookup(this.url, room, broadcaster);
       return {
         emit: function emit(event, data) {
           _this.emit(event, data, { websockets: websockets });
         }
       };
+    }
+
+    /*
+     * Alias for Server.to
+     */
+  }, {
+    key: 'in',
+    value: function _in() {
+      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      return this.to.apply(null, args);
     }
   }]);
 

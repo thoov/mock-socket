@@ -50,7 +50,7 @@ var SocketIO = (function (_EventTarget) {
   */
 
   function SocketIO() {
-    var _this = this;
+    var _this2 = this;
 
     var url = arguments.length <= 0 || arguments[0] === undefined ? 'socket.io' : arguments[0];
     var protocol = arguments.length <= 1 || arguments[1] === undefined ? '' : arguments[1];
@@ -100,7 +100,7 @@ var SocketIO = (function (_EventTarget) {
       Add an aliased event listener for close / disconnect
      */
     this.addEventListener('close', function (event) {
-      _this.dispatchEvent((0, _eventFactory.createCloseEvent)({
+      _this2.dispatchEvent((0, _eventFactory.createCloseEvent)({
         type: 'disconnect',
         target: event.target,
         code: event.code
@@ -187,10 +187,17 @@ var SocketIO = (function (_EventTarget) {
     }
 
     /*
-    * For registering events to be received from the server
+    * For broadcasting events to other connected sockets.
+    *
+    * e.g. socket.broadcast.emit('hi!');
+    * e.g. socket.broadcast.to('my-room').emit('hi!');
     */
   }, {
     key: 'on',
+
+    /*
+    * For registering events to be received from the server
+    */
     value: function on(type, callback) {
       this.addEventListener(type, callback);
     }
@@ -226,7 +233,7 @@ var SocketIO = (function (_EventTarget) {
   }, {
     key: 'dispatchEvent',
     value: function dispatchEvent(event) {
-      var _this2 = this;
+      var _this3 = this;
 
       for (var _len = arguments.length, customArguments = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         customArguments[_key - 1] = arguments[_key];
@@ -241,14 +248,39 @@ var SocketIO = (function (_EventTarget) {
 
       listeners.forEach(function (listener) {
         if (customArguments.length > 0) {
-          listener.apply(_this2, customArguments);
+          listener.apply(_this3, customArguments);
         } else {
           // Regular WebSockets expect a MessageEvent but Socketio.io just wants raw data
           //  payload instanceof MessageEvent works, but you can't isntance of NodeEvent
           //  for now we detect if the output has data defined on it
-          listener.call(_this2, event.data ? event.data : event);
+          listener.call(_this3, event.data ? event.data : event);
         }
       });
+    }
+  }, {
+    key: 'broadcast',
+    get: function get() {
+      if (this.readyState !== SocketIO.OPEN) {
+        throw new Error('SocketIO is already in CLOSING or CLOSED state');
+      }
+
+      var _this = this;
+      var server = _networkBridge2['default'].serverLookup(this.url);
+      if (!server) {
+        throw new Error('SocketIO can not find a server at the specified URL (' + this.url + ')');
+      }
+
+      return {
+        emit: function emit(event, data) {
+          server.emit(event, data, { websockets: _networkBridge2['default'].websocketsLookup(_this.url, null, _this) });
+        },
+        to: function to(room) {
+          return server.to(room, _this);
+        },
+        'in': function _in(room) {
+          return server['in'](room, _this);
+        }
+      };
     }
   }]);
 
