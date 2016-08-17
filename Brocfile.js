@@ -1,6 +1,7 @@
 /* eslint-disable no-var */
 var babel = require('broccoli-babel-transpiler');
 var mergeTrees = require('broccoli-merge-trees');
+var Funnel = require('broccoli-funnel');
 
 /*
   Node Module
@@ -12,6 +13,16 @@ var mergeTrees = require('broccoli-merge-trees');
    - require('mock-socket/dist/socket-io');
 */
 
-var transpiledNodeModuleTree = babel('src');
+var transpiledAMDTree = babel('src', {
+  stage: 0,
+  moduleIds: true,
+  modules: 'amd',
+});
 
-module.exports = mergeTrees([transpiledNodeModuleTree]);
+var AMDTree = new Funnel(transpiledAMDTree, {
+  destDir: 'amd',
+});
+
+var transpiledCommonJSTree = babel('src');
+
+module.exports = mergeTrees([transpiledCommonJSTree, AMDTree]);
