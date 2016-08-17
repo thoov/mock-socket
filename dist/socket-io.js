@@ -155,7 +155,11 @@ var SocketIO = (function (_EventTarget) {
     */
   }, {
     key: 'emit',
-    value: function emit(event, data) {
+    value: function emit(event) {
+      for (var _len = arguments.length, data = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        data[_key - 1] = arguments[_key];
+      }
+
       if (this.readyState !== SocketIO.OPEN) {
         throw new Error('SocketIO is already in CLOSING or CLOSED state');
       }
@@ -169,7 +173,7 @@ var SocketIO = (function (_EventTarget) {
       var server = _networkBridge2['default'].serverLookup(this.url);
 
       if (server) {
-        server.dispatchEvent(messageEvent, data);
+        server.dispatchEvent.apply(server, [messageEvent].concat(data));
       }
     }
 
@@ -235,8 +239,8 @@ var SocketIO = (function (_EventTarget) {
     value: function dispatchEvent(event) {
       var _this3 = this;
 
-      for (var _len = arguments.length, customArguments = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        customArguments[_key - 1] = arguments[_key];
+      for (var _len2 = arguments.length, customArguments = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+        customArguments[_key2 - 1] = arguments[_key2];
       }
 
       var eventName = event.type;

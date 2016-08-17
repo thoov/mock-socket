@@ -10,6 +10,8 @@ var _get = function get(_x5, _x6, _x7) { var _again = true; _function: while (_a
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
@@ -156,13 +158,26 @@ var Server = (function (_EventTarget) {
         websockets = _networkBridge2['default'].websocketsLookup(this.url);
       }
 
+      if (typeof options !== 'object' || arguments.length > 3) {
+        data = Array.prototype.slice.call(arguments, 1, arguments.length);
+      }
+
       websockets.forEach(function (socket) {
-        socket.dispatchEvent((0, _eventFactory.createMessageEvent)({
-          type: event,
-          data: data,
-          origin: _this2.url,
-          target: socket
-        }));
+        if (Array.isArray(data)) {
+          socket.dispatchEvent.apply(socket, [(0, _eventFactory.createMessageEvent)({
+            type: event,
+            data: data,
+            origin: _this2.url,
+            target: socket
+          })].concat(_toConsumableArray(data)));
+        } else {
+          socket.dispatchEvent((0, _eventFactory.createMessageEvent)({
+            type: event,
+            data: data,
+            origin: _this2.url,
+            target: socket
+          }));
+        }
       });
     }
 
