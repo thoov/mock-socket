@@ -16,11 +16,11 @@ var Funnel = require('broccoli-funnel');
 var transpiledAMDTree = babel('src', {
   stage: 0,
   moduleIds: true,
-  modules: 'amd'
+  modules: 'amd',
 });
 
 var AMDTree = new Funnel(transpiledAMDTree, {
-  destDir: 'amd'
+  destDir: 'amd',
 });
 
 var transpiledCommonJSTree = babel('src');
