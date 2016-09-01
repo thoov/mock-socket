@@ -101,6 +101,7 @@ class WebSocket extends EventTarget {
           console.error(`WebSocket connection to '${this.url}' failed: HTTP Authentication failed; no valid credentials available`);
           /* eslint-enable no-console */
 
+          networkBridge.removeWebSocket(this, this.url);
           this.dispatchEvent(createEvent({ type: 'error', target: this }));
           this.dispatchEvent(createCloseEvent({ type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL }));
         } else {
