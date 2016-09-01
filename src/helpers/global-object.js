@@ -1,5 +1,5 @@
 export default function retrieveGlobalObject() {
-  if (typeof window !== 'undefinde') {
+  if (typeof window !== 'undefined') {
     return window;
   }
 
