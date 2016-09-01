@@ -3,15 +3,8 @@ import EventTarget from './event-target';
 import networkBridge from './network-bridge';
 import CLOSE_CODES from './helpers/close-codes';
 import normalize from './helpers/normalize-url';
+import globalObject from './helpers/global-object';
 import { createEvent, createMessageEvent, createCloseEvent } from './event-factory';
-
-function isBrowser() {
-  return (typeof window !== 'undefined');
-}
-
-function isNode() {
-  return (typeof global !== 'undefined');
-}
 
 /*
 * https://github.com/websockets/ws#server-example
@@ -23,6 +16,7 @@ class Server extends EventTarget {
   constructor(url, options = {}) {
     super();
     this.url = normalize(url);
+    this._originalWebSocket = null;
     const server = networkBridge.attachServer(this, this.url);
 
     if (!server) {
@@ -38,27 +32,31 @@ class Server extends EventTarget {
   }
 
   /*
-  * Attaches the mock websocket object to the window or global object.
+  * Attaches the mock websocket object to the global object
   */
   start() {
-    if (isBrowser()) {
-      this._originalWebSocket = window.WebSocket;
-      window.WebSocket = WebSocket;
-    } else if (isNode()) {
-      this._originalWebSocket = global.WebSocket;
-      global.WebSocket = WebSocket;
+    const globalObj = globalObject();
+
+    if (globalObj.WebSocket) {
+      this._originalWebSocket = globalObj.WebSocket;
     }
+
+    globalObj.WebSocket = WebSocket;
   }
 
   /*
-  * Removes the mock websocket object from the window
+  * Removes the mock websocket object from the global object
   */
   stop() {
-    if (isBrowser()) {
-      window.WebSocket = this._originalWebSocket;
-    } else if (isNode()) {
-      global.WebSocket = this._originalWebSocket;
+    const globalObj = globalObject();
+
+    if (this._originalWebSocket) {
+      globalObj.WebSocket = this._originalWebSocket;
+    } else {
+      delete globalObj.WebSocket;
     }
+
+    this._originalWebSocket = null;
 
     networkBridge.removeServer(this.url);
   }
