@@ -3,6 +3,7 @@ import Server from '../src/server';
 import WebSocket from '../src/websocket';
 import EventTarget from '../src/event-target';
 import networkBridge from '../src/network-bridge';
+import globalObject from '../src/helpers/global-object';
 
 describe('Unit - Server', function unitTest() {
   it('that server inherents EventTarget methods', () => {
@@ -100,5 +101,21 @@ describe('Unit - Server', function unitTest() {
     assert.deepEqual(urlMap.server, myServer, 'server was correctly added to the urlMap');
     myServer.close();
     assert.deepEqual(networkBridge.urlMap, {}, 'the urlMap was cleared after the close call');
+  });
+
+  it('start and stop correctly sets and remove global WebSocket state', () => {
+    const myServer = new Server('ws://example.com');
+    const globalObj = globalObject();
+    const originalWebSocket = globalObj.WebSocket;
+
+    myServer.start();
+
+    assert.deepEqual(globalObj.WebSocket, WebSocket, 'WebSocket class is defined on the globalObject');
+    assert.deepEqual(myServer._originalWebSocket, originalWebSocket, 'the original websocket is stored');
+
+    myServer.stop();
+
+    assert.equal(myServer._originalWebSocket, null, 'server forgets about the original websocket');
+    assert.deepEqual(globalObj.WebSocket, originalWebSocket, ' the original websocket is returned to the global object');
   });
 });
