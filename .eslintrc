@@ -1,9 +1,7 @@
 ---
 extends: airbnb-base
 rules:
-  max-len:
-    - error
-    - 180
+  max-len: 0
   consistent-return: 0
   no-underscore-dangle: 0
   no-param-reassign: 0
