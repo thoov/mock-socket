@@ -38,6 +38,20 @@ describe('Functional - WebSockets', function functionalTest() {
     };
   });
 
+  it('that failing the verifyClient check removes the websocket from the networkBridge', done => {
+    const server = new Server('ws://localhost:8080', {
+      verifyClient: () => false
+    });
+    const mockSocket = new WebSocket('ws://localhost:8080');
+   
+    mockSocket.onclose = function close() {
+       const urlMap = networkBridge.urlMap['ws://localhost:8080/'];
+      assert.equal(urlMap.websockets.length, 0, 'the websocket was removed from the network bridge');
+      server.close();
+      done();
+    };
+  });
+
   it('that verifyClient is only invoked if it is a function', done => {
     const server = new Server('ws://localhost:8080', {
       verifyClient: false
