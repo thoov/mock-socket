@@ -1,4 +1,4 @@
-define('server', ['exports', 'module', './websocket', './event-target', './network-bridge', './helpers/close-codes', './helpers/normalize-url', './event-factory'], function (exports, module, _websocket, _eventTarget, _networkBridge, _helpersCloseCodes, _helpersNormalizeUrl, _eventFactory) {
+define('server', ['exports', 'module', './websocket', './event-target', './network-bridge', './helpers/close-codes', './helpers/normalize-url', './helpers/global-object', './event-factory'], function (exports, module, _websocket, _eventTarget, _networkBridge, _helpersCloseCodes, _helpersNormalizeUrl, _helpersGlobalObject, _eventFactory) {
   'use strict';
 
   var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -23,13 +23,7 @@ define('server', ['exports', 'module', './websocket', './event-target', './netwo
 
   var _normalize = _interopRequireDefault(_helpersNormalizeUrl);
 
-  function isBrowser() {
-    return typeof window !== 'undefined';
-  }
-
-  function isNode() {
-    return typeof global !== 'undefined';
-  }
+  var _globalObject = _interopRequireDefault(_helpersGlobalObject);
 
   /*
   * https://github.com/websockets/ws#server-example
@@ -49,6 +43,7 @@ define('server', ['exports', 'module', './websocket', './event-target', './netwo
 
       _get(Object.getPrototypeOf(Server.prototype), 'constructor', this).call(this);
       this.url = (0, _normalize['default'])(url);
+      this._originalWebSocket = null;
       var server = _networkBridge2['default'].attachServer(this, this.url);
 
       if (!server) {
@@ -70,32 +65,36 @@ define('server', ['exports', 'module', './websocket', './event-target', './netwo
      */
 
     /*
-    * Attaches the mock websocket object to the window or global object.
+    * Attaches the mock websocket object to the global object
     */
 
     _createClass(Server, [{
       key: 'start',
       value: function start() {
-        if (isBrowser()) {
-          this._originalWebSocket = window.WebSocket;
-          window.WebSocket = _WebSocket['default'];
-        } else if (isNode()) {
-          this._originalWebSocket = global.WebSocket;
-          global.WebSocket = _WebSocket['default'];
+        var globalObj = (0, _globalObject['default'])();
+
+        if (globalObj.WebSocket) {
+          this._originalWebSocket = globalObj.WebSocket;
         }
+
+        globalObj.WebSocket = _WebSocket['default'];
       }
 
       /*
-      * Removes the mock websocket object from the window
+      * Removes the mock websocket object from the global object
       */
     }, {
       key: 'stop',
       value: function stop() {
-        if (isBrowser()) {
-          window.WebSocket = this._originalWebSocket;
-        } else if (isNode()) {
-          global.WebSocket = this._originalWebSocket;
+        var globalObj = (0, _globalObject['default'])();
+
+        if (this._originalWebSocket) {
+          globalObj.WebSocket = this._originalWebSocket;
+        } else {
+          delete globalObj.WebSocket;
         }
+
+        this._originalWebSocket = null;
 
         _networkBridge2['default'].removeServer(this.url);
       }

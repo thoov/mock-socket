@@ -148,6 +148,7 @@ var WebSocket = (function (_EventTarget) {
           console.error('WebSocket connection to \'' + this.url + '\' failed: HTTP Authentication failed; no valid credentials available');
           /* eslint-enable no-console */
 
+          _networkBridge2['default'].removeWebSocket(this, this.url);
           this.dispatchEvent((0, _eventFactory.createEvent)({ type: 'error', target: this }));
           this.dispatchEvent((0, _eventFactory.createCloseEvent)({ type: 'close', target: this, code: _helpersCloseCodes2['default'].CLOSE_NORMAL }));
         } else {

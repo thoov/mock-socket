@@ -36,15 +36,11 @@ var _helpersNormalizeUrl = require('./helpers/normalize-url');
 
 var _helpersNormalizeUrl2 = _interopRequireDefault(_helpersNormalizeUrl);
 
+var _helpersGlobalObject = require('./helpers/global-object');
+
+var _helpersGlobalObject2 = _interopRequireDefault(_helpersGlobalObject);
+
 var _eventFactory = require('./event-factory');
-
-function isBrowser() {
-  return typeof window !== 'undefined';
-}
-
-function isNode() {
-  return typeof global !== 'undefined';
-}
 
 /*
 * https://github.com/websockets/ws#server-example
@@ -64,6 +60,7 @@ var Server = (function (_EventTarget) {
 
     _get(Object.getPrototypeOf(Server.prototype), 'constructor', this).call(this);
     this.url = (0, _helpersNormalizeUrl2['default'])(url);
+    this._originalWebSocket = null;
     var server = _networkBridge2['default'].attachServer(this, this.url);
 
     if (!server) {
@@ -85,32 +82,36 @@ var Server = (function (_EventTarget) {
    */
 
   /*
-  * Attaches the mock websocket object to the window or global object.
+  * Attaches the mock websocket object to the global object
   */
 
   _createClass(Server, [{
     key: 'start',
     value: function start() {
-      if (isBrowser()) {
-        this._originalWebSocket = window.WebSocket;
-        window.WebSocket = _websocket2['default'];
-      } else if (isNode()) {
-        this._originalWebSocket = global.WebSocket;
-        global.WebSocket = _websocket2['default'];
+      var globalObj = (0, _helpersGlobalObject2['default'])();
+
+      if (globalObj.WebSocket) {
+        this._originalWebSocket = globalObj.WebSocket;
       }
+
+      globalObj.WebSocket = _websocket2['default'];
     }
 
     /*
-    * Removes the mock websocket object from the window
+    * Removes the mock websocket object from the global object
     */
   }, {
     key: 'stop',
     value: function stop() {
-      if (isBrowser()) {
-        window.WebSocket = this._originalWebSocket;
-      } else if (isNode()) {
-        global.WebSocket = this._originalWebSocket;
+      var globalObj = (0, _helpersGlobalObject2['default'])();
+
+      if (this._originalWebSocket) {
+        globalObj.WebSocket = this._originalWebSocket;
+      } else {
+        delete globalObj.WebSocket;
       }
+
+      this._originalWebSocket = null;
 
       _networkBridge2['default'].removeServer(this.url);
     }
