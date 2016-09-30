@@ -30,7 +30,7 @@
   "homepage": "https://github.com/thoov/mock-socket",
   "devDependencies": {
     "babel-cli": "~6.16.0",
-    "babel-core": "~6.14.0",
+    "babel-core": "~6.16.0",
     "babel-preset-es2015": "~6.14.0",
     "babel-preset-stage-0": "~6.16.0",
     "broccoli": "~0.16.9",
