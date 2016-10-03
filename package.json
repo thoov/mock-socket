@@ -38,7 +38,7 @@
     "broccoli-cli": "~1.0.0",
     "broccoli-funnel": "^1.0.6",
     "broccoli-merge-trees": "~1.1.0",
-    "codeclimate-test-reporter": "^0.3.3",
+    "codeclimate-test-reporter": "^0.4.0",
     "eslint": "^3.2.2",
     "eslint-config-airbnb-base": "^5.0.3",
     "eslint-plugin-import": "^1.12.0",
