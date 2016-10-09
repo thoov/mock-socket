@@ -132,7 +132,7 @@ class Server extends EventTarget {
     const listeners = networkBridge.websocketsLookup(this.url);
 
     listeners.forEach(socket => {
-      socket.readyState = WebSocket.CLOSE;
+      socket.readyState = WebSocket.CLOSED;
       socket.dispatchEvent(createCloseEvent({
         type: 'close',
         target: socket,
