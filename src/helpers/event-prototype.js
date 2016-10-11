@@ -1,8 +1,8 @@
 
 export default class EventPrototype {
   // Noops
-  stopPropagation() {}
-  stopImmediatePropagation() {}
+  static stopPropagation() {}
+  static stopImmediatePropagation() {}
 
   // if no arguments are passed then the type is set to "undefined" on
   // chrome and safari.

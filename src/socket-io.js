@@ -57,7 +57,7 @@ class SocketIO extends EventTarget {
     /**
       Add an aliased event listener for close / disconnect
      */
-    this.addEventListener('close', event => {
+    this.addEventListener('close', (event) => {
       this.dispatchEvent(createCloseEvent({
         type: 'disconnect',
         target: event.target,
@@ -202,7 +202,7 @@ class SocketIO extends EventTarget {
       return false;
     }
 
-    listeners.forEach(listener => {
+    listeners.forEach((listener) => {
       if (customArguments.length > 0) {
         listener.apply(this, customArguments);
       } else {
