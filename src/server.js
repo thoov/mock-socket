@@ -97,7 +97,7 @@ class Server extends EventTarget {
       data = Array.prototype.slice.call(arguments, 1, arguments.length);
     }
 
-    websockets.forEach(socket => {
+    websockets.forEach((socket) => {
       if (Array.isArray(data)) {
         socket.dispatchEvent(createMessageEvent({
           type: event,
@@ -131,7 +131,7 @@ class Server extends EventTarget {
     } = options;
     const listeners = networkBridge.websocketsLookup(this.url);
 
-    listeners.forEach(socket => {
+    listeners.forEach((socket) => {
       socket.readyState = WebSocket.CLOSE;
       socket.dispatchEvent(createCloseEvent({
         type: 'close',
