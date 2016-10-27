@@ -3,3 +3,6 @@
     it: true
     describe: true
     afterEach: true
+  rules:
+    no-unused-vars: 0
+    no-use-before-define: 0

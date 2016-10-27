@@ -1,9 +1,9 @@
 import assert from 'assert';
-import { createEvent, createMessageEvent, createCloseEvent } from '../src/event-factory';
+import { createEvent, createMessageEvent, createCloseEvent } from '../../src/event-factory';
 
 const fakeObject = { foo: 'bar' };
 
-describe('Unit - Factory', function unitTest() {
+describe('Unit - Factory', () => {
   it('that the create methods throw errors if no type if specified', () => {
     assert.throws(() => {
       createEvent();
@@ -16,7 +16,7 @@ describe('Unit - Factory', function unitTest() {
 
   it('that createEvent correctly creates an event', () => {
     let event = createEvent({
-      type: 'open',
+      type: 'open'
     });
 
     assert.equal(event.type, 'open', 'the type property is set');
@@ -26,7 +26,7 @@ describe('Unit - Factory', function unitTest() {
 
     event = createEvent({
       type: 'open',
-      target: fakeObject,
+      target: fakeObject
     });
 
     assert.deepEqual(event.target, fakeObject, 'target is set to fakeObject');
@@ -38,7 +38,7 @@ describe('Unit - Factory', function unitTest() {
     let event = createMessageEvent({
       type: 'message',
       origin: 'ws://localhost:8080',
-      data: 'Testing',
+      data: 'Testing'
     });
 
     assert.equal(event.type, 'message', 'the type property is set');
@@ -53,7 +53,7 @@ describe('Unit - Factory', function unitTest() {
       type: 'close',
       origin: 'ws://localhost:8080',
       data: 'Testing',
-      target: fakeObject,
+      target: fakeObject
     });
 
     assert.equal(event.lastEventId, '', 'lastEventId is an empty string');
@@ -64,7 +64,7 @@ describe('Unit - Factory', function unitTest() {
 
   it('that createCloseEvent correctly creates an event', () => {
     let event = createCloseEvent({
-      type: 'close',
+      type: 'close'
     });
 
     assert.equal(event.code, 0, 'the code property is set');
@@ -78,7 +78,7 @@ describe('Unit - Factory', function unitTest() {
       type: 'close',
       code: 1001,
       reason: 'my bad',
-      target: fakeObject,
+      target: fakeObject
     });
 
     assert.equal(event.code, 1001, 'the code property is set');
@@ -89,7 +89,7 @@ describe('Unit - Factory', function unitTest() {
 
     event = createCloseEvent({
       type: 'close',
-      code: 1000,
+      code: 1000
     });
 
     assert.equal(event.wasClean, true, 'wasClean is true as the code is 1000');

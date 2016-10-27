@@ -1,9 +1,9 @@
 import assert from 'assert';
-import io from '../src/socket-io';
-import Server from '../src/server';
+import io from '../../src/socket-io';
+import Server from '../../src/server';
 
-describe('Functional - SocketIO', function functionalTest() {
-  it('client triggers the server connection event', done => {
+describe('Functional - SocketIO', () => {
+  it('client triggers the server connection event', (done) => {
     const server = new Server('foobar');
     const socket = io('foobar');
 
@@ -15,7 +15,7 @@ describe('Functional - SocketIO', function functionalTest() {
     });
   });
 
-  it('client triggers the server connect event', done => {
+  it('client triggers the server connect event', (done) => {
     const server = new Server('foobar');
     const socket = io('foobar');
 
@@ -27,7 +27,7 @@ describe('Functional - SocketIO', function functionalTest() {
     });
   });
 
-  it('server triggers the client connect event', done => {
+  it('server triggers the client connect event', (done) => {
     const server = new Server('foobar');
     const socket = io('foobar');
 
@@ -39,7 +39,7 @@ describe('Functional - SocketIO', function functionalTest() {
     });
   });
 
-  it('no connection triggers the client error event', done => {
+  it('no connection triggers the client error event', (done) => {
     const socket = io('foobar');
 
     socket.on('error', () => {
@@ -49,14 +49,14 @@ describe('Functional - SocketIO', function functionalTest() {
     });
   });
 
-  it('client and server receive an event', done => {
+  it('client and server receive an event', (done) => {
     const server = new Server('foobar');
-    server.on('client-event', data => {
+    server.on('client-event', (data) => {
       server.emit('server-response', data);
     });
 
     const socket = io('foobar');
-    socket.on('server-response', data => {
+    socket.on('server-response', (data) => {
       assert.equal('payload', data);
       socket.disconnect();
       server.close();
@@ -68,7 +68,7 @@ describe('Functional - SocketIO', function functionalTest() {
     });
   });
 
-  it('Server closing triggers the client disconnect event', done => {
+  it('Server closing triggers the client disconnect event', (done) => {
     const server = new Server('foobar');
     server.on('connect', () => {
       server.close();
@@ -82,7 +82,7 @@ describe('Functional - SocketIO', function functionalTest() {
     });
   });
 
-  it('Server receives disconnect when socket is closed', done => {
+  it('Server receives disconnect when socket is closed', (done) => {
     const server = new Server('foobar');
     server.on('disconnect', () => {
       assert.ok(true);
@@ -96,7 +96,7 @@ describe('Functional - SocketIO', function functionalTest() {
     });
   });
 
-  it('Client can submit an event without a payload', done => {
+  it('Client can submit an event without a payload', (done) => {
     const server = new Server('foobar');
     server.on('client-event', () => {
       assert.ok(true);
@@ -110,7 +110,7 @@ describe('Functional - SocketIO', function functionalTest() {
     });
   });
 
-  it('Client also has the send method available', done => {
+  it('Client also has the send method available', (done) => {
     const server = new Server('foobar');
     server.on('message', (data) => {
       assert.equal(data, 'hullo!');
@@ -124,7 +124,7 @@ describe('Functional - SocketIO', function functionalTest() {
     });
   });
 
-  it('a socket can join and leave a room', done => {
+  it('a socket can join and leave a room', (done) => {
     const server = new Server('ws://roomy');
     const socket = io('ws://roomy');
 
@@ -140,7 +140,7 @@ describe('Functional - SocketIO', function functionalTest() {
     });
   });
 
-  it('Client can emit with multiple arguments', done => {
+  it('Client can emit with multiple arguments', (done) => {
     const server = new Server('foobar');
     server.on('client-event', (...data) => {
       assert.equal(data.length, 3);
@@ -157,7 +157,7 @@ describe('Functional - SocketIO', function functionalTest() {
     });
   });
 
-  it('Server can emit with multiple arguments', done => {
+  it('Server can emit with multiple arguments', (done) => {
     const server = new Server('foobar');
     server.on('connection', () => {
       server.emit('server-emit', 'foo', 'bar');

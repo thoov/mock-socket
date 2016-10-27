@@ -1,9 +1,9 @@
 import assert from 'assert';
-import Server from '../src/server';
-import IO from '../src/socket-io';
+import Server from '../../src/server';
+import IO from '../../src/socket-io';
 
-describe('Issue #64: `on` allows multiple handlers for the same event', function issueTest() {
-  it('mock sockets invokes each handler', done => {
+describe('Issue #64: `on` allows multiple handlers for the same event', () => {
+  it('mock sockets invokes each handler', (done) => {
     const socketUrl = 'ws://roomy';
     const server = new Server(socketUrl);
     const socket = new IO(socketUrl);
@@ -26,7 +26,7 @@ describe('Issue #64: `on` allows multiple handlers for the same event', function
       server.to('room').emit('custom-event');
     });
 
-    setTimeout(function timeout() {
+    setTimeout(() => {
       assert.equal(handler1Called, true);
       assert.equal(handler2Called, true);
       server.close();

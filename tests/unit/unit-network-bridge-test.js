@@ -1,10 +1,10 @@
 import assert from 'assert';
-import networkBridge from '../src/network-bridge';
+import networkBridge from '../../src/network-bridge';
 
 const fakeObject = { foo: 'bar' };
 
-describe('Unit - Network Bridge', function unitTest() {
-  afterEach(function after() {
+describe('Unit - Network Bridge', () => {
+  afterEach(() => {
     networkBridge.urlMap = {};
   });
 

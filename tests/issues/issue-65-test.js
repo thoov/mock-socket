@@ -1,9 +1,9 @@
 import assert from 'assert';
-import Server from '../src/server';
-import IO from '../src/socket-io';
+import Server from '../../src/server';
+import IO from '../../src/socket-io';
 
-describe('Issue #65: `on` allows multiple handlers for the same event with different contexts', function issueTest() {
-  it('mock socket invokes each handler with unique reference', done => {
+describe('Issue #65: `on` allows multiple handlers for the same event with different contexts', () => {
+  it('mock socket invokes each handler with unique reference', (done) => {
     const socketUrl = 'ws://roomy';
     const server = new Server(socketUrl);
     const socket = new IO(socketUrl);
@@ -11,7 +11,7 @@ describe('Issue #65: `on` allows multiple handlers for the same event with diffe
     let handlerInvoked = 0;
     const handler3 = function handlerFunc() {
       assert.ok(true);
-      handlerInvoked++;
+      handlerInvoked += 1;
     };
 
     // Same functions but different scopes/contexts
@@ -27,14 +27,14 @@ describe('Issue #65: `on` allows multiple handlers for the same event with diffe
       server.to('room').emit('custom-event');
     });
 
-    setTimeout(function timeoutCallback() {
+    setTimeout(() => {
       assert.equal(handlerInvoked, 3, 'handler invoked too many times');
       server.close();
       done();
     }, 500);
   });
 
-  it('mock socket invokes each handler per socket', done => {
+  it('mock socket invokes each handler per socket', (done) => {
     const socketUrl = 'ws://roomy';
     const server = new Server(socketUrl);
     const socketA = new IO(socketUrl);
@@ -43,7 +43,7 @@ describe('Issue #65: `on` allows multiple handlers for the same event with diffe
     let handlerInvoked = 0;
     const handler3 = function handlerFunc() {
       assert.ok(true);
-      handlerInvoked++;
+      handlerInvoked += 1;
     };
 
     // Same functions but different scopes/contexts
@@ -62,7 +62,7 @@ describe('Issue #65: `on` allows multiple handlers for the same event with diffe
       server.to('room').emit('custom-event');
     });
 
-    setTimeout(function timeoutFunc() {
+    setTimeout(() => {
       assert.equal(handlerInvoked, 4, 'handler invoked too many times');
       server.close();
       done();

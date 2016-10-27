@@ -1,9 +1,9 @@
 import assert from 'assert';
-import Server from '../src/server';
-import WebSocket from '../src/websocket';
+import Server from '../../src/server';
+import WebSocket from '../../src/websocket';
 
-describe('Issue #13: Sockets send messages multiple times', function issueTest() {
-  it('mock sockets sends double messages', done => {
+describe('Issue #13: Sockets send messages multiple times', () => {
+  it('mock sockets sends double messages', (done) => {
     const socketUrl = 'ws://localhost:8080';
     const mockServer = new Server(socketUrl);
     const mockSocketA = new WebSocket(socketUrl);
@@ -14,25 +14,25 @@ describe('Issue #13: Sockets send messages multiple times', function issueTest()
     let connectionsCreated = 0;
 
     const serverMessageHandler = function handlerFunc() {
-      numMessagesReceived++;
+      numMessagesReceived += 1;
     };
 
-    mockServer.on('connection', function connectionFunc(server) {
-      connectionsCreated++;
+    mockServer.on('connection', (server) => {
+      connectionsCreated += 1;
       server.on('message', serverMessageHandler);
     });
 
     mockSocketA.onopen = function open() {
-      numMessagesSent++;
+      numMessagesSent += 1;
       this.send('1');
     };
 
     mockSocketB.onopen = function open() {
-      numMessagesSent++;
+      numMessagesSent += 1;
       this.send('2');
     };
 
-    setTimeout(function timeout() {
+    setTimeout(() => {
       assert.equal(numMessagesReceived, numMessagesSent);
       mockServer.close();
       done();

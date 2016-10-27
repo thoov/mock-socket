@@ -1,8 +1,8 @@
 import assert from 'assert';
-import WebSocket from '../src/websocket';
-import EventTarget from '../src/event-target';
+import WebSocket from '../../src/websocket';
+import EventTarget from '../../src/event-target';
 
-describe('Unit - WebSocket', function unitTest() {
+describe('Unit - WebSocket', () => {
   it('that not passing a url throws an error', () => {
     assert.throws(() => {
       const ws = new WebSocket();
@@ -18,7 +18,6 @@ describe('Unit - WebSocket', function unitTest() {
     const mySocket = new WebSocket('ws://not-real');
     assert.ok(mySocket instanceof EventTarget);
   });
-
 
   it('that on(open, message, error, and close) can be set', () => {
     const mySocket = new WebSocket('ws://not-real');
@@ -47,7 +46,7 @@ describe('Unit - WebSocket', function unitTest() {
   it('that sending when the socket is closed throws an expection', () => {
     const mySocket = new WebSocket('ws://not-real', 'foo');
     mySocket.readyState = WebSocket.CLOSED;
-    assert.throws(function throws() {
+    assert.throws(() => {
       mySocket.send('testing');
     }, 'WebSocket is already in CLOSING or CLOSED state', 'an expection is thrown when sending while closed');
   });
