@@ -6,9 +6,12 @@
   "directories": {
     "test": "tests"
   },
+  "engines": {
+    "node": ">= 4.6.1"
+  },
   "scripts": {
-    "test": "BABEL_ENV=test babel-node ./node_modules/.bin/isparta cover _mocha",
-    "build": "rm -rf dist; broccoli build dist",
+    "test": "BABEL_ENV=test NODE_ENV=test babel-node ./node_modules/.bin/isparta cover _mocha",
+    "build": "rm -rf dist tmp && broccoli build dist && rm -rf tmp",
     "lint": "eslint src tests Brocfile.js",
     "publish_coverage": "CODECLIMATE_REPO_TOKEN=81e42661a39fae978969b4a10f6cc0a629f613a3d88faaf8fa36750a02f00fa0 codeclimate-test-reporter < coverage/lcov.info"
   },
@@ -28,20 +31,18 @@
     "url": "https://github.com/thoov/mock-socket/issues"
   },
   "homepage": "https://github.com/thoov/mock-socket",
-  "devDependencies": {
+  "dependencies": {
     "babel-cli": "~6.18.0",
     "babel-core": "~6.18.0",
-    "babel-preset-es2015": "~6.16.0",
-    "babel-preset-stage-0": "~6.16.0",
+    "babel-plugin-transform-es2015-modules-umd": "^6.18.0",
+    "babel-preset-es2015": "^6.18.0",
     "broccoli": "~0.16.9",
-    "broccoli-babel-transpiler": "~5.6.0",
+    "broccoli-babel-transpiler": "6.0.0-alpha.1",
     "broccoli-cli": "~1.0.0",
-    "broccoli-funnel": "^1.0.6",
-    "broccoli-merge-trees": "~1.1.0",
     "codeclimate-test-reporter": "^0.4.0",
     "eslint": "^3.2.2",
-    "eslint-config-airbnb-base": "^5.0.3",
-    "eslint-plugin-import": "^1.12.0",
+    "eslint-config-airbnb-base": "^9.0.0",
+    "eslint-plugin-import": "^2.0.1",
     "express": "~4.14.0",
     "isparta": "~4.0.0",
     "mocha": "~3.1.0",

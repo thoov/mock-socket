@@ -8,7 +8,7 @@ const codes = {
   CLOSE_UNSUPPORTED: 1003,
   CLOSE_NO_STATUS: 1005,
   CLOSE_ABNORMAL: 1006,
-  CLOSE_TOO_LARGE: 1009,
+  CLOSE_TOO_LARGE: 1009
 };
 
 export default codes;

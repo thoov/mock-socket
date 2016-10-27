@@ -1,12 +1,15 @@
----
-extends: airbnb-base
-rules:
-  max-len: 0
-  consistent-return: 0
-  no-underscore-dangle: 0
-  no-param-reassign: 0
-  import/no-extraneous-dependencies: 0
-  no-undef: 0
-  prefer-rest-params: 0
-  no-global-assign: 0
-  no-unsafe-negation: 0
+{
+  "extends": "airbnb-base",
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "rules": {
+    "max-len": ["error", 120],
+    "class-methods-use-this": ["error", { "exceptMethods": ["stopPropagation", "stopImmediatePropagation"] }],
+    "consistent-return": 0,
+    "prefer-rest-params": 0,
+    "no-param-reassign": 0,
+    "comma-dangle": ["error", "never"]
+  }
+}

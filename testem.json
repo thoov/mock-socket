@@ -1,6 +1,6 @@
 {
-	"framework": "mocha",
-	"launch_in_dev": ["PhantomJS"],
-	"launch_in_ci": ["PhantomJS"],
-	"test_page": "test/index.html"
+  "framework": "mocha",
+  "launch_in_dev": ["PhantomJS"],
+  "launch_in_ci": ["PhantomJS"],
+  "test_page": "test/index.html"
 }

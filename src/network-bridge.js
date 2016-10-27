@@ -59,7 +59,7 @@ class NetworkBridge {
       this.urlMap[url] = {
         server,
         websockets: [],
-        roomMemberships: {},
+        roomMemberships: {}
       };
 
       return server;

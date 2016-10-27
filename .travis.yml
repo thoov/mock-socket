@@ -1,25 +1,27 @@
 language: node_js
+
 node_js:
-- node
-sudo: false
+  - 4
+  - 6
+  - node
+
 cache:
   directories:
-  - node_modules
+    - $HOME/.npm
+    - $HOME/.yarn-cache
+    - node_modules
+
+before_install:
+  - npm i -g yarn --cache-min 999999999
+
 install:
-- npm install
+  - yarn
+
 before_script:
-- npm run lint
+  - yarn lint
+
 script:
-- npm test
-deploy:
-  provider: npm
-  email: thoov7@gmail.com
-  api_key:
-    secure: UT8oKPvt+CtWb/wwSzxqGuKXadUQr7QkXTTSf88aXLv9wAT1BwGTXe4I3yA2/ZKlNKDPwq0/NpdDiFDEYHpCtvFITGRT177m2DNYSrmFOWFMS+MU19gEqUGwntTFkInIFncBMRo3PD2K6WxySBopCKG9aLiV6699b/lcphOq+sc=
-  skip_cleanup: true
-  on:
-    tags: true
-before_deploy:
-- npm run build
+  - yarn test
+
 after_success:
-- npm run publish_coverage
+  - yarn publish_coverage

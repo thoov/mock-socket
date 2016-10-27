@@ -111,11 +111,11 @@ describe('Unit - Server', function unitTest() {
     myServer.start();
 
     assert.deepEqual(globalObj.WebSocket, WebSocket, 'WebSocket class is defined on the globalObject');
-    assert.deepEqual(myServer._originalWebSocket, originalWebSocket, 'the original websocket is stored');
+    assert.deepEqual(myServer.originalWebSocket, originalWebSocket, 'the original websocket is stored');
 
     myServer.stop();
 
-    assert.equal(myServer._originalWebSocket, null, 'server forgets about the original websocket');
+    assert.equal(myServer.originalWebSocket, null, 'server forgets about the original websocket');
     assert.deepEqual(globalObj.WebSocket, originalWebSocket, ' the original websocket is returned to the global object');
   });
 });

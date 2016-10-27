@@ -17,7 +17,7 @@ export default class CloseEvent extends EventPrototype {
       cancelable,
       code,
       reason,
-      wasClean,
+      wasClean
     } = eventInitConfig;
 
     this.type = String(type);

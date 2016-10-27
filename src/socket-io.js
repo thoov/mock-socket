@@ -3,6 +3,7 @@ import EventTarget from './event-target';
 import networkBridge from './network-bridge';
 import CLOSE_CODES from './helpers/close-codes';
 import normalize from './helpers/normalize-url';
+import logger from './helpers/logger';
 import { createEvent, createMessageEvent, createCloseEvent } from './event-factory';
 
 /*
@@ -45,23 +46,21 @@ class SocketIO extends EventTarget {
         this.dispatchEvent(createCloseEvent({
           type: 'close',
           target: this,
-          code: CLOSE_CODES.CLOSE_NORMAL,
+          code: CLOSE_CODES.CLOSE_NORMAL
         }));
 
-        /* eslint-disable no-console */
-        console.error(`Socket.io connection to '${this.url}' failed`);
-        /* eslint-enable no-console */
+        logger('error', `Socket.io connection to '${this.url}' failed`);
       }
     }, this);
 
     /**
       Add an aliased event listener for close / disconnect
      */
-    this.addEventListener('close', event => {
+    this.addEventListener('close', (event) => {
       this.dispatchEvent(createCloseEvent({
         type: 'disconnect',
         target: event.target,
-        code: event.code,
+        code: event.code
       }));
     });
   }
@@ -80,14 +79,14 @@ class SocketIO extends EventTarget {
     this.dispatchEvent(createCloseEvent({
       type: 'close',
       target: this,
-      code: CLOSE_CODES.CLOSE_NORMAL,
+      code: CLOSE_CODES.CLOSE_NORMAL
     }));
 
     if (server) {
       server.dispatchEvent(createCloseEvent({
         type: 'disconnect',
         target: this,
-        code: CLOSE_CODES.CLOSE_NORMAL,
+        code: CLOSE_CODES.CLOSE_NORMAL
       }), server);
     }
   }
@@ -112,7 +111,7 @@ class SocketIO extends EventTarget {
     const messageEvent = createMessageEvent({
       type: event,
       origin: this.url,
-      data,
+      data
     });
 
     const server = networkBridge.serverLookup(this.url);
@@ -144,7 +143,7 @@ class SocketIO extends EventTarget {
       throw new Error('SocketIO is already in CLOSING or CLOSED state');
     }
 
-    const _this = this;
+    const self = this;
     const server = networkBridge.serverLookup(this.url);
     if (!server) {
       throw new Error(`SocketIO can not find a server at the specified URL (${this.url})`);
@@ -152,14 +151,14 @@ class SocketIO extends EventTarget {
 
     return {
       emit(event, data) {
-        server.emit(event, data, { websockets: networkBridge.websocketsLookup(_this.url, null, _this) });
+        server.emit(event, data, { websockets: networkBridge.websocketsLookup(self.url, null, self) });
       },
       to(room) {
-        return server.to(room, _this);
+        return server.to(room, self);
       },
       in(room) {
-        return server.in(room, _this);
-      },
+        return server.in(room, self);
+      }
     };
   }
 
@@ -202,7 +201,7 @@ class SocketIO extends EventTarget {
       return false;
     }
 
-    listeners.forEach(listener => {
+    listeners.forEach((listener) => {
       if (customArguments.length > 0) {
         listener.apply(this, customArguments);
       } else {

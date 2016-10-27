@@ -59,13 +59,15 @@ class EventTarget {
       return false;
     }
 
-    listeners.forEach(listener => {
+    listeners.forEach((listener) => {
       if (customArguments.length > 0) {
         listener.apply(this, customArguments);
       } else {
         listener.call(this, event);
       }
     });
+
+    return true;
   }
 }
 

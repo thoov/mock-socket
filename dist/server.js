@@ -1,119 +1,91 @@
-'use strict';
+(function (global, factory) {
+  if (typeof define === "function" && define.amd) {
+    define(['exports', './websocket', './event-target', './network-bridge', './helpers/close-codes', './helpers/normalize-url', './helpers/global-object', './event-factory'], factory);
+  } else if (typeof exports !== "undefined") {
+    factory(exports, require('./websocket'), require('./event-target'), require('./network-bridge'), require('./helpers/close-codes'), require('./helpers/normalize-url'), require('./helpers/global-object'), require('./event-factory'));
+  } else {
+    var mod = {
+      exports: {}
+    };
+    factory(mod.exports, global.websocket, global.eventTarget, global.networkBridge, global.closeCodes, global.normalizeUrl, global.globalObject, global.eventFactory);
+    global.server = mod.exports;
+  }
+})(this, function (exports, _websocket, _eventTarget, _networkBridge, _closeCodes, _normalizeUrl, _globalObject, _eventFactory) {
+  'use strict';
 
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+  var _websocket2 = _interopRequireDefault(_websocket);
 
-var _get = function get(_x5, _x6, _x7) { var _again = true; _function: while (_again) { var object = _x5, property = _x6, receiver = _x7; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x5 = parent; _x6 = property; _x7 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+  var _eventTarget2 = _interopRequireDefault(_eventTarget);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+  var _networkBridge2 = _interopRequireDefault(_networkBridge);
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+  var _closeCodes2 = _interopRequireDefault(_closeCodes);
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+  var _normalizeUrl2 = _interopRequireDefault(_normalizeUrl);
 
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+  var _globalObject2 = _interopRequireDefault(_globalObject);
 
-var _websocket = require('./websocket');
-
-var _websocket2 = _interopRequireDefault(_websocket);
-
-var _eventTarget = require('./event-target');
-
-var _eventTarget2 = _interopRequireDefault(_eventTarget);
-
-var _networkBridge = require('./network-bridge');
-
-var _networkBridge2 = _interopRequireDefault(_networkBridge);
-
-var _helpersCloseCodes = require('./helpers/close-codes');
-
-var _helpersCloseCodes2 = _interopRequireDefault(_helpersCloseCodes);
-
-var _helpersNormalizeUrl = require('./helpers/normalize-url');
-
-var _helpersNormalizeUrl2 = _interopRequireDefault(_helpersNormalizeUrl);
-
-var _helpersGlobalObject = require('./helpers/global-object');
-
-var _helpersGlobalObject2 = _interopRequireDefault(_helpersGlobalObject);
-
-var _eventFactory = require('./event-factory');
-
-/*
-* https://github.com/websockets/ws#server-example
-*/
-
-var Server = (function (_EventTarget) {
-  _inherits(Server, _EventTarget);
-
-  /*
-  * @param {string} url
-  */
-
-  function Server(url) {
-    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-    _classCallCheck(this, Server);
-
-    _get(Object.getPrototypeOf(Server.prototype), 'constructor', this).call(this);
-    this.url = (0, _helpersNormalizeUrl2['default'])(url);
-    this._originalWebSocket = null;
-    var server = _networkBridge2['default'].attachServer(this, this.url);
-
-    if (!server) {
-      this.dispatchEvent((0, _eventFactory.createEvent)({ type: 'error' }));
-      throw new Error('A mock server is already listening on this url');
-    }
-
-    this.options = Object.assign({
-      verifiyClient: null
-    }, options);
-
-    this.start();
+  function _interopRequireDefault(obj) {
+    return obj && obj.__esModule ? obj : {
+      default: obj
+    };
   }
 
   /*
-   * Alternative constructor to support namespaces in socket.io
-   *
-   * http://socket.io/docs/rooms-and-namespaces/#custom-namespaces
-   */
-
-  /*
-  * Attaches the mock websocket object to the global object
+  * https://github.com/websockets/ws#server-example
   */
+  class Server extends _eventTarget2.default {
+    /*
+    * @param {string} url
+    */
+    constructor(url, options = {}) {
+      super();
+      this.url = (0, _normalizeUrl2.default)(url);
+      this.originalWebSocket = null;
+      const server = _networkBridge2.default.attachServer(this, this.url);
 
-  _createClass(Server, [{
-    key: 'start',
-    value: function start() {
-      var globalObj = (0, _helpersGlobalObject2['default'])();
-
-      if (globalObj.WebSocket) {
-        this._originalWebSocket = globalObj.WebSocket;
+      if (!server) {
+        this.dispatchEvent((0, _eventFactory.createEvent)({ type: 'error' }));
+        throw new Error('A mock server is already listening on this url');
       }
 
-      globalObj.WebSocket = _websocket2['default'];
+      this.options = Object.assign({ verifiyClient: null }, options);
+
+      this.start();
+    }
+
+    /*
+    * Attaches the mock websocket object to the global object
+    */
+    start() {
+      const globalObj = (0, _globalObject2.default)();
+
+      if (globalObj.WebSocket) {
+        this.originalWebSocket = globalObj.WebSocket;
+      }
+
+      globalObj.WebSocket = _websocket2.default;
     }
 
     /*
     * Removes the mock websocket object from the global object
     */
-  }, {
-    key: 'stop',
-    value: function stop() {
-      var globalObj = (0, _helpersGlobalObject2['default'])();
+    stop() {
+      const globalObj = (0, _globalObject2.default)();
 
-      if (this._originalWebSocket) {
-        globalObj.WebSocket = this._originalWebSocket;
+      if (this.originalWebSocket) {
+        globalObj.WebSocket = this.originalWebSocket;
       } else {
         delete globalObj.WebSocket;
       }
 
-      this._originalWebSocket = null;
+      this.originalWebSocket = null;
 
-      _networkBridge2['default'].removeServer(this.url);
+      _networkBridge2.default.removeServer(this.url);
     }
 
     /*
@@ -124,9 +96,7 @@ var Server = (function (_EventTarget) {
     * @param {string} type - The event key to subscribe to. Valid keys are: connection, message, and close.
     * @param {function} callback - The callback which should be called when a certain event is fired.
     */
-  }, {
-    key: 'on',
-    value: function on(type, callback) {
+    on(type, callback) {
       this.addEventListener(type, callback);
     }
 
@@ -136,46 +106,37 @@ var Server = (function (_EventTarget) {
     *
     * @param {*} data - Any javascript object which will be crafted into a MessageObject.
     */
-  }, {
-    key: 'send',
-    value: function send(data) {
-      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
+    send(data, options = {}) {
       this.emit('message', data, options);
     }
 
     /*
     * Sends a generic message event to all mock clients.
     */
-  }, {
-    key: 'emit',
-    value: function emit(event, data) {
-      var _this2 = this;
-
-      var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-      var websockets = options.websockets;
+    emit(event, data, options = {}) {
+      let { websockets } = options;
 
       if (!websockets) {
-        websockets = _networkBridge2['default'].websocketsLookup(this.url);
+        websockets = _networkBridge2.default.websocketsLookup(this.url);
       }
 
       if (typeof options !== 'object' || arguments.length > 3) {
         data = Array.prototype.slice.call(arguments, 1, arguments.length);
       }
 
-      websockets.forEach(function (socket) {
+      websockets.forEach(socket => {
         if (Array.isArray(data)) {
-          socket.dispatchEvent.apply(socket, [(0, _eventFactory.createMessageEvent)({
+          socket.dispatchEvent((0, _eventFactory.createMessageEvent)({
             type: event,
-            data: data,
-            origin: _this2.url,
+            data,
+            origin: this.url,
             target: socket
-          })].concat(_toConsumableArray(data)));
+          }), ...data);
         } else {
           socket.dispatchEvent((0, _eventFactory.createMessageEvent)({
             type: event,
-            data: data,
-            origin: _this2.url,
+            data,
+            origin: this.url,
             target: socket
           }));
         }
@@ -189,38 +150,34 @@ var Server = (function (_EventTarget) {
     *
     * @param {object} options
     */
-  }, {
-    key: 'close',
-    value: function close() {
-      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-      var code = options.code;
-      var reason = options.reason;
-      var wasClean = options.wasClean;
+    close(options = {}) {
+      const {
+        code,
+        reason,
+        wasClean
+      } = options;
+      const listeners = _networkBridge2.default.websocketsLookup(this.url);
 
-      var listeners = _networkBridge2['default'].websocketsLookup(this.url);
-
-      listeners.forEach(function (socket) {
-        socket.readyState = _websocket2['default'].CLOSE;
+      listeners.forEach(socket => {
+        socket.readyState = _websocket2.default.CLOSE;
         socket.dispatchEvent((0, _eventFactory.createCloseEvent)({
           type: 'close',
           target: socket,
-          code: code || _helpersCloseCodes2['default'].CLOSE_NORMAL,
+          code: code || _closeCodes2.default.CLOSE_NORMAL,
           reason: reason || '',
-          wasClean: wasClean
+          wasClean
         }));
       });
 
       this.dispatchEvent((0, _eventFactory.createCloseEvent)({ type: 'close' }), this);
-      _networkBridge2['default'].removeServer(this.url);
+      _networkBridge2.default.removeServer(this.url);
     }
 
     /*
     * Returns an array of websockets which are listening to this server
     */
-  }, {
-    key: 'clients',
-    value: function clients() {
-      return _networkBridge2['default'].websocketsLookup(this.url);
+    clients() {
+      return _networkBridge2.default.websocketsLookup(this.url);
     }
 
     /*
@@ -228,14 +185,12 @@ var Server = (function (_EventTarget) {
     *
     * e.g. server.to('my-room').emit('hi!');
     */
-  }, {
-    key: 'to',
-    value: function to(room, broadcaster) {
-      var _this = this;
-      var websockets = _networkBridge2['default'].websocketsLookup(this.url, room, broadcaster);
+    to(room, broadcaster) {
+      const self = this;
+      const websockets = _networkBridge2.default.websocketsLookup(this.url, room, broadcaster);
       return {
-        emit: function emit(event, data) {
-          _this.emit(event, data, { websockets: websockets });
+        emit(event, data) {
+          self.emit(event, data, { websockets });
         }
       };
     }
@@ -243,23 +198,19 @@ var Server = (function (_EventTarget) {
     /*
      * Alias for Server.to
      */
-  }, {
-    key: 'in',
-    value: function _in() {
-      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
+    in(...args) {
       return this.to.apply(null, args);
     }
-  }]);
+  }
 
-  return Server;
-})(_eventTarget2['default']);
+  /*
+   * Alternative constructor to support namespaces in socket.io
+   *
+   * http://socket.io/docs/rooms-and-namespaces/#custom-namespaces
+   */
+  Server.of = function of(url) {
+    return new Server(url);
+  };
 
-Server.of = function of(url) {
-  return new Server(url);
-};
-
-exports['default'] = Server;
-module.exports = exports['default'];
+  exports.default = Server;
+});
