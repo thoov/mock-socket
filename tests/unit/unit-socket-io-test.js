@@ -1,8 +1,8 @@
 import assert from 'assert';
-import io from '../src/socket-io';
-import Server from '../src/server';
+import io from '../../src/socket-io';
+import Server from '../../src/server';
 
-describe('Unit - SocketIO', function unitTest() {
+describe('Unit - SocketIO', () => {
   it('it can be instantiated without a url', () => {
     const socket = io();
     assert.ok(socket);
@@ -26,7 +26,7 @@ describe('Unit - SocketIO', function unitTest() {
   it('it can broadcast to other connected sockets', (done) => {
     const url = 'ws://not-real/';
     const myServer = new Server(url);
-    myServer.on('connection', function (server, socket) {
+    myServer.on('connection', (server, socket) => {
       socketFoo.broadcast.emit('Testing');
     });
 
@@ -34,7 +34,7 @@ describe('Unit - SocketIO', function unitTest() {
     socketFoo.on('Testing', () => {
       assert.fail(null, null, 'Socket Foo should be excluded from broadcast');
     });
-    
+
     const socketBar = io(url);
     socketBar.on('Testing', (socket) => {
       assert.ok(true);
@@ -48,14 +48,14 @@ describe('Unit - SocketIO', function unitTest() {
     const url = 'ws://not-real/';
 
     const myServer = new Server(url);
-    myServer.on('connection', function (server, socket) {
+    myServer.on('connection', (server, socket) => {
       socketFoo.broadcast.to(roomKey).emit('Testing', socket);
     });
 
     const socketFoo = io(url);
     socketFoo.join(roomKey);
     socketFoo.on('Testing', () => assert.fail(null, null, 'Socket Foo should be excluded from broadcast'));
-    
+
     const socketBar = io(url);
     socketBar.on('Testing', () => assert.fail(null, null, 'Socket Bar should be excluded from broadcast'));
 
@@ -66,5 +66,5 @@ describe('Unit - SocketIO', function unitTest() {
       myServer.close();
       done();
     });
-  })
+  });
 });

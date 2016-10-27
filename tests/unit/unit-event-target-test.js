@@ -1,11 +1,11 @@
 import assert from 'assert';
-import { createEvent } from '../src/event-factory';
-import EventTarget from '../src/event-target';
+import { createEvent } from '../../src/event-factory';
+import EventTarget from '../../src/event-target';
 
 class Mock extends EventTarget {}
 class MockFoo extends EventTarget {}
 
-describe('Unit - EventTarget', function unitTest() {
+describe('Unit - EventTarget', () => {
   it('has all the required methods', () => {
     const mock = new Mock();
 
@@ -17,7 +17,7 @@ describe('Unit - EventTarget', function unitTest() {
   it('adding/removing "message" event listeners works', () => {
     const mock = new Mock();
     const eventObject = createEvent({
-      type: 'message',
+      type: 'message'
     });
 
     const fooListener = (event) => { assert.equal(event.type, 'message'); };
@@ -38,7 +38,7 @@ describe('Unit - EventTarget', function unitTest() {
     const mock = new Mock();
     const mockFoo = new MockFoo();
     const eventObject = createEvent({
-      type: 'message',
+      type: 'message'
     });
 
     const fooListener = (event) => { assert.equal(event.type, 'message'); };
@@ -73,7 +73,7 @@ describe('Unit - EventTarget', function unitTest() {
   it('that dispatching an event with multiple data arguments works correctly', () => {
     const mock = new Mock();
     const eventObject = createEvent({
-      type: 'message',
+      type: 'message'
     });
 
     const fooListener = (...data) => {

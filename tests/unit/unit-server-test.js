@@ -1,11 +1,11 @@
 import assert from 'assert';
-import Server from '../src/server';
-import WebSocket from '../src/websocket';
-import EventTarget from '../src/event-target';
-import networkBridge from '../src/network-bridge';
-import globalObject from '../src/helpers/global-object';
+import Server from '../../src/server';
+import WebSocket from '../../src/websocket';
+import EventTarget from '../../src/event-target';
+import networkBridge from '../../src/network-bridge';
+import globalObject from '../../src/helpers/global-object';
 
-describe('Unit - Server', function unitTest() {
+describe('Unit - Server', () => {
   it('that server inherents EventTarget methods', () => {
     const myServer = new Server('ws://not-real');
     assert.ok(myServer instanceof EventTarget);
@@ -44,7 +44,7 @@ describe('Unit - Server', function unitTest() {
     myServer.close();
   });
 
-  it('that calling send will trigger the onmessage of websockets', done => {
+  it('that calling send will trigger the onmessage of websockets', (done) => {
     const myServer = new Server('ws://not-real/');
 
     myServer.on('connection', (server, socket) => {
@@ -64,29 +64,29 @@ describe('Unit - Server', function unitTest() {
     };
   });
 
-  it('that calling close will trigger the onclose of websockets', done => {
+  it('that calling close will trigger the onclose of websockets', (done) => {
     const myServer = new Server('ws://not-real/');
     let counter = 0;
 
     myServer.on('connection', () => {
-      counter++;
+      counter += 1;
       if (counter === 2) {
         myServer.close({
           code: 1005,
-          reason: 'Some reason',
+          reason: 'Some reason'
         });
       }
     });
 
     const socketFoo = new WebSocket('ws://not-real/');
     const socketBar = new WebSocket('ws://not-real/');
-    socketFoo.onclose = event => {
+    socketFoo.onclose = (event) => {
       assert.ok(true, 'socketFoo onmessage was correctly called');
       assert.equal(event.code, 1005, 'the correct code was recieved');
       assert.equal(event.reason, 'Some reason', 'the correct reason was recieved');
     };
 
-    socketBar.onclose = event => {
+    socketBar.onclose = (event) => {
       assert.ok(true, 'socketBar onmessage was correctly called');
       assert.equal(event.code, 1005, 'the correct code was recieved');
       assert.equal(event.reason, 'Some reason', 'the correct reason was recieved');
@@ -116,6 +116,6 @@ describe('Unit - Server', function unitTest() {
     myServer.stop();
 
     assert.equal(myServer.originalWebSocket, null, 'server forgets about the original websocket');
-    assert.deepEqual(globalObj.WebSocket, originalWebSocket, ' the original websocket is returned to the global object');
+    assert.deepEqual(globalObj.WebSocket, originalWebSocket, 'the original websocket is returned to the global object');
   });
 });

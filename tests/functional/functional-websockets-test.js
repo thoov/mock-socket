@@ -1,14 +1,14 @@
 import assert from 'assert';
-import Server from '../src/server';
-import WebSocket from '../src/websocket';
-import networkBridge from '../src/network-bridge';
+import Server from '../../src/server';
+import WebSocket from '../../src/websocket';
+import networkBridge from '../../src/network-bridge';
 
-describe('Functional - WebSockets', function functionalTest() {
-  afterEach(function after() {
+describe('Functional - WebSockets', () => {
+  afterEach(() => {
     networkBridge.urlMap = {};
   });
 
-  it('that creating a websocket with no server invokes the onerror method', done => {
+  it('that creating a websocket with no server invokes the onerror method', (done) => {
     const mockSocket = new WebSocket('ws://localhost:8080');
     mockSocket.onerror = function error(event) {
       assert.equal(event.target.readyState, WebSocket.CLOSED, 'onerror fires as expected');
@@ -16,7 +16,7 @@ describe('Functional - WebSockets', function functionalTest() {
     };
   });
 
-  it('that onopen is called after successfully connection to the server', done => {
+  it('that onopen is called after successfully connection to the server', (done) => {
     const server = new Server('ws://localhost:8080');
     const mockSocket = new WebSocket('ws://localhost:8080');
 
@@ -26,7 +26,7 @@ describe('Functional - WebSockets', function functionalTest() {
     };
   });
 
-  it('that failing the verifyClient check invokes the onerror method', done => {
+  it('that failing the verifyClient check invokes the onerror method', (done) => {
     const server = new Server('ws://localhost:8080', {
       verifyClient: () => false
     });
@@ -38,21 +38,21 @@ describe('Functional - WebSockets', function functionalTest() {
     };
   });
 
-  it('that failing the verifyClient check removes the websocket from the networkBridge', done => {
+  it('that failing the verifyClient check removes the websocket from the networkBridge', (done) => {
     const server = new Server('ws://localhost:8080', {
       verifyClient: () => false
     });
     const mockSocket = new WebSocket('ws://localhost:8080');
-   
+
     mockSocket.onclose = function close() {
-       const urlMap = networkBridge.urlMap['ws://localhost:8080/'];
+      const urlMap = networkBridge.urlMap['ws://localhost:8080/'];
       assert.equal(urlMap.websockets.length, 0, 'the websocket was removed from the network bridge');
       server.close();
       done();
     };
   });
 
-  it('that verifyClient is only invoked if it is a function', done => {
+  it('that verifyClient is only invoked if it is a function', (done) => {
     const server = new Server('ws://localhost:8080', {
       verifyClient: false
     });
@@ -64,10 +64,10 @@ describe('Functional - WebSockets', function functionalTest() {
     };
   });
 
-  it('that onmessage is called after the server sends a message', done => {
+  it('that onmessage is called after the server sends a message', (done) => {
     const test = new Server('ws://localhost:8080');
 
-    test.on('connection', function connection(server) {
+    test.on('connection', (server) => {
       server.send('Testing');
     });
 
@@ -79,10 +79,10 @@ describe('Functional - WebSockets', function functionalTest() {
     };
   });
 
-  it('that onclose is called after the client closes the connection', done => {
+  it('that onclose is called after the client closes the connection', (done) => {
     const test = new Server('ws://localhost:8080');
 
-    test.on('connection', function connection(server) {
+    test.on('connection', (server) => {
       server.send('Testing');
     });
 
@@ -98,10 +98,10 @@ describe('Functional - WebSockets', function functionalTest() {
     };
   });
 
-  it('that the server gets called when the client sends a message', done => {
+  it('that the server gets called when the client sends a message', (done) => {
     const test = new Server('ws://localhost:8080');
 
-    test.on('message', function message(data) {
+    test.on('message', (data) => {
       assert.equal(data, 'Testing', 'on message fires as expected');
       done();
     });
@@ -113,7 +113,7 @@ describe('Functional - WebSockets', function functionalTest() {
     };
   });
 
-  it('that the onopen function will only be called once for each client', done => {
+  it('that the onopen function will only be called once for each client', (done) => {
     const socketUrl = 'ws://localhost:8080';
     const mockServer = new Server(socketUrl);
     const websocketFoo = new WebSocket(socketUrl);
@@ -130,7 +130,7 @@ describe('Functional - WebSockets', function functionalTest() {
     };
   });
 
-  it('closing a client will only close itself and not other clients', done => {
+  it('closing a client will only close itself and not other clients', (done) => {
     const server = new Server('ws://localhost:8080');
     const websocketFoo = new WebSocket('ws://localhost:8080');
     const websocketBar = new WebSocket('ws://localhost:8080');
@@ -149,7 +149,7 @@ describe('Functional - WebSockets', function functionalTest() {
     };
   });
 
-  it('mock clients can send messages to the right mock server', done => {
+  it('mock clients can send messages to the right mock server', (done) => {
     const serverFoo = new Server('ws://localhost:8080');
     const serverBar = new Server('ws://localhost:8081');
     const dataFoo = 'foo';
@@ -157,18 +157,18 @@ describe('Functional - WebSockets', function functionalTest() {
     const socketFoo = new WebSocket('ws://localhost:8080');
     const socketBar = new WebSocket('ws://localhost:8081');
 
-    serverFoo.on('connection', function connection(server) {
+    serverFoo.on('connection', (server) => {
       assert.ok(true, 'mock server on connection fires as expected');
 
-      server.on('message', function message(data) {
+      server.on('message', (data) => {
         assert.equal(data, dataFoo);
       });
     });
 
-    serverBar.on('connection', function connection(server) {
+    serverBar.on('connection', (server) => {
       assert.ok(true, 'mock server on connection fires as expected');
 
-      server.on('message', function message(data) {
+      server.on('message', (data) => {
         assert.equal(data, dataBar);
         done();
       });
@@ -185,7 +185,7 @@ describe('Functional - WebSockets', function functionalTest() {
     };
   });
 
-  it('that closing a websocket removes it from the network bridge', done => {
+  it('that closing a websocket removes it from the network bridge', (done) => {
     const server = new Server('ws://localhost:8080');
     const socket = new WebSocket('ws://localhost:8080');
 
