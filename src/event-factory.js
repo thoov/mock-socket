@@ -31,7 +31,7 @@ function createMessageEvent(config) {
   const { type, origin, data, target } = config;
   const messageEvent = new MessageEvent(type, {
     data,
-    origin,
+    origin
   });
 
   if (target) {
@@ -60,7 +60,7 @@ function createCloseEvent(config) {
   const closeEvent = new CloseEvent(type, {
     code,
     reason,
-    wasClean,
+    wasClean
   });
 
   if (target) {
@@ -75,5 +75,5 @@ function createCloseEvent(config) {
 export {
   createEvent,
   createMessageEvent,
-  createCloseEvent,
+  createCloseEvent
 };

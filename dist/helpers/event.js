@@ -1,58 +1,57 @@
-'use strict';
+(function (global, factory) {
+  if (typeof define === "function" && define.amd) {
+    define(['exports', './event-prototype'], factory);
+  } else if (typeof exports !== "undefined") {
+    factory(exports, require('./event-prototype'));
+  } else {
+    var mod = {
+      exports: {}
+    };
+    factory(mod.exports, global.eventPrototype);
+    global.event = mod.exports;
+  }
+})(this, function (exports, _eventPrototype) {
+  'use strict';
 
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
 
-var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+  var _eventPrototype2 = _interopRequireDefault(_eventPrototype);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var _eventPrototype = require('./event-prototype');
-
-var _eventPrototype2 = _interopRequireDefault(_eventPrototype);
-
-var Event = (function (_EventPrototype) {
-  _inherits(Event, _EventPrototype);
-
-  function Event(type) {
-    var eventInitConfig = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-    _classCallCheck(this, Event);
-
-    _get(Object.getPrototypeOf(Event.prototype), 'constructor', this).call(this);
-
-    if (!type) {
-      throw new TypeError('Failed to construct \'Event\': 1 argument required, but only 0 present.');
-    }
-
-    if (typeof eventInitConfig !== 'object') {
-      throw new TypeError('Failed to construct \'Event\': parameter 2 (\'eventInitDict\') is not an object');
-    }
-
-    var bubbles = eventInitConfig.bubbles;
-    var cancelable = eventInitConfig.cancelable;
-
-    this.type = String(type);
-    this.timeStamp = Date.now();
-    this.target = null;
-    this.srcElement = null;
-    this.returnValue = true;
-    this.isTrusted = false;
-    this.eventPhase = 0;
-    this.defaultPrevented = false;
-    this.currentTarget = null;
-    this.cancelable = cancelable ? Boolean(cancelable) : false;
-    this.canncelBubble = false;
-    this.bubbles = bubbles ? Boolean(bubbles) : false;
+  function _interopRequireDefault(obj) {
+    return obj && obj.__esModule ? obj : {
+      default: obj
+    };
   }
 
-  return Event;
-})(_eventPrototype2['default']);
+  class Event extends _eventPrototype2.default {
+    constructor(type, eventInitConfig = {}) {
+      super();
 
-exports['default'] = Event;
-module.exports = exports['default'];
+      if (!type) {
+        throw new TypeError('Failed to construct \'Event\': 1 argument required, but only 0 present.');
+      }
+
+      if (typeof eventInitConfig !== 'object') {
+        throw new TypeError('Failed to construct \'Event\': parameter 2 (\'eventInitDict\') is not an object');
+      }
+
+      const { bubbles, cancelable } = eventInitConfig;
+
+      this.type = String(type);
+      this.timeStamp = Date.now();
+      this.target = null;
+      this.srcElement = null;
+      this.returnValue = true;
+      this.isTrusted = false;
+      this.eventPhase = 0;
+      this.defaultPrevented = false;
+      this.currentTarget = null;
+      this.cancelable = cancelable ? Boolean(cancelable) : false;
+      this.canncelBubble = false;
+      this.bubbles = bubbles ? Boolean(bubbles) : false;
+    }
+  }
+  exports.default = Event;
+});

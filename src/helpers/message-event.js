@@ -18,7 +18,7 @@ export default class MessageEvent extends EventPrototype {
       data,
       origin,
       lastEventId,
-      ports,
+      ports
     } = eventInitConfig;
 
     this.type = String(type);

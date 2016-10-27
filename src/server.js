@@ -16,7 +16,7 @@ class Server extends EventTarget {
   constructor(url, options = {}) {
     super();
     this.url = normalize(url);
-    this._originalWebSocket = null;
+    this.originalWebSocket = null;
     const server = networkBridge.attachServer(this, this.url);
 
     if (!server) {
@@ -24,9 +24,7 @@ class Server extends EventTarget {
       throw new Error('A mock server is already listening on this url');
     }
 
-    this.options = Object.assign({
-      verifiyClient: null,
-    }, options);
+    this.options = Object.assign({ verifiyClient: null }, options);
 
     this.start();
   }
@@ -38,7 +36,7 @@ class Server extends EventTarget {
     const globalObj = globalObject();
 
     if (globalObj.WebSocket) {
-      this._originalWebSocket = globalObj.WebSocket;
+      this.originalWebSocket = globalObj.WebSocket;
     }
 
     globalObj.WebSocket = WebSocket;
@@ -50,13 +48,13 @@ class Server extends EventTarget {
   stop() {
     const globalObj = globalObject();
 
-    if (this._originalWebSocket) {
-      globalObj.WebSocket = this._originalWebSocket;
+    if (this.originalWebSocket) {
+      globalObj.WebSocket = this.originalWebSocket;
     } else {
       delete globalObj.WebSocket;
     }
 
-    this._originalWebSocket = null;
+    this.originalWebSocket = null;
 
     networkBridge.removeServer(this.url);
   }
@@ -97,20 +95,20 @@ class Server extends EventTarget {
       data = Array.prototype.slice.call(arguments, 1, arguments.length);
     }
 
-    websockets.forEach(socket => {
+    websockets.forEach((socket) => {
       if (Array.isArray(data)) {
         socket.dispatchEvent(createMessageEvent({
           type: event,
           data,
           origin: this.url,
-          target: socket,
+          target: socket
         }), ...data);
       } else {
         socket.dispatchEvent(createMessageEvent({
           type: event,
           data,
           origin: this.url,
-          target: socket,
+          target: socket
         }));
       }
     });
@@ -127,18 +125,18 @@ class Server extends EventTarget {
     const {
       code,
       reason,
-      wasClean,
+      wasClean
     } = options;
     const listeners = networkBridge.websocketsLookup(this.url);
 
-    listeners.forEach(socket => {
+    listeners.forEach((socket) => {
       socket.readyState = WebSocket.CLOSE;
       socket.dispatchEvent(createCloseEvent({
         type: 'close',
         target: socket,
         code: code || CLOSE_CODES.CLOSE_NORMAL,
         reason: reason || '',
-        wasClean,
+        wasClean
       }));
     });
 
@@ -159,12 +157,12 @@ class Server extends EventTarget {
   * e.g. server.to('my-room').emit('hi!');
   */
   to(room, broadcaster) {
-    const _this = this;
+    const self = this;
     const websockets = networkBridge.websocketsLookup(this.url, room, broadcaster);
     return {
       emit(event, data) {
-        _this.emit(event, data, { websockets });
-      },
+        self.emit(event, data, { websockets });
+      }
     };
   }
 

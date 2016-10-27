@@ -3,6 +3,7 @@ import EventTarget from './event-target';
 import networkBridge from './network-bridge';
 import CLOSE_CODES from './helpers/close-codes';
 import normalize from './helpers/normalize-url';
+import logger from './helpers/logger';
 import { createEvent, createMessageEvent, createCloseEvent } from './event-factory';
 
 /*
@@ -48,7 +49,7 @@ class WebSocket extends EventTarget {
         get() { return this.listeners.open; },
         set(listener) {
           this.addEventListener('open', listener);
-        },
+        }
       },
       onmessage: {
         configurable: true,
@@ -56,7 +57,7 @@ class WebSocket extends EventTarget {
         get() { return this.listeners.message; },
         set(listener) {
           this.addEventListener('message', listener);
-        },
+        }
       },
       onclose: {
         configurable: true,
@@ -64,7 +65,7 @@ class WebSocket extends EventTarget {
         get() { return this.listeners.close; },
         set(listener) {
           this.addEventListener('close', listener);
-        },
+        }
       },
       onerror: {
         configurable: true,
@@ -72,8 +73,8 @@ class WebSocket extends EventTarget {
         get() { return this.listeners.error; },
         set(listener) {
           this.addEventListener('error', listener);
-        },
-      },
+        }
+      }
     });
 
     const server = networkBridge.attachWebSocket(this, this.url);
@@ -94,12 +95,15 @@ class WebSocket extends EventTarget {
     */
     delay(function delayCallback() {
       if (server) {
-        if (server.options.verifyClient && typeof server.options.verifyClient === 'function' && !server.options.verifyClient()) {
+        if (server.options.verifyClient
+          && typeof server.options.verifyClient === 'function'
+          && !server.options.verifyClient()) {
           this.readyState = WebSocket.CLOSED;
 
-          /* eslint-disable no-console */
-          console.error(`WebSocket connection to '${this.url}' failed: HTTP Authentication failed; no valid credentials available`);
-          /* eslint-enable no-console */
+          logger(
+            'error',
+            `WebSocket connection to '${this.url}' failed: HTTP Authentication failed; no valid credentials available`
+          );
 
           networkBridge.removeWebSocket(this, this.url);
           this.dispatchEvent(createEvent({ type: 'error', target: this }));
@@ -114,9 +118,7 @@ class WebSocket extends EventTarget {
         this.dispatchEvent(createEvent({ type: 'error', target: this }));
         this.dispatchEvent(createCloseEvent({ type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL }));
 
-        /* eslint-disable no-console */
-        console.error(`WebSocket connection to '${this.url}' failed`);
-        /* eslint-enable no-console */
+        logger('error', `WebSocket connection to '${this.url}' failed`);
       }
     }, this);
   }
@@ -134,7 +136,7 @@ class WebSocket extends EventTarget {
     const messageEvent = createMessageEvent({
       type: 'message',
       origin: this.url,
-      data,
+      data
     });
 
     const server = networkBridge.serverLookup(this.url);
@@ -157,7 +159,7 @@ class WebSocket extends EventTarget {
     const closeEvent = createCloseEvent({
       type: 'close',
       target: this,
-      code: CLOSE_CODES.CLOSE_NORMAL,
+      code: CLOSE_CODES.CLOSE_NORMAL
     });
 
     networkBridge.removeWebSocket(this, this.url);
