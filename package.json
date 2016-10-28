@@ -10,7 +10,7 @@
     "node": ">= 4.6.1"
   },
   "scripts": {
-    "test": "cross-env NODE_ENV=test nyc mocha tests/**/*.js",
+    "test": "cross-env NODE_ENV=test nyc mocha tests/**/*.test.js",
     "build": "rm -rf dist tmp && broccoli build dist && rm -rf tmp",
     "lint": "eslint src tests Brocfile.js",
     "check-coverage": "nyc check-coverage --lines 92 --functions 92 --branches 70 --statements 92",
@@ -48,9 +48,10 @@
     "eslint-plugin-import": "^2.0.1",
     "express": "~4.14.0",
     "isparta": "~4.0.0",
+    "jsdom": "^9.8.3",
     "mocha": "~3.1.0",
     "nyc": "^8.3.2",
-    "testem": "~1.13.0",
+    "requirejs": "^2.3.2",
     "ws": "~1.1.1"
   }
 }

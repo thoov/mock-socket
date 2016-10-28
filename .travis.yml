@@ -19,6 +19,7 @@ install:
 
 before_script:
   - yarn lint
+  - yarn build
 
 script:
   - yarn test

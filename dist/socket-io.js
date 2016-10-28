@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['exports', './helpers/delay', './event-target', './network-bridge', './helpers/close-codes', './helpers/normalize-url', './event-factory'], factory);
+    define(['exports', './helpers/delay', './event-target', './network-bridge', './helpers/close-codes', './helpers/normalize-url', './helpers/logger', './event-factory'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(exports, require('./helpers/delay'), require('./event-target'), require('./network-bridge'), require('./helpers/close-codes'), require('./helpers/normalize-url'), require('./event-factory'));
+    factory(exports, require('./helpers/delay'), require('./event-target'), require('./network-bridge'), require('./helpers/close-codes'), require('./helpers/normalize-url'), require('./helpers/logger'), require('./event-factory'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod.exports, global.delay, global.eventTarget, global.networkBridge, global.closeCodes, global.normalizeUrl, global.eventFactory);
+    factory(mod.exports, global.delay, global.eventTarget, global.networkBridge, global.closeCodes, global.normalizeUrl, global.logger, global.eventFactory);
     global.socketIo = mod.exports;
   }
-})(this, function (exports, _delay, _eventTarget, _networkBridge, _closeCodes, _normalizeUrl, _eventFactory) {
+})(this, function (exports, _delay, _eventTarget, _networkBridge, _closeCodes, _normalizeUrl, _logger, _eventFactory) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -26,6 +26,8 @@
   var _closeCodes2 = _interopRequireDefault(_closeCodes);
 
   var _normalizeUrl2 = _interopRequireDefault(_normalizeUrl);
+
+  var _logger2 = _interopRequireDefault(_logger);
 
   function _interopRequireDefault(obj) {
     return obj && obj.__esModule ? obj : {
@@ -76,9 +78,7 @@
             code: _closeCodes2.default.CLOSE_NORMAL
           }));
 
-          /* eslint-disable no-console */
-          console.error(`Socket.io connection to '${ this.url }' failed`);
-          /* eslint-enable no-console */
+          (0, _logger2.default)('error', `Socket.io connection to '${ this.url }' failed`);
         }
       }, this);
 
