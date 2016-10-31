@@ -7,4 +7,3 @@ tmp
 # Individual files to exclude
 .DS_Store
 npm-debug.log
-.idea

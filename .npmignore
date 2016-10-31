@@ -1,2 +1,10 @@
 coverage
 tmp
+tests
+
+.babelrc
+.editorconfig
+.npmignore
+.nycrc
+.travis.yml
+Brocfile.js
