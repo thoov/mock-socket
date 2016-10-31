@@ -45,7 +45,7 @@ class Server extends EventTarget {
   /*
   * Removes the mock websocket object from the global object
   */
-  stop() {
+  stop(callback = () => {}) {
     const globalObj = globalObject();
 
     if (this.originalWebSocket) {
@@ -57,6 +57,10 @@ class Server extends EventTarget {
     this.originalWebSocket = null;
 
     networkBridge.removeServer(this.url);
+
+    if (typeof callback === 'function') {
+      callback();
+    }
   }
 
   /*
