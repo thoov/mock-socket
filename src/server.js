@@ -24,7 +24,11 @@ class Server extends EventTarget {
       throw new Error('A mock server is already listening on this url');
     }
 
-    this.options = Object.assign({ verifiyClient: null }, options);
+    if (typeof options.verifiyClient === 'undefined') {
+      options.verifiyClient = null;
+    }
+
+    this.options = options;
 
     this.start();
   }
