@@ -62,8 +62,7 @@ describe('Chat Unit Test', () => {
       const messageLen = chatApp.messages.length;
       assert.equal(messageLen, 2, '2 messages where sent from the s server');
 
-      mockServer.stop();
-      done();
+      mockServer.stop(done);
     }, 100);
   });
 });
@@ -110,7 +109,7 @@ describe('Chat Unit Test', () => {
     setTimeout(() => {
       const messageLen = chatApp.messages.length;
       assert.equal(messageLen, 2, '2 messages where sent from the server');
-      done();
+      mockServer.stop(done);
     }, 100);
   });
 });
@@ -122,33 +121,35 @@ describe('Chat Unit Test', () => {
 The easiest way to work on the project is to clone the repo down via:
 
 ```shell
-git clone git@github.com:thoov/mock-socket.git; cd mock-socket; npm i
+git clone git@github.com:thoov/mock-socket.git
+cd mock-socket
+yarn
 ```
 Then to create a local build via:
 
 ```shell
-npm run build
+yarn build
 ```
 
 Then create a local npm link via:
 
 ```shell
-npm link
+yarn link
 ```
 
 At this point you can create other projects / apps locally and reference this local build via:
 
 ```shell
-npm link mock-socket
+yarn link mock-socket
 ```
 
-from within your other projects folder. Make sure that after any changes you run `npm run build`!
+from within your other projects folder. Make sure that after any changes you run `yarn build`!
 
 ### Tests
 This project uses mocha as its test framework. Tests are located in /test and have 1 of 3 file name prefixes (functional-, issue-#, or unit-).
 
 ```shell
-npm test
+yarn test
 ```
 
 ### Linting
@@ -156,7 +157,7 @@ npm test
 This project uses eslint and a rules set from [airbnb's javascript style guides](https://github.com/airbnb/javascript). To run linting:
 
 ```shell
-npm run lint
+yarn lint
 ```
 
 ### Code Coverage

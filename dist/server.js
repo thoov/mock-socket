@@ -74,7 +74,7 @@
     /*
     * Removes the mock websocket object from the global object
     */
-    stop() {
+    stop(callback = () => {}) {
       const globalObj = (0, _globalObject2.default)();
 
       if (this.originalWebSocket) {
@@ -86,6 +86,10 @@
       this.originalWebSocket = null;
 
       _networkBridge2.default.removeServer(this.url);
+
+      if (typeof callback === 'function') {
+        callback();
+      }
     }
 
     /*

@@ -8,7 +8,7 @@
       exports: {}
     };
     factory(mod.exports, global.server, global.socketIo, global.websocket);
-    global.main = mod.exports;
+    global.index = mod.exports;
   }
 })(this, function (exports, _server, _socketIo, _websocket) {
   'use strict';
