@@ -23,7 +23,4 @@ before_script:
 
 script:
   - yarn test
-  - yarn check-coverage
-
-after_success:
-  - yarn publish-coverage
+  - yarn test:min-coverage
