@@ -1,175 +1,173 @@
-import assert from 'assert';
+import test from 'ava';
 import io from '../../src/socket-io';
 import Server from '../../src/server';
 
-describe('Functional - SocketIO', () => {
-  it('client triggers the server connection event', (done) => {
-    const server = new Server('foobar');
-    const socket = io('foobar');
+test.cb('client triggers the server connection event', (t) => {
+  const server = new Server('foobar');
+  const socket = io('foobar');
 
-    server.on('connection', () => {
-      assert.ok(true);
-      socket.disconnect();
-      server.close();
-      done();
-    });
+  server.on('connection', () => {
+    t.true(true);
+    socket.disconnect();
+    server.close();
+    t.end();
+  });
+});
+
+test.cb('client triggers the server connect event', (t) => {
+  const server = new Server('foobar');
+  const socket = io('foobar');
+
+  server.on('connect', () => {
+    t.true(true);
+    socket.disconnect();
+    server.close();
+    t.end();
+  });
+});
+
+test.cb('server triggers the client connect event', (t) => {
+  const server = new Server('foobar');
+  const socket = io('foobar');
+
+  socket.on('connect', () => {
+    t.true(true);
+    socket.disconnect();
+    server.close();
+    t.end();
+  });
+});
+
+test.cb('no connection triggers the client error event', (t) => {
+  const socket = io('foobar');
+
+  socket.on('error', () => {
+    t.true(true);
+    socket.disconnect();
+    t.end();
+  });
+});
+
+test.cb('client and server receive an event', (t) => {
+  const server = new Server('foobar');
+  server.on('client-event', (data) => {
+    server.emit('server-response', data);
   });
 
-  it('client triggers the server connect event', (done) => {
-    const server = new Server('foobar');
-    const socket = io('foobar');
-
-    server.on('connect', () => {
-      assert.ok(true);
-      socket.disconnect();
-      server.close();
-      done();
-    });
+  const socket = io('foobar');
+  socket.on('server-response', (data) => {
+    t.is('payload', data);
+    socket.disconnect();
+    server.close();
+    t.end();
   });
 
-  it('server triggers the client connect event', (done) => {
-    const server = new Server('foobar');
-    const socket = io('foobar');
+  socket.on('connect', () => {
+    socket.emit('client-event', 'payload');
+  });
+});
 
-    socket.on('connect', () => {
-      assert.ok(true);
-      socket.disconnect();
-      server.close();
-      done();
-    });
+test.cb('Server closing triggers the client disconnect event', (t) => {
+  const server = new Server('foobar');
+  server.on('connect', () => {
+    server.close();
   });
 
-  it('no connection triggers the client error event', (done) => {
-    const socket = io('foobar');
+  const socket = io('foobar');
+  socket.on('disconnect', () => {
+    t.true(true);
+    socket.disconnect();
+    t.end();
+  });
+});
 
-    socket.on('error', () => {
-      assert.ok(true);
-      socket.disconnect();
-      done();
-    });
+test.cb('Server receives disconnect when socket is closed', (t) => {
+  const server = new Server('foobar');
+  server.on('disconnect', () => {
+    t.true(true);
+    server.close();
+    t.end();
   });
 
-  it('client and server receive an event', (done) => {
-    const server = new Server('foobar');
-    server.on('client-event', (data) => {
-      server.emit('server-response', data);
-    });
+  const socket = io('foobar');
+  socket.on('connect', () => {
+    socket.disconnect();
+  });
+});
 
-    const socket = io('foobar');
-    socket.on('server-response', (data) => {
-      assert.equal('payload', data);
-      socket.disconnect();
-      server.close();
-      done();
-    });
-
-    socket.on('connect', () => {
-      socket.emit('client-event', 'payload');
-    });
+test.cb('Client can submit an event without a payload', (t) => {
+  const server = new Server('foobar');
+  server.on('client-event', () => {
+    t.true(true);
+    server.close();
+    t.end();
   });
 
-  it('Server closing triggers the client disconnect event', (done) => {
-    const server = new Server('foobar');
-    server.on('connect', () => {
-      server.close();
-    });
+  const socket = io('foobar');
+  socket.on('connect', () => {
+    socket.emit('client-event');
+  });
+});
 
-    const socket = io('foobar');
-    socket.on('disconnect', () => {
-      assert.ok(true);
-      socket.disconnect();
-      done();
-    });
+test.cb('Client also has the send method available', (t) => {
+  const server = new Server('foobar');
+  server.on('message', (data) => {
+    t.is(data, 'hullo!');
+    server.close();
+    t.end();
   });
 
-  it('Server receives disconnect when socket is closed', (done) => {
-    const server = new Server('foobar');
-    server.on('disconnect', () => {
-      assert.ok(true);
-      server.close();
-      done();
-    });
+  const socket = io('foobar');
+  socket.on('connect', () => {
+    socket.send('hullo!');
+  });
+});
 
-    const socket = io('foobar');
-    socket.on('connect', () => {
-      socket.disconnect();
-    });
+test.cb('a socket can join and leave a room', (t) => {
+  const server = new Server('ws://roomy');
+  const socket = io('ws://roomy');
+
+  socket.on('good-response', () => {
+    t.true(true);
+    server.close();
+    t.end();
   });
 
-  it('Client can submit an event without a payload', (done) => {
-    const server = new Server('foobar');
-    server.on('client-event', () => {
-      assert.ok(true);
-      server.close();
-      done();
-    });
+  socket.on('connect', () => {
+    socket.join('room');
+    server.to('room').emit('good-response');
+  });
+});
 
-    const socket = io('foobar');
-    socket.on('connect', () => {
-      socket.emit('client-event');
-    });
+test.cb('Client can emit with multiple arguments', (t) => {
+  const server = new Server('foobar');
+  server.on('client-event', (...data) => {
+    t.is(data.length, 3);
+    t.is(data[0], 'foo');
+    t.is(data[1], 'bar');
+    t.is(data[2], 'baz');
+    server.close();
+    t.end();
   });
 
-  it('Client also has the send method available', (done) => {
-    const server = new Server('foobar');
-    server.on('message', (data) => {
-      assert.equal(data, 'hullo!');
-      server.close();
-      done();
-    });
+  const socket = io('foobar');
+  socket.on('connect', () => {
+    socket.emit('client-event', 'foo', 'bar', 'baz');
+  });
+});
 
-    const socket = io('foobar');
-    socket.on('connect', () => {
-      socket.send('hullo!');
-    });
+test.cb('Server can emit with multiple arguments', (t) => {
+  const server = new Server('foobar');
+  server.on('connection', () => {
+    server.emit('server-emit', 'foo', 'bar');
   });
 
-  it('a socket can join and leave a room', (done) => {
-    const server = new Server('ws://roomy');
-    const socket = io('ws://roomy');
-
-    socket.on('good-response', () => {
-      assert.ok(true);
-      server.close();
-      done();
-    });
-
-    socket.on('connect', () => {
-      socket.join('room');
-      server.to('room').emit('good-response');
-    });
-  });
-
-  it('Client can emit with multiple arguments', (done) => {
-    const server = new Server('foobar');
-    server.on('client-event', (...data) => {
-      assert.equal(data.length, 3);
-      assert.equal(data[0], 'foo');
-      assert.equal(data[1], 'bar');
-      assert.equal(data[2], 'baz');
-      server.close();
-      done();
-    });
-
-    const socket = io('foobar');
-    socket.on('connect', () => {
-      socket.emit('client-event', 'foo', 'bar', 'baz');
-    });
-  });
-
-  it('Server can emit with multiple arguments', (done) => {
-    const server = new Server('foobar');
-    server.on('connection', () => {
-      server.emit('server-emit', 'foo', 'bar');
-    });
-
-    const socket = io('foobar');
-    socket.on('server-emit', (...data) => {
-      assert.equal(data.length, 2);
-      assert.equal(data[0], 'foo');
-      assert.equal(data[1], 'bar');
-      server.close();
-      done();
-    });
+  const socket = io('foobar');
+  socket.on('server-emit', (...data) => {
+    t.is(data.length, 2);
+    t.is(data[0], 'foo');
+    t.is(data[1], 'bar');
+    server.close();
+    t.end();
   });
 });

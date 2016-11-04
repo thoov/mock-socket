@@ -19,8 +19,8 @@
   exports.reject = reject;
   exports.filter = filter;
   function reject(array, callback) {
-    const results = [];
-    array.forEach(itemInArray => {
+    var results = [];
+    array.forEach(function (itemInArray) {
       if (!callback(itemInArray)) {
         results.push(itemInArray);
       }
@@ -30,8 +30,8 @@
   }
 
   function filter(array, callback) {
-    const results = [];
-    array.forEach(itemInArray => {
+    var results = [];
+    array.forEach(function (itemInArray) {
       if (callback(itemInArray)) {
         results.push(itemInArray);
       }

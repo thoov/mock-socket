@@ -17,14 +17,34 @@
     value: true
   });
 
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
 
-  /*
-  * The network bridge is a way for the mock websocket object to 'communicate' with
-  * all available servers. This is a singleton object so it is important that you
-  * clean up urlMap whenever you are finished.
-  */
-  class NetworkBridge {
-    constructor() {
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  var NetworkBridge = function () {
+    function NetworkBridge() {
+      _classCallCheck(this, NetworkBridge);
+
       this.urlMap = {};
     }
 
@@ -35,120 +55,104 @@
     * @param {object} websocket - websocket object to add to the urlMap hash
     * @param {string} url
     */
-    attachWebSocket(websocket, url) {
-      const connectionLookup = this.urlMap[url];
 
-      if (connectionLookup && connectionLookup.server && connectionLookup.websockets.indexOf(websocket) === -1) {
-        connectionLookup.websockets.push(websocket);
-        return connectionLookup.server;
+
+    _createClass(NetworkBridge, [{
+      key: 'attachWebSocket',
+      value: function attachWebSocket(websocket, url) {
+        var connectionLookup = this.urlMap[url];
+
+        if (connectionLookup && connectionLookup.server && connectionLookup.websockets.indexOf(websocket) === -1) {
+          connectionLookup.websockets.push(websocket);
+          return connectionLookup.server;
+        }
       }
-    }
+    }, {
+      key: 'addMembershipToRoom',
+      value: function addMembershipToRoom(websocket, room) {
+        var connectionLookup = this.urlMap[websocket.url];
 
-    /*
-    * Attaches a websocket to a room
-    */
-    addMembershipToRoom(websocket, room) {
-      const connectionLookup = this.urlMap[websocket.url];
+        if (connectionLookup && connectionLookup.server && connectionLookup.websockets.indexOf(websocket) !== -1) {
+          if (!connectionLookup.roomMemberships[room]) {
+            connectionLookup.roomMemberships[room] = [];
+          }
 
-      if (connectionLookup && connectionLookup.server && connectionLookup.websockets.indexOf(websocket) !== -1) {
-        if (!connectionLookup.roomMemberships[room]) {
-          connectionLookup.roomMemberships[room] = [];
+          connectionLookup.roomMemberships[room].push(websocket);
+        }
+      }
+    }, {
+      key: 'attachServer',
+      value: function attachServer(server, url) {
+        var connectionLookup = this.urlMap[url];
+
+        if (!connectionLookup) {
+          this.urlMap[url] = {
+            server: server,
+            websockets: [],
+            roomMemberships: {}
+          };
+
+          return server;
+        }
+      }
+    }, {
+      key: 'serverLookup',
+      value: function serverLookup(url) {
+        var connectionLookup = this.urlMap[url];
+
+        if (connectionLookup) {
+          return connectionLookup.server;
+        }
+      }
+    }, {
+      key: 'websocketsLookup',
+      value: function websocketsLookup(url, room, broadcaster) {
+        var websockets = void 0;
+        var connectionLookup = this.urlMap[url];
+
+        websockets = connectionLookup ? connectionLookup.websockets : [];
+
+        if (room) {
+          var members = connectionLookup.roomMemberships[room];
+          websockets = members || [];
         }
 
-        connectionLookup.roomMemberships[room].push(websocket);
+        return broadcaster ? websockets.filter(function (websocket) {
+          return websocket !== broadcaster;
+        }) : websockets;
       }
-    }
-
-    /*
-    * Attaches a server object to the urlMap hash so that it can find a websockets
-    * which are connected to it and so that websockets can in turn can find it.
-    *
-    * @param {object} server - server object to add to the urlMap hash
-    * @param {string} url
-    */
-    attachServer(server, url) {
-      const connectionLookup = this.urlMap[url];
-
-      if (!connectionLookup) {
-        this.urlMap[url] = {
-          server,
-          websockets: [],
-          roomMemberships: {}
-        };
-
-        return server;
+    }, {
+      key: 'removeServer',
+      value: function removeServer(url) {
+        delete this.urlMap[url];
       }
-    }
+    }, {
+      key: 'removeWebSocket',
+      value: function removeWebSocket(websocket, url) {
+        var connectionLookup = this.urlMap[url];
 
-    /*
-    * Finds the server which is 'running' on the given url.
-    *
-    * @param {string} url - the url to use to find which server is running on it
-    */
-    serverLookup(url) {
-      const connectionLookup = this.urlMap[url];
-
-      if (connectionLookup) {
-        return connectionLookup.server;
+        if (connectionLookup) {
+          connectionLookup.websockets = (0, _arrayHelpers.reject)(connectionLookup.websockets, function (socket) {
+            return socket === websocket;
+          });
+        }
       }
-    }
+    }, {
+      key: 'removeMembershipFromRoom',
+      value: function removeMembershipFromRoom(websocket, room) {
+        var connectionLookup = this.urlMap[websocket.url];
+        var memberships = connectionLookup.roomMemberships[room];
 
-    /*
-    * Finds all websockets which is 'listening' on the given url.
-    *
-    * @param {string} url - the url to use to find all websockets which are associated with it
-    * @param {string} room - if a room is provided, will only return sockets in this room
-    * @param {class} broadcaster - socket that is broadcasting and is to be excluded from the lookup
-    */
-    websocketsLookup(url, room, broadcaster) {
-      let websockets;
-      const connectionLookup = this.urlMap[url];
-
-      websockets = connectionLookup ? connectionLookup.websockets : [];
-
-      if (room) {
-        const members = connectionLookup.roomMemberships[room];
-        websockets = members || [];
+        if (connectionLookup && memberships !== null) {
+          connectionLookup.roomMemberships[room] = (0, _arrayHelpers.reject)(memberships, function (socket) {
+            return socket === websocket;
+          });
+        }
       }
+    }]);
 
-      return broadcaster ? websockets.filter(websocket => websocket !== broadcaster) : websockets;
-    }
-
-    /*
-    * Removes the entry associated with the url.
-    *
-    * @param {string} url
-    */
-    removeServer(url) {
-      delete this.urlMap[url];
-    }
-
-    /*
-    * Removes the individual websocket from the map of associated websockets.
-    *
-    * @param {object} websocket - websocket object to remove from the url map
-    * @param {string} url
-    */
-    removeWebSocket(websocket, url) {
-      const connectionLookup = this.urlMap[url];
-
-      if (connectionLookup) {
-        connectionLookup.websockets = (0, _arrayHelpers.reject)(connectionLookup.websockets, socket => socket === websocket);
-      }
-    }
-
-    /*
-    * Removes a websocket from a room
-    */
-    removeMembershipFromRoom(websocket, room) {
-      const connectionLookup = this.urlMap[websocket.url];
-      const memberships = connectionLookup.roomMemberships[room];
-
-      if (connectionLookup && memberships !== null) {
-        connectionLookup.roomMemberships[room] = (0, _arrayHelpers.reject)(memberships, socket => socket === websocket);
-      }
-    }
-  }
+    return NetworkBridge;
+  }();
 
   exports.default = new NetworkBridge();
 });

@@ -30,7 +30,7 @@
     };
   }
 
-  const Server = exports.Server = _server2.default;
-  const WebSocket = exports.WebSocket = _websocket2.default;
-  const SocketIO = exports.SocketIO = _socketIo2.default;
+  var Server = exports.Server = _server2.default;
+  var WebSocket = exports.WebSocket = _websocket2.default;
+  var SocketIO = exports.SocketIO = _socketIo2.default;
 });

@@ -17,11 +17,18 @@
     value: true
   });
   exports.default = retrieveGlobalObject;
+
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  };
+
   function retrieveGlobalObject() {
     if (typeof window !== 'undefined') {
       return window;
     }
 
-    return typeof process === 'object' && typeof require === 'function' && typeof global === 'object' ? global : this;
+    return (typeof process === 'undefined' ? 'undefined' : _typeof(process)) === 'object' && typeof require === 'function' && (typeof global === 'undefined' ? 'undefined' : _typeof(global)) === 'object' ? global : this;
   }
 });
