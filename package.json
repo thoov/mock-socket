@@ -31,7 +31,7 @@
     "url": "https://github.com/thoov/mock-socket/issues"
   },
   "homepage": "https://github.com/thoov/mock-socket",
-  "dependencies": {
+  "devDependencies": {
     "ava": "^0.16.0",
     "babel-core": "^6.18.2",
     "babel-loader": "^6.2.7",

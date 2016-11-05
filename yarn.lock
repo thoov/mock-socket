@@ -191,7 +191,29 @@ asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
 
-ava:
+ava-files@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/ava-files/-/ava-files-0.1.1.tgz#18abb6f4b87029c32fc35f2053fecd3a55f1d2b0"
+  dependencies:
+    arr-flatten "^1.0.1"
+    bluebird "^3.4.1"
+    globby "^5.0.0"
+    ignore-by-default "^1.0.1"
+    multimatch "^2.1.0"
+    slash "^1.0.0"
+
+ava-init@^0.1.0:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/ava-init/-/ava-init-0.1.6.tgz#ef19ed0b24b6bf359dad6fbadf1a05d836395c91"
+  dependencies:
+    arr-exclude "^1.0.0"
+    cross-spawn "^4.0.0"
+    pinkie-promise "^2.0.0"
+    read-pkg-up "^1.0.1"
+    the-argv "^1.0.0"
+    write-pkg "^1.0.0"
+
+ava@^0.16.0:
   version "0.16.0"
   resolved "https://registry.yarnpkg.com/ava/-/ava-0.16.0.tgz#07d7e06c627820115a84d7ee346f0bb165730454"
   dependencies:
@@ -267,28 +289,6 @@ ava:
     unique-temp-dir "^1.0.0"
     update-notifier "^1.0.0"
 
-ava-files@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/ava-files/-/ava-files-0.1.1.tgz#18abb6f4b87029c32fc35f2053fecd3a55f1d2b0"
-  dependencies:
-    arr-flatten "^1.0.1"
-    bluebird "^3.4.1"
-    globby "^5.0.0"
-    ignore-by-default "^1.0.1"
-    multimatch "^2.1.0"
-    slash "^1.0.0"
-
-ava-init@^0.1.0:
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/ava-init/-/ava-init-0.1.6.tgz#ef19ed0b24b6bf359dad6fbadf1a05d836395c91"
-  dependencies:
-    arr-exclude "^1.0.0"
-    cross-spawn "^4.0.0"
-    pinkie-promise "^2.0.0"
-    read-pkg-up "^1.0.1"
-    the-argv "^1.0.0"
-    write-pkg "^1.0.0"
-
 aws-sign2@~0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/aws-sign2/-/aws-sign2-0.6.0.tgz#14342dd38dbcc94d0e5b87d763cd63612c0e794f"
@@ -305,7 +305,7 @@ babel-code-frame@^6.16.0, babel-code-frame@^6.7.5:
     esutils "^2.0.2"
     js-tokens "^2.0.0"
 
-babel-core, babel-core@^6.18.0, babel-core@^6.3.21:
+babel-core@^6.18.0, babel-core@^6.18.2, babel-core@^6.3.21:
   version "6.18.2"
   resolved "https://registry.yarnpkg.com/babel-core/-/babel-core-6.18.2.tgz#d8bb14dd6986fa4f3566a26ceda3964fa0e04e5b"
   dependencies:
@@ -459,7 +459,7 @@ babel-helpers@^6.16.0:
     babel-runtime "^6.0.0"
     babel-template "^6.16.0"
 
-babel-loader:
+babel-loader@^6.2.7:
   version "6.2.7"
   resolved "https://registry.yarnpkg.com/babel-loader/-/babel-loader-6.2.7.tgz#16fdbf64328030dc5a606827d389c8b92a2a8032"
   dependencies:
@@ -817,7 +817,7 @@ babel-preset-es2017@^6.16.0:
     babel-plugin-syntax-trailing-function-commas "^6.8.0"
     babel-plugin-transform-async-to-generator "^6.16.0"
 
-babel-preset-latest:
+babel-preset-latest@^6.16.0:
   version "6.16.0"
   resolved "https://registry.yarnpkg.com/babel-preset-latest/-/babel-preset-latest-6.16.0.tgz#5b87e19e250bb1213f13af4ec9dc7a51d53f388d"
   dependencies:
@@ -3954,7 +3954,14 @@ webidl-conversions@^3.0.0, webidl-conversions@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-3.0.1.tgz#24534275e2a7bc6be7bc86611cc16ae0a5654871"
 
-webpack:
+webpack-core@~0.6.0:
+  version "0.6.8"
+  resolved "https://registry.yarnpkg.com/webpack-core/-/webpack-core-0.6.8.tgz#edf9135de00a6a3c26dd0f14b208af0aa4af8d0a"
+  dependencies:
+    source-list-map "~0.1.0"
+    source-map "~0.4.1"
+
+webpack@^1.13.3:
   version "1.13.3"
   resolved "https://registry.yarnpkg.com/webpack/-/webpack-1.13.3.tgz#e79c46fe5a37c5ca70084ba0894c595cdcb42815"
   dependencies:
@@ -3973,13 +3980,6 @@ webpack:
     uglify-js "~2.7.3"
     watchpack "^0.2.1"
     webpack-core "~0.6.0"
-
-webpack-core@~0.6.0:
-  version "0.6.8"
-  resolved "https://registry.yarnpkg.com/webpack-core/-/webpack-core-0.6.8.tgz#edf9135de00a6a3c26dd0f14b208af0aa4af8d0a"
-  dependencies:
-    source-list-map "~0.1.0"
-    source-map "~0.4.1"
 
 whatwg-encoding@^1.0.1:
   version "1.0.1"
