@@ -59,33 +59,35 @@ test.skip('the dist package can be loaded via a AMD loader like requireJS', (t) 
   });
 });
 
-test.skip('the dist package and be loaded via a AMD loader like requireJS', (t) => {
-  const requireJS = fs.readFileSync(
-    path.resolve(
-      __dirname,
-      '../../node_modules/requirejs/require.js'
-    ),
-    'utf-8'
-  );
-
+test.cb('the dist package correctly sets up the globals', (t) => {
   const mockSocket = fs.readFileSync(
-    path.resolve(
-      __dirname,
-      '../../dist/main.js'
-    ),
-    'utf-8'
+    path.resolve(__dirname, '../../dist/mock-socket.js'), 'utf-8'
   );
 
   jsdom.env({
     src: [mockSocket],
+    html: `
+      <div></div>
+    `,
     done: (err, window) => {
       if (err) {
         t.true(false, 'error initializing jsdom');
+        t.end();
       }
 
-      if (!window.Mock || !window.Mock.MockServer) {
+      if (!window.Mock || !window.Mock.Server) {
         t.true(false, 'mock server was not found as a global');
       }
+
+      if (!window.Mock || !window.Mock.WebSocket) {
+        t.true(false, 'mock websocket was not found as a global');
+      }
+
+      if (!window.Mock || !window.Mock.SocketIO) {
+        t.true(false, 'mock socketio was not found as a global');
+      }
+
+      t.end();
     }
   });
 });
