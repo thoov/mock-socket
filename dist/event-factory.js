@@ -37,8 +37,10 @@
   * @param {object} config - within config you will need to pass type and optionally target
   */
   function createEvent(config) {
-    const { type, target } = config;
-    const eventObject = new _event2.default(type);
+    var type = config.type,
+        target = config.target;
+
+    var eventObject = new _event2.default(type);
 
     if (target) {
       eventObject.target = target;
@@ -56,10 +58,14 @@
   * @param {object} config - within config: type, origin, data and optionally target
   */
   function createMessageEvent(config) {
-    const { type, origin, data, target } = config;
-    const messageEvent = new _messageEvent2.default(type, {
-      data,
-      origin
+    var type = config.type,
+        origin = config.origin,
+        data = config.data,
+        target = config.target;
+
+    var messageEvent = new _messageEvent2.default(type, {
+      data: data,
+      origin: origin
     });
 
     if (target) {
@@ -78,17 +84,21 @@
   * @param {object} config - within config: type and optionally target, code, and reason
   */
   function createCloseEvent(config) {
-    const { code, reason, type, target } = config;
-    let { wasClean } = config;
+    var code = config.code,
+        reason = config.reason,
+        type = config.type,
+        target = config.target;
+    var wasClean = config.wasClean;
+
 
     if (!wasClean) {
       wasClean = code === 1000;
     }
 
-    const closeEvent = new _closeEvent2.default(type, {
-      code,
-      reason,
-      wasClean
+    var closeEvent = new _closeEvent2.default(type, {
+      code: code,
+      reason: reason,
+      wasClean: wasClean
     });
 
     if (target) {

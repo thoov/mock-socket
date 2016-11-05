@@ -35,21 +35,91 @@
     };
   }
 
-  /*
-  * https://github.com/websockets/ws#server-example
-  */
-  class Server extends _eventTarget2.default {
+  function _toConsumableArray(arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+        arr2[i] = arr[i];
+      }
+
+      return arr2;
+    } else {
+      return Array.from(arr);
+    }
+  }
+
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  };
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  function _possibleConstructorReturn(self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
+  }
+
+  function _inherits(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+  }
+
+  var Server = function (_EventTarget) {
+    _inherits(Server, _EventTarget);
+
     /*
     * @param {string} url
     */
-    constructor(url, options = {}) {
-      super();
-      this.url = (0, _normalizeUrl2.default)(url);
-      this.originalWebSocket = null;
-      const server = _networkBridge2.default.attachServer(this, this.url);
+    function Server(url) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      _classCallCheck(this, Server);
+
+      var _this = _possibleConstructorReturn(this, (Server.__proto__ || Object.getPrototypeOf(Server)).call(this));
+
+      _this.url = (0, _normalizeUrl2.default)(url);
+      _this.originalWebSocket = null;
+      var server = _networkBridge2.default.attachServer(_this, _this.url);
 
       if (!server) {
-        this.dispatchEvent((0, _eventFactory.createEvent)({ type: 'error' }));
+        _this.dispatchEvent((0, _eventFactory.createEvent)({ type: 'error' }));
         throw new Error('A mock server is already listening on this url');
       }
 
@@ -57,159 +127,149 @@
         options.verifiyClient = null;
       }
 
-      this.options = options;
+      _this.options = options;
 
-      this.start();
+      _this.start();
+      return _this;
     }
 
     /*
     * Attaches the mock websocket object to the global object
     */
-    start() {
-      const globalObj = (0, _globalObject2.default)();
 
-      if (globalObj.WebSocket) {
-        this.originalWebSocket = globalObj.WebSocket;
+
+    _createClass(Server, [{
+      key: 'start',
+      value: function start() {
+        var globalObj = (0, _globalObject2.default)();
+
+        if (globalObj.WebSocket) {
+          this.originalWebSocket = globalObj.WebSocket;
+        }
+
+        globalObj.WebSocket = _websocket2.default;
       }
+    }, {
+      key: 'stop',
+      value: function stop() {
+        var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {};
 
-      globalObj.WebSocket = _websocket2.default;
-    }
+        var globalObj = (0, _globalObject2.default)();
 
-    /*
-    * Removes the mock websocket object from the global object
-    */
-    stop(callback = () => {}) {
-      const globalObj = (0, _globalObject2.default)();
-
-      if (this.originalWebSocket) {
-        globalObj.WebSocket = this.originalWebSocket;
-      } else {
-        delete globalObj.WebSocket;
-      }
-
-      this.originalWebSocket = null;
-
-      _networkBridge2.default.removeServer(this.url);
-
-      if (typeof callback === 'function') {
-        callback();
-      }
-    }
-
-    /*
-    * This is the main function for the mock server to subscribe to the on events.
-    *
-    * ie: mockServer.on('connection', function() { console.log('a mock client connected'); });
-    *
-    * @param {string} type - The event key to subscribe to. Valid keys are: connection, message, and close.
-    * @param {function} callback - The callback which should be called when a certain event is fired.
-    */
-    on(type, callback) {
-      this.addEventListener(type, callback);
-    }
-
-    /*
-    * This send function will notify all mock clients via their onmessage callbacks that the server
-    * has a message for them.
-    *
-    * @param {*} data - Any javascript object which will be crafted into a MessageObject.
-    */
-    send(data, options = {}) {
-      this.emit('message', data, options);
-    }
-
-    /*
-    * Sends a generic message event to all mock clients.
-    */
-    emit(event, data, options = {}) {
-      let { websockets } = options;
-
-      if (!websockets) {
-        websockets = _networkBridge2.default.websocketsLookup(this.url);
-      }
-
-      if (typeof options !== 'object' || arguments.length > 3) {
-        data = Array.prototype.slice.call(arguments, 1, arguments.length);
-      }
-
-      websockets.forEach(socket => {
-        if (Array.isArray(data)) {
-          socket.dispatchEvent((0, _eventFactory.createMessageEvent)({
-            type: event,
-            data,
-            origin: this.url,
-            target: socket
-          }), ...data);
+        if (this.originalWebSocket) {
+          globalObj.WebSocket = this.originalWebSocket;
         } else {
-          socket.dispatchEvent((0, _eventFactory.createMessageEvent)({
-            type: event,
-            data,
-            origin: this.url,
-            target: socket
+          delete globalObj.WebSocket;
+        }
+
+        this.originalWebSocket = null;
+
+        _networkBridge2.default.removeServer(this.url);
+
+        if (typeof callback === 'function') {
+          callback();
+        }
+      }
+    }, {
+      key: 'on',
+      value: function on(type, callback) {
+        this.addEventListener(type, callback);
+      }
+    }, {
+      key: 'send',
+      value: function send(data) {
+        var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        this.emit('message', data, options);
+      }
+    }, {
+      key: 'emit',
+      value: function emit(event, data) {
+        var _this2 = this;
+
+        var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+        var websockets = options.websockets;
+
+
+        if (!websockets) {
+          websockets = _networkBridge2.default.websocketsLookup(this.url);
+        }
+
+        if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) !== 'object' || arguments.length > 3) {
+          data = Array.prototype.slice.call(arguments, 1, arguments.length);
+        }
+
+        websockets.forEach(function (socket) {
+          if (Array.isArray(data)) {
+            socket.dispatchEvent.apply(socket, [(0, _eventFactory.createMessageEvent)({
+              type: event,
+              data: data,
+              origin: _this2.url,
+              target: socket
+            })].concat(_toConsumableArray(data)));
+          } else {
+            socket.dispatchEvent((0, _eventFactory.createMessageEvent)({
+              type: event,
+              data: data,
+              origin: _this2.url,
+              target: socket
+            }));
+          }
+        });
+      }
+    }, {
+      key: 'close',
+      value: function close() {
+        var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        var code = options.code,
+            reason = options.reason,
+            wasClean = options.wasClean;
+
+        var listeners = _networkBridge2.default.websocketsLookup(this.url);
+
+        listeners.forEach(function (socket) {
+          socket.readyState = _websocket2.default.CLOSE;
+          socket.dispatchEvent((0, _eventFactory.createCloseEvent)({
+            type: 'close',
+            target: socket,
+            code: code || _closeCodes2.default.CLOSE_NORMAL,
+            reason: reason || '',
+            wasClean: wasClean
           }));
+        });
+
+        this.dispatchEvent((0, _eventFactory.createCloseEvent)({ type: 'close' }), this);
+        _networkBridge2.default.removeServer(this.url);
+      }
+    }, {
+      key: 'clients',
+      value: function clients() {
+        return _networkBridge2.default.websocketsLookup(this.url);
+      }
+    }, {
+      key: 'to',
+      value: function to(room, broadcaster) {
+        var self = this;
+        var websockets = _networkBridge2.default.websocketsLookup(this.url, room, broadcaster);
+        return {
+          emit: function emit(event, data) {
+            self.emit(event, data, { websockets: websockets });
+          }
+        };
+      }
+    }, {
+      key: 'in',
+      value: function _in() {
+        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+          args[_key] = arguments[_key];
         }
-      });
-    }
 
-    /*
-    * Closes the connection and triggers the onclose method of all listening
-    * websockets. After that it removes itself from the urlMap so another server
-    * could add itself to the url.
-    *
-    * @param {object} options
-    */
-    close(options = {}) {
-      const {
-        code,
-        reason,
-        wasClean
-      } = options;
-      const listeners = _networkBridge2.default.websocketsLookup(this.url);
+        return this.to.apply(null, args);
+      }
+    }]);
 
-      listeners.forEach(socket => {
-        socket.readyState = _websocket2.default.CLOSE;
-        socket.dispatchEvent((0, _eventFactory.createCloseEvent)({
-          type: 'close',
-          target: socket,
-          code: code || _closeCodes2.default.CLOSE_NORMAL,
-          reason: reason || '',
-          wasClean
-        }));
-      });
-
-      this.dispatchEvent((0, _eventFactory.createCloseEvent)({ type: 'close' }), this);
-      _networkBridge2.default.removeServer(this.url);
-    }
-
-    /*
-    * Returns an array of websockets which are listening to this server
-    */
-    clients() {
-      return _networkBridge2.default.websocketsLookup(this.url);
-    }
-
-    /*
-    * Prepares a method to submit an event to members of the room
-    *
-    * e.g. server.to('my-room').emit('hi!');
-    */
-    to(room, broadcaster) {
-      const self = this;
-      const websockets = _networkBridge2.default.websocketsLookup(this.url, room, broadcaster);
-      return {
-        emit(event, data) {
-          self.emit(event, data, { websockets });
-        }
-      };
-    }
-
-    /*
-     * Alias for Server.to
-     */
-    in(...args) {
-      return this.to.apply(null, args);
-    }
-  }
+    return Server;
+  }(_eventTarget2.default);
 
   /*
    * Alternative constructor to support namespaces in socket.io

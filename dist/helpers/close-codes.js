@@ -19,7 +19,7 @@
   /*
   * https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
   */
-  const codes = {
+  var codes = {
     CLOSE_NORMAL: 1000,
     CLOSE_GOING_AWAY: 1001,
     CLOSE_PROTOCOL_ERROR: 1002,
