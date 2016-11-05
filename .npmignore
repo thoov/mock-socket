@@ -1,10 +1,10 @@
 coverage
-tmp
 tests
 
 .babelrc
 .editorconfig
+.eslintrc
 .npmignore
 .nycrc
 .travis.yml
-Brocfile.js
+webpack.config.js
