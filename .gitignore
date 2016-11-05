@@ -1,10 +1,9 @@
 # Folders to exclude
 node_modules
 coverage
-tmp
 .nyc_output
-yarn-error.log
 
 # Individual files to exclude
 .DS_Store
 npm-debug.log
+yarn-error.log
