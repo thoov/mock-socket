@@ -1,4 +1,6 @@
-<h1 align="center">Mock Socket</h1>
+<p align="center">
+  <img width=600 src="http://imgur.com/Xt9X83M.png">
+</p>
 
 <p align="center">
 Javascript mocking library for <a href="https://developer.mozilla.org/en-US/docs/WebSockets">websockets</a> and <a href="http://socket.io/">socket.io</a>
