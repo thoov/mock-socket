@@ -1,11 +1,23 @@
-# Mock Socket
+<h1 align="center">Mock Socket</h1>
 
-Javascript mocking library for [websockets](https://developer.mozilla.org/en-US/docs/WebSockets) and [socket.io](http://socket.io/).
+<p align="center">
+Javascript mocking library for <a href="https://developer.mozilla.org/en-US/docs/WebSockets">websockets</a> and <a href="http://socket.io/">socket.io</a>
+</p>
 
-[![Build Status](https://travis-ci.org/thoov/mock-socket.svg?branch=master)](https://travis-ci.org/thoov/mock-socket)
-<a href="https://codeclimate.com/github/thoov/mock-socket/coverage"><img src="https://codeclimate.com/github/thoov/mock-socket/badges/coverage.svg" /></a>
-[![Code Climate](https://codeclimate.com/github/thoov/mock-socket/badges/gpa.svg)](https://codeclimate.com/github/thoov/mock-socket)
-[![npm version](https://badge.fury.io/js/mock-socket.svg)](http://badge.fury.io/js/mock-socket)
+<p align="center">
+  <a href="https://travis-ci.org/thoov/mock-socket">
+    <img src="https://travis-ci.org/thoov/mock-socket.svg?branch=master" alt="Build Status">
+  </a>
+  <a href="https://codeclimate.com/github/thoov/mock-socket/coverage">
+    <img src="https://codeclimate.com/github/thoov/mock-socket/badges/coverage.svg" alt="Code Coverage">
+  </a>
+  <a href="https://codeclimate.com/github/thoov/mock-socket">
+    <img src="https://codeclimate.com/github/thoov/mock-socket/badges/gpa.svg" alt="Code GPA">
+  </a>
+  <a href="http://badge.fury.io/js/mock-socket">
+    <img src="https://badge.fury.io/js/mock-socket.svg" alt="NPM Version">
+  </a>
+</p>
 
 ## Installation
 
