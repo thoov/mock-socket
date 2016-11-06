@@ -33,13 +33,13 @@ To use within a node environment you can simply import or require the files dire
 option is great for phantomjs or CI environments.
 
 ```js
-// ES 2015:
-const { WebSocket, Server, SocketIO } from 'mock-socket';
+import { WebSocket, Server, SocketIO } from 'mock-socket';
 
-// ES5:
-var mockWebSocket = require('mock-socket').WebSocket;
-var mockServer = require('mock-socket').Server;
-var socketIO = require('mock-socket').SocketIO;
+// OR
+
+const mockServer = require('mock-socket').Server;
+const socketIO = require('mock-socket').SocketIO;
+const mockWebSocket = require('mock-socket').WebSocket;
 ```
 
 ## Native WebSocket Example
