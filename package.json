@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/thoov/mock-socket",
   "devDependencies": {
-    "ava": "^0.16.0",
+    "ava": "^0.17.0",
     "babel-core": "^6.18.2",
     "babel-loader": "^6.2.7",
     "babel-preset-latest": "^6.16.0",
