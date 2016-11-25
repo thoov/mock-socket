@@ -41,7 +41,7 @@
     "eslint-config-airbnb-base": "^9.0.0",
     "eslint-plugin-import": "^2.0.1",
     "jsdom": "^9.8.3",
-    "mocha": "~3.1.0",
+    "mocha": "~3.2.0",
     "nyc": "^9.0.1",
     "requirejs": "^2.3.2",
     "webpack": "^1.13.3"
