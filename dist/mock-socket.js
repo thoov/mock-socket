@@ -75,8 +75,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	debugger;
-	
 	var Server = exports.Server = _server2.default;
 	var WebSocket = exports.WebSocket = _websocket2.default;
 	var SocketIO = exports.SocketIO = _socketIo2.default;
