@@ -3,7 +3,7 @@ module.exports = {
   output: {
     library: 'Mock',
     libraryTarget: 'umd',
-    filename: 'dist/mock-socket.js',
+    filename: 'dist/mock-socket.js'
   },
   devtool: 'inline-source-map',
   module: {
