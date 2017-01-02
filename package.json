@@ -12,7 +12,7 @@
   "scripts": {
     "test": "cross-env NODE_ENV=test ava --serial --verbose",
     "test:coverage": "cross-env NODE_ENV=test nyc ava --serial",
-    "build": "rm -rf dist && webpack",
+    "build": "rm -rf dist && rollup -c rollup.config.js",
     "lint": "eslint src tests"
   },
   "repository": {
@@ -40,11 +40,11 @@
     "eslint": "^3.11.0",
     "eslint-config-airbnb-base": "^9.0.0",
     "eslint-plugin-import": "^2.0.1",
-    "jsdom": "^9.8.3",
     "mocha": "~3.2.0",
     "nyc": "^10.0.0",
-    "requirejs": "^2.3.2",
-    "webpack": "^1.13.3"
+    "rollup": "^0.39.2",
+    "rollup-plugin-buble": "^0.15.0",
+    "systemjs": "^0.19.41"
   },
   "ava": {
     "files": [
