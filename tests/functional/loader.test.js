@@ -1,93 +1,35 @@
-import fs from 'fs';
 import test from 'ava';
-import path from 'path';
-import jsdom from 'jsdom';
+import systemjs from 'systemjs';
 
-const successfullyLoaded = 'loaded-amd-succesfully';
-const failedToLoad = 'loaded-amd-failed';
+test('amd modules are loaded', async (t) => {
+  const mockSocket = await systemjs.import('../../dist/mock-socket.amd.js');
 
-function amdLoader() {
-  return `
-    requirejs(["dist/main"], function(mockSocket) {
-      // TODO if things are loaded correctly write some value to the dom
-
-      console.log('here');
-
-      document.getElementById("amd-loader").innerHTML = '${failedToLoad}';
-
-      if (mockSocket) {
-        document.getElementById("amd-loader").innerHTML = '${successfullyLoaded}';
-      }
-    });
-  `;
-}
-
-test.skip('the dist package can be loaded via a AMD loader like requireJS', (t) => {
-  const requireJS = fs.readFileSync(
-    path.resolve(
-      __dirname,
-      '../../node_modules/requirejs/require.js'
-    ),
-    'utf-8'
-  );
-
-  const mockSocket = fs.readFileSync(
-    path.resolve(
-      __dirname,
-      '../../dist/main.js'
-    ),
-    'utf-8'
-  );
-
-  jsdom.env({
-    html: `
-      <div id="amd-loader"></div>
-    `,
-    src: [
-      requireJS,
-      mockSocket,
-      amdLoader()
-    ],
-    done: (err, window) => {
-      if (err) {
-        t.true(false, 'error initializing jsdom');
-      }
-
-      // console.log(window.require.s.contexts._.defined);
-      t.is(window.document.getElementById('amd-loader').innerHTML, successfullyLoaded);
-    }
-  });
+  t.truthy(mockSocket.Server);
+  t.truthy(mockSocket.WebSocket);
+  t.truthy(mockSocket.SocketIO);
 });
 
-test.cb('the dist package correctly sets up the globals', (t) => {
-  const mockSocket = fs.readFileSync(
-    path.resolve(__dirname, '../../dist/mock-socket.js'), 'utf-8'
-  );
+test('umd modules are loaded', async (t) => {
+  const mockSocket = await systemjs.import('../../dist/mock-socket.js');
 
-  jsdom.env({
-    src: [mockSocket],
-    html: `
-      <div></div>
-    `,
-    done: (err, window) => {
-      if (err) {
-        t.true(false, 'error initializing jsdom');
-        t.end();
-      }
+  t.truthy(mockSocket.Server);
+  t.truthy(mockSocket.WebSocket);
+  t.truthy(mockSocket.SocketIO);
+});
 
-      if (!window.Mock || !window.Mock.Server) {
-        t.true(false, 'mock server was not found as a global');
-      }
+test('cjs modules are loaded', async (t) => {
+  const mockSocket = await systemjs.import('../../dist/mock-socket.cjs.js');
 
-      if (!window.Mock || !window.Mock.WebSocket) {
-        t.true(false, 'mock websocket was not found as a global');
-      }
+  t.truthy(mockSocket.Server);
+  t.truthy(mockSocket.WebSocket);
+  t.truthy(mockSocket.SocketIO);
+});
 
-      if (!window.Mock || !window.Mock.SocketIO) {
-        t.true(false, 'mock socketio was not found as a global');
-      }
+// TODO: install traceur (https://github.com/systemjs/plugin-traceur)
+test.skip('es modules are loaded', async (t) => {
+  const mockSocket = await systemjs.import('../../dist/mock-socket.es.js');
 
-      t.end();
-    }
-  });
+  t.truthy(mockSocket.Server);
+  t.truthy(mockSocket.WebSocket);
+  t.truthy(mockSocket.SocketIO);
 });
