@@ -187,6 +187,14 @@ class SocketIO extends EventTarget {
     networkBridge.removeMembershipFromRoom(this, room);
   }
 
+  to(room) {
+    return this.broadcast.to(room);
+  }
+
+  in() {
+    return this.to.apply(null, args);
+  }
+
   /*
    * Invokes all listener functions that are listening to the given event.type property. Each
    * listener will be passed the event as the first argument.

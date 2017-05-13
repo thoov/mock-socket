@@ -139,6 +139,26 @@ test.cb('a socket can join and leave a room', (t) => {
   });
 });
 
+test.cb('a socket can emit to a room', (t) => {
+  const server = new Server('ws://roomy');
+  const socketFoo = io('ws://roomy');
+  const socketBar = io('ws://roomy');
+
+  socketFoo.on('connect', () => {
+    socketFoo.join('room');
+  });
+  socketFoo.on('room-talk', () => {
+    t.true(true);
+    server.close();
+    t.end();
+  })
+
+  socketBar.on('connect', () => {
+    socketBar.join('room');
+    socketBar.to('room').emit('room-talk')
+  })
+})
+
 test.cb('Client can emit with multiple arguments', (t) => {
   const server = new Server('foobar');
   server.on('client-event', (...data) => {
