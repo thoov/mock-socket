@@ -4,6 +4,7 @@ import networkBridge from './network-bridge';
 import CLOSE_CODES from './helpers/close-codes';
 import normalize from './helpers/normalize-url';
 import globalObject from './helpers/global-object';
+import dedupe from './helpers/dedupe';
 import { createEvent, createMessageEvent, createCloseEvent } from './event-factory';
 
 /*
@@ -164,10 +165,15 @@ class Server extends EventTarget {
   *
   * e.g. server.to('my-room').emit('hi!');
   */
-  to(room, broadcaster) {
+  to(room, broadcaster, broadcastList = []) {
     const self = this;
-    const websockets = networkBridge.websocketsLookup(this.url, room, broadcaster);
+    const websockets = dedupe(broadcastList.concat(
+      networkBridge.websocketsLookup(this.url, room, broadcaster)
+    ));
+
     return {
+      to: (chainedRoom, chainedBroadcaster) =>
+        this.to.call(this, chainedRoom, chainedBroadcaster, websockets),
       emit(event, data) {
         self.emit(event, data, { websockets });
       }
