@@ -104,21 +104,26 @@ class Server extends EventTarget {
       data = Array.prototype.slice.call(arguments, 1, arguments.length);
     }
 
-    websockets.forEach((socket) => {
+    websockets.forEach(socket => {
       if (Array.isArray(data)) {
-        socket.dispatchEvent(createMessageEvent({
-          type: event,
-          data,
-          origin: this.url,
-          target: socket
-        }), ...data);
+        socket.dispatchEvent(
+          createMessageEvent({
+            type: event,
+            data,
+            origin: this.url,
+            target: socket
+          }),
+          ...data
+        );
       } else {
-        socket.dispatchEvent(createMessageEvent({
-          type: event,
-          data,
-          origin: this.url,
-          target: socket
-        }));
+        socket.dispatchEvent(
+          createMessageEvent({
+            type: event,
+            data,
+            origin: this.url,
+            target: socket
+          })
+        );
       }
     });
   }
@@ -131,22 +136,20 @@ class Server extends EventTarget {
   * @param {object} options
   */
   close(options = {}) {
-    const {
-      code,
-      reason,
-      wasClean
-    } = options;
+    const { code, reason, wasClean } = options;
     const listeners = networkBridge.websocketsLookup(this.url);
 
-    listeners.forEach((socket) => {
+    listeners.forEach(socket => {
       socket.readyState = WebSocket.CLOSE;
-      socket.dispatchEvent(createCloseEvent({
-        type: 'close',
-        target: socket,
-        code: code || CLOSE_CODES.CLOSE_NORMAL,
-        reason: reason || '',
-        wasClean
-      }));
+      socket.dispatchEvent(
+        createCloseEvent({
+          type: 'close',
+          target: socket,
+          code: code || CLOSE_CODES.CLOSE_NORMAL,
+          reason: reason || '',
+          wasClean
+        })
+      );
     });
 
     this.dispatchEvent(createCloseEvent({ type: 'close' }), this);
@@ -167,13 +170,10 @@ class Server extends EventTarget {
   */
   to(room, broadcaster, broadcastList = []) {
     const self = this;
-    const websockets = dedupe(broadcastList.concat(
-      networkBridge.websocketsLookup(this.url, room, broadcaster)
-    ));
+    const websockets = dedupe(broadcastList.concat(networkBridge.websocketsLookup(this.url, room, broadcaster)));
 
     return {
-      to: (chainedRoom, chainedBroadcaster) =>
-        this.to.call(this, chainedRoom, chainedBroadcaster, websockets),
+      to: (chainedRoom, chainedBroadcaster) => this.to.call(this, chainedRoom, chainedBroadcaster, websockets),
       emit(event, data) {
         self.emit(event, data, { websockets });
       }

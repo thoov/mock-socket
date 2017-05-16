@@ -54,7 +54,7 @@ function createCloseEvent(config) {
   let { wasClean } = config;
 
   if (!wasClean) {
-    wasClean = (code === 1000);
+    wasClean = code === 1000;
   }
 
   const closeEvent = new CloseEvent(type, {
@@ -72,8 +72,4 @@ function createCloseEvent(config) {
   return closeEvent;
 }
 
-export {
-  createEvent,
-  createMessageEvent,
-  createCloseEvent
-};
+export { createEvent, createMessageEvent, createCloseEvent };

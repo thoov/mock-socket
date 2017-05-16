@@ -7,7 +7,6 @@ import { reject, filter } from './helpers/array-helpers';
 * https://developer.mozilla.org/en-US/docs/Web/API/EventTarget
 */
 class EventTarget {
-
   constructor() {
     this.listeners = {};
   }
@@ -59,7 +58,7 @@ class EventTarget {
       return false;
     }
 
-    listeners.forEach((listener) => {
+    listeners.forEach(listener => {
       if (customArguments.length > 0) {
         listener.apply(this, customArguments);
       } else {

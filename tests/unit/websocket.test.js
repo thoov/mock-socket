@@ -2,21 +2,23 @@ import test from 'ava';
 import WebSocket from '../../src/websocket';
 import EventTarget from '../../src/event-target';
 
-test.skip('that not passing a url throws an error', (t) => {
-  t.throws(() => { new WebSocket(); }, 'Failed to construct \'WebSocket\': 1 argument required, but only 0 present');
+test.skip('that not passing a url throws an error', t => {
+  t.throws(() => {
+    new WebSocket();
+  }, "Failed to construct 'WebSocket': 1 argument required, but only 0 present");
 });
 
-test('that websockets inherents EventTarget methods', (t) => {
+test('that websockets inherents EventTarget methods', t => {
   const mySocket = new WebSocket('ws://not-real');
   t.true(mySocket instanceof EventTarget);
 });
 
-test('that websockets inherents EventTarget methods', (t) => {
+test('that websockets inherents EventTarget methods', t => {
   const mySocket = new WebSocket('ws://not-real');
   t.true(mySocket instanceof EventTarget);
 });
 
-test('that on(open, message, error, and close) can be set', (t) => {
+test('that on(open, message, error, and close) can be set', t => {
   const mySocket = new WebSocket('ws://not-real');
 
   mySocket.onopen = () => {};
@@ -32,7 +34,7 @@ test('that on(open, message, error, and close) can be set', (t) => {
   t.is(listeners.error.length, 1);
 });
 
-test('that passing protocols into the constructor works', (t) => {
+test('that passing protocols into the constructor works', t => {
   const mySocket = new WebSocket('ws://not-real', 'foo');
   const myOtherSocket = new WebSocket('ws://not-real', ['bar']);
 
@@ -40,10 +42,14 @@ test('that passing protocols into the constructor works', (t) => {
   t.is(myOtherSocket.protocol, 'bar', 'the correct protocol is set when it was passed in as an array');
 });
 
-test('that sending when the socket is closed throws an expection', (t) => {
+test('that sending when the socket is closed throws an expection', t => {
   const mySocket = new WebSocket('ws://not-real', 'foo');
   mySocket.readyState = WebSocket.CLOSED;
-  t.throws(() => {
-    mySocket.send('testing');
-  }, 'WebSocket is already in CLOSING or CLOSED state', 'an expection is thrown when sending while closed');
+  t.throws(
+    () => {
+      mySocket.send('testing');
+    },
+    'WebSocket is already in CLOSING or CLOSED state',
+    'an expection is thrown when sending while closed'
+  );
 });

@@ -2,7 +2,7 @@ import test from 'ava';
 import Server from '../../src/server';
 import WebSocket from '../../src/websocket';
 
-test.cb('mock sockets sends double messages', (t) => {
+test.cb('mock sockets sends double messages', t => {
   const socketUrl = 'ws://localhost:8080';
   const mockServer = new Server(socketUrl);
   const mockSocketA = new WebSocket(socketUrl);
@@ -16,7 +16,7 @@ test.cb('mock sockets sends double messages', (t) => {
     numMessagesReceived += 1;
   };
 
-  mockServer.on('connection', (server) => {
+  mockServer.on('connection', server => {
     connectionsCreated += 1;
     server.on('message', serverMessageHandler);
   });

@@ -2,9 +2,8 @@ coverage
 tests
 
 .babelrc
-.editorconfig
 .eslintrc
 .npmignore
 .nycrc
 .travis.yml
-webpack.config.js
+rollup.config.js

@@ -3,7 +3,5 @@ export default function retrieveGlobalObject() {
     return window;
   }
 
-  return (typeof process === 'object' &&
-      typeof require === 'function' &&
-      typeof global === 'object') ? global : this;
+  return typeof process === 'object' && typeof require === 'function' && typeof global === 'object' ? global : this;
 }
