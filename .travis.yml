@@ -1,21 +1,11 @@
 language: node_js
 
 node_js:
-  - 4
-  - 6
   - node
+  - 6
+  - 4
 
-cache:
-  directories:
-    - $HOME/.npm
-    - $HOME/.yarn-cache
-    - node_modules
-
-before_install:
-  - npm i -g yarn --cache-min 999999999
-
-install:
-  - yarn
+cache: yarn
 
 before_script:
   - yarn lint
