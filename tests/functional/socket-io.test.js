@@ -139,6 +139,26 @@ test.cb('a socket can join and leave a room', (t) => {
   });
 });
 
+test.cb('a socket can emit to a room', (t) => {
+  const server = new Server('ws://roomy');
+  const socketFoo = io('ws://roomy');
+  const socketBar = io('ws://roomy');
+
+  socketFoo.on('connect', () => {
+    socketFoo.join('room');
+  });
+  socketFoo.on('room-talk', () => {
+    t.true(true);
+    server.close();
+    t.end();
+  });
+
+  socketBar.on('connect', () => {
+    socketBar.join('room');
+    socketBar.to('room').emit('room-talk');
+  });
+});
+
 test.cb('Client can emit with multiple arguments', (t) => {
   const server = new Server('foobar');
   server.on('client-event', (...data) => {
@@ -169,5 +189,42 @@ test.cb('Server can emit with multiple arguments', (t) => {
     t.is(data[1], 'bar');
     server.close();
     t.end();
+  });
+});
+
+test.cb('Server can emit to multiple rooms', (t) => {
+  const server = new Server('ws://chat');
+  const socket1 = io('ws://chat');
+  const socket2 = io('ws://chat');
+
+  let connectedCount = 0;
+  const checkConnected = () => {
+    connectedCount += 1;
+    if (connectedCount === 2) {
+      server.to('room1').to('room2').emit('good-response');
+    }
+  };
+
+  let goodResponses = 0;
+  const checkGoodResponses = (socketId) => {
+    goodResponses += 1;
+    if (goodResponses === 2) {
+      t.true(true);
+      server.close();
+      t.end();
+    }
+  };
+
+  socket1.on('good-response', checkGoodResponses.bind(null, 1));
+  socket2.on('good-response', checkGoodResponses.bind(null, 2));
+
+  socket1.on('connect', () => {
+    socket1.join('room1');
+    checkConnected();
+  });
+
+  socket2.on('connect', () => {
+    socket2.join('room2');
+    checkConnected();
   });
 });
