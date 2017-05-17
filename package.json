@@ -15,7 +15,8 @@
     "build": "rm -rf dist && rollup -c rollup.config.js",
     "lint": "eslint src tests",
     "format": "prettier --print-width 120 --single-quote --write '{src,tests}/**/*.js'",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "prepublish": "yarn build"
   },
   "repository": {
     "type": "git",
