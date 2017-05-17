@@ -151,13 +151,13 @@ test.cb('a socket can emit to a room', (t) => {
     t.true(true);
     server.close();
     t.end();
-  })
+  });
 
   socketBar.on('connect', () => {
     socketBar.join('room');
-    socketBar.to('room').emit('room-talk')
-  })
-})
+    socketBar.to('room').emit('room-talk');
+  });
+});
 
 test.cb('Client can emit with multiple arguments', (t) => {
   const server = new Server('foobar');
@@ -203,7 +203,7 @@ test.cb('Server can emit to multiple rooms', (t) => {
     if (connectedCount === 2) {
       server.to('room1').to('room2').emit('good-response');
     }
-  }
+  };
 
   let goodResponses = 0;
   const checkGoodResponses = (socketId) => {
@@ -213,7 +213,7 @@ test.cb('Server can emit to multiple rooms', (t) => {
       server.close();
       t.end();
     }
-  }
+  };
 
   socket1.on('good-response', checkGoodResponses.bind(null, 1));
   socket2.on('good-response', checkGoodResponses.bind(null, 2));
@@ -226,5 +226,5 @@ test.cb('Server can emit to multiple rooms', (t) => {
   socket2.on('connect', () => {
     socket2.join('room2');
     checkConnected();
-  })
+  });
 });

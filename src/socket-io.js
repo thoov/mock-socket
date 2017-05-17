@@ -192,7 +192,7 @@ class SocketIO extends EventTarget {
   }
 
   in() {
-    return this.to.apply(null, args);
+    return this.to.apply(null, arguments);
   }
 
   /*
