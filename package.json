@@ -63,7 +63,6 @@
     "*.js": [
       "lint",
       "format",
-      "build",
       "git add"
     ]
   }
