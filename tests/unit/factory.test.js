@@ -3,12 +3,12 @@ import { createEvent, createMessageEvent, createCloseEvent } from '../../src/eve
 
 const fakeObject = { foo: 'bar' };
 
-test('that the create methods throw errors if no type if specified', (t) => {
-  t.throws(() => createEvent(), 'Cannot read property \'type\' of undefined');
-  t.throws(() => createMessageEvent(), 'Cannot read property \'type\' of undefined');
+test('that the create methods throw errors if no type if specified', t => {
+  t.throws(() => createEvent(), "Cannot read property 'type' of undefined");
+  t.throws(() => createMessageEvent(), "Cannot read property 'type' of undefined");
 });
 
-test('that createEvent correctly creates an event', (t) => {
+test('that createEvent correctly creates an event', t => {
   let event = createEvent({
     type: 'open'
   });
@@ -28,7 +28,7 @@ test('that createEvent correctly creates an event', (t) => {
   t.deepEqual(event.currentTarget, fakeObject, 'currentTarget is set to fakeObject');
 });
 
-test('that createMessageEvent correctly creates an event', (t) => {
+test('that createMessageEvent correctly creates an event', t => {
   let event = createMessageEvent({
     type: 'message',
     origin: 'ws://localhost:8080',
@@ -56,7 +56,7 @@ test('that createMessageEvent correctly creates an event', (t) => {
   t.deepEqual(event.currentTarget, fakeObject, 'currentTarget is set to fakeObject');
 });
 
-test('that createCloseEvent correctly creates an event', (t) => {
+test('that createCloseEvent correctly creates an event', t => {
   let event = createCloseEvent({
     type: 'close'
   });

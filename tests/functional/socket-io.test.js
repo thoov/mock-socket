@@ -2,7 +2,7 @@ import test from 'ava';
 import io from '../../src/socket-io';
 import Server from '../../src/server';
 
-test.cb('client triggers the server connection event', (t) => {
+test.cb('client triggers the server connection event', t => {
   const server = new Server('foobar');
   const socket = io('foobar');
 
@@ -14,7 +14,7 @@ test.cb('client triggers the server connection event', (t) => {
   });
 });
 
-test.cb('client triggers the server connect event', (t) => {
+test.cb('client triggers the server connect event', t => {
   const server = new Server('foobar');
   const socket = io('foobar');
 
@@ -26,7 +26,7 @@ test.cb('client triggers the server connect event', (t) => {
   });
 });
 
-test.cb('server triggers the client connect event', (t) => {
+test.cb('server triggers the client connect event', t => {
   const server = new Server('foobar');
   const socket = io('foobar');
 
@@ -38,7 +38,7 @@ test.cb('server triggers the client connect event', (t) => {
   });
 });
 
-test.cb('no connection triggers the client error event', (t) => {
+test.cb('no connection triggers the client error event', t => {
   const socket = io('foobar');
 
   socket.on('error', () => {
@@ -48,14 +48,14 @@ test.cb('no connection triggers the client error event', (t) => {
   });
 });
 
-test.cb('client and server receive an event', (t) => {
+test.cb('client and server receive an event', t => {
   const server = new Server('foobar');
-  server.on('client-event', (data) => {
+  server.on('client-event', data => {
     server.emit('server-response', data);
   });
 
   const socket = io('foobar');
-  socket.on('server-response', (data) => {
+  socket.on('server-response', data => {
     t.is('payload', data);
     socket.disconnect();
     server.close();
@@ -67,7 +67,7 @@ test.cb('client and server receive an event', (t) => {
   });
 });
 
-test.cb('Server closing triggers the client disconnect event', (t) => {
+test.cb('Server closing triggers the client disconnect event', t => {
   const server = new Server('foobar');
   server.on('connect', () => {
     server.close();
@@ -81,7 +81,7 @@ test.cb('Server closing triggers the client disconnect event', (t) => {
   });
 });
 
-test.cb('Server receives disconnect when socket is closed', (t) => {
+test.cb('Server receives disconnect when socket is closed', t => {
   const server = new Server('foobar');
   server.on('disconnect', () => {
     t.true(true);
@@ -95,7 +95,7 @@ test.cb('Server receives disconnect when socket is closed', (t) => {
   });
 });
 
-test.cb('Client can submit an event without a payload', (t) => {
+test.cb('Client can submit an event without a payload', t => {
   const server = new Server('foobar');
   server.on('client-event', () => {
     t.true(true);
@@ -109,9 +109,9 @@ test.cb('Client can submit an event without a payload', (t) => {
   });
 });
 
-test.cb('Client also has the send method available', (t) => {
+test.cb('Client also has the send method available', t => {
   const server = new Server('foobar');
-  server.on('message', (data) => {
+  server.on('message', data => {
     t.is(data, 'hullo!');
     server.close();
     t.end();
@@ -123,7 +123,7 @@ test.cb('Client also has the send method available', (t) => {
   });
 });
 
-test.cb('a socket can join and leave a room', (t) => {
+test.cb('a socket can join and leave a room', t => {
   const server = new Server('ws://roomy');
   const socket = io('ws://roomy');
 
@@ -139,7 +139,7 @@ test.cb('a socket can join and leave a room', (t) => {
   });
 });
 
-test.cb('a socket can emit to a room', (t) => {
+test.cb('a socket can emit to a room', t => {
   const server = new Server('ws://roomy');
   const socketFoo = io('ws://roomy');
   const socketBar = io('ws://roomy');
@@ -159,7 +159,7 @@ test.cb('a socket can emit to a room', (t) => {
   });
 });
 
-test.cb('Client can emit with multiple arguments', (t) => {
+test.cb('Client can emit with multiple arguments', t => {
   const server = new Server('foobar');
   server.on('client-event', (...data) => {
     t.is(data.length, 3);
@@ -176,7 +176,7 @@ test.cb('Client can emit with multiple arguments', (t) => {
   });
 });
 
-test.cb('Server can emit with multiple arguments', (t) => {
+test.cb('Server can emit with multiple arguments', t => {
   const server = new Server('foobar');
   server.on('connection', () => {
     server.emit('server-emit', 'foo', 'bar');
@@ -192,7 +192,7 @@ test.cb('Server can emit with multiple arguments', (t) => {
   });
 });
 
-test.cb('Server can emit to multiple rooms', (t) => {
+test.cb('Server can emit to multiple rooms', t => {
   const server = new Server('ws://chat');
   const socket1 = io('ws://chat');
   const socket2 = io('ws://chat');
@@ -206,7 +206,7 @@ test.cb('Server can emit to multiple rooms', (t) => {
   };
 
   let goodResponses = 0;
-  const checkGoodResponses = (socketId) => {
+  const checkGoodResponses = socketId => {
     goodResponses += 1;
     if (goodResponses === 2) {
       t.true(true);

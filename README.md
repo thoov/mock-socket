@@ -24,7 +24,7 @@ Javascript mocking library for <a href="https://developer.mozilla.org/en-US/docs
 ## Installation
 
 ```shell
-npm install mock-socket
+yarn add mock-socket --dev
 ```
 
 ## Usage
@@ -174,9 +174,22 @@ This project uses eslint and a rules set from [airbnb's javascript style guides]
 yarn lint
 ```
 
+### Formatting
+
+This project uses prettier with --single-quote and --print-width 120. To run the formatting:
+
+```shell
+yarn format
+```
+
+
 ### Code Coverage
 
-Code coverage reports are created in /coverage after all of the tests have successfully passed.
+Code coverage reports are created in /coverage after all of the tests have successfully passed. To run the coverage:
+
+```shell
+yarn test:coverage
+```
 
 ## Feedback / Issues
 

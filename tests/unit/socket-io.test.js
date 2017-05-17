@@ -2,27 +2,27 @@ import test from 'ava';
 import io from '../../src/socket-io';
 import Server from '../../src/server';
 
-test('it can be instantiated without a url', (t) => {
+test('it can be instantiated without a url', t => {
   const socket = io();
   t.truthy(socket);
 });
 
-test('it accepts a url', (t) => {
+test('it accepts a url', t => {
   const socket = io('http://localhost');
   t.truthy(socket);
 });
 
-test('it accepts an opts object paramter', (t) => {
+test('it accepts an opts object paramter', t => {
   const socket = io('http://localhost', { a: 'apple' });
   t.truthy(socket);
 });
 
-test('it can equivalently use a connect method', (t) => {
+test('it can equivalently use a connect method', t => {
   const socket = io.connect('http://localhost');
   t.truthy(socket);
 });
 
-test.cb.skip('it can broadcast to other connected sockets', (t) => {
+test.cb.skip('it can broadcast to other connected sockets', t => {
   const url = 'ws://not-real/';
   const myServer = new Server(url);
   const socketFoo = io(url);
@@ -38,14 +38,14 @@ test.cb.skip('it can broadcast to other connected sockets', (t) => {
     t.end();
   });
 
-  socketBar.on('Testing', (socket) => {
+  socketBar.on('Testing', socket => {
     t.true(true);
     myServer.close();
     t.end();
   });
 });
 
-test.cb.skip('it can broadcast to other connected sockets in a room', (t) => {
+test.cb.skip('it can broadcast to other connected sockets in a room', t => {
   const roomKey = 'room-64';
   const url = 'ws://not-real/';
 
@@ -63,7 +63,7 @@ test.cb.skip('it can broadcast to other connected sockets in a room', (t) => {
 
   const socketFooBar = io(url);
   socketFooBar.join(roomKey);
-  socketFooBar.on('Testing', (socket) => {
+  socketFooBar.on('Testing', socket => {
     t.true(true);
     myServer.close();
     t.end();

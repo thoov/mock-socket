@@ -43,11 +43,13 @@ class SocketIO extends EventTarget {
       } else {
         this.readyState = SocketIO.CLOSED;
         this.dispatchEvent(createEvent({ type: 'error', target: this }));
-        this.dispatchEvent(createCloseEvent({
-          type: 'close',
-          target: this,
-          code: CLOSE_CODES.CLOSE_NORMAL
-        }));
+        this.dispatchEvent(
+          createCloseEvent({
+            type: 'close',
+            target: this,
+            code: CLOSE_CODES.CLOSE_NORMAL
+          })
+        );
 
         logger('error', `Socket.io connection to '${this.url}' failed`);
       }
@@ -56,12 +58,14 @@ class SocketIO extends EventTarget {
     /**
       Add an aliased event listener for close / disconnect
      */
-    this.addEventListener('close', (event) => {
-      this.dispatchEvent(createCloseEvent({
-        type: 'disconnect',
-        target: event.target,
-        code: event.code
-      }));
+    this.addEventListener('close', event => {
+      this.dispatchEvent(
+        createCloseEvent({
+          type: 'disconnect',
+          target: event.target,
+          code: event.code
+        })
+      );
     });
   }
 
@@ -70,24 +74,31 @@ class SocketIO extends EventTarget {
   * If the connection is already CLOSED, this method does nothing.
   */
   close() {
-    if (this.readyState !== SocketIO.OPEN) { return undefined; }
+    if (this.readyState !== SocketIO.OPEN) {
+      return undefined;
+    }
 
     const server = networkBridge.serverLookup(this.url);
     networkBridge.removeWebSocket(this, this.url);
 
     this.readyState = SocketIO.CLOSED;
-    this.dispatchEvent(createCloseEvent({
-      type: 'close',
-      target: this,
-      code: CLOSE_CODES.CLOSE_NORMAL
-    }));
-
-    if (server) {
-      server.dispatchEvent(createCloseEvent({
-        type: 'disconnect',
+    this.dispatchEvent(
+      createCloseEvent({
+        type: 'close',
         target: this,
         code: CLOSE_CODES.CLOSE_NORMAL
-      }), server);
+      })
+    );
+
+    if (server) {
+      server.dispatchEvent(
+        createCloseEvent({
+          type: 'disconnect',
+          target: this,
+          code: CLOSE_CODES.CLOSE_NORMAL
+        }),
+        server
+      );
     }
   }
 
@@ -209,7 +220,7 @@ class SocketIO extends EventTarget {
       return false;
     }
 
-    listeners.forEach((listener) => {
+    listeners.forEach(listener => {
       if (customArguments.length > 0) {
         listener.apply(this, customArguments);
       } else {

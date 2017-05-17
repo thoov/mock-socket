@@ -5,13 +5,13 @@ import EventTarget from '../../src/event-target';
 import networkBridge from '../../src/network-bridge';
 import globalObject from '../../src/helpers/global-object';
 
-test('that server inherents EventTarget methods', (t) => {
+test('that server inherents EventTarget methods', t => {
   const myServer = new Server('ws://not-real');
   t.true(myServer instanceof EventTarget);
   myServer.close();
 });
 
-test('that after creating a server it is added to the network bridge', (t) => {
+test('that after creating a server it is added to the network bridge', t => {
   const myServer = new Server('ws://not-real/');
   const urlMap = networkBridge.urlMap['ws://not-real/'];
 
@@ -20,7 +20,7 @@ test('that after creating a server it is added to the network bridge', (t) => {
   t.deepEqual(networkBridge.urlMap, {}, 'the urlMap was cleared after the close call');
 });
 
-test('that callback functions can be added to the listeners object', (t) => {
+test('that callback functions can be added to the listeners object', t => {
   const myServer = new Server('ws://not-real/');
 
   myServer.on('message', () => {});
@@ -32,7 +32,7 @@ test('that callback functions can be added to the listeners object', (t) => {
   myServer.close();
 });
 
-test('that calling clients() returns the correct clients', (t) => {
+test('that calling clients() returns the correct clients', t => {
   const myServer = new Server('ws://not-real/');
   const socketFoo = new WebSocket('ws://not-real/');
   const socketBar = new WebSocket('ws://not-real/');
@@ -43,7 +43,7 @@ test('that calling clients() returns the correct clients', (t) => {
   myServer.close();
 });
 
-test.cb('that calling clients() returns the correct clients', (t) => {
+test.cb('that calling clients() returns the correct clients', t => {
   const myServer = new Server('ws://not-real/');
 
   myServer.on('connection', (server, socket) => {
@@ -63,7 +63,7 @@ test.cb('that calling clients() returns the correct clients', (t) => {
   };
 });
 
-test.cb('that calling close will trigger the onclose of websockets', (t) => {
+test.cb('that calling close will trigger the onclose of websockets', t => {
   const myServer = new Server('ws://not-real/');
   let counter = 0;
 
@@ -79,13 +79,13 @@ test.cb('that calling close will trigger the onclose of websockets', (t) => {
 
   const socketFoo = new WebSocket('ws://not-real/');
   const socketBar = new WebSocket('ws://not-real/');
-  socketFoo.onclose = (event) => {
+  socketFoo.onclose = event => {
     t.true(true, 'socketFoo onmessage was correctly called');
     t.is(event.code, 1005, 'the correct code was recieved');
     t.is(event.reason, 'Some reason', 'the correct reason was recieved');
   };
 
-  socketBar.onclose = (event) => {
+  socketBar.onclose = event => {
     t.pass(true, 'socketBar onmessage was correctly called');
     t.is(event.code, 1005, 'the correct code was recieved');
     t.is(event.reason, 'Some reason', 'the correct reason was recieved');
@@ -93,7 +93,7 @@ test.cb('that calling close will trigger the onclose of websockets', (t) => {
   };
 });
 
-test('a namespaced server is added to the network bridge', (t) => {
+test('a namespaced server is added to the network bridge', t => {
   const myServer = Server.of('/my-namespace');
   const urlMap = networkBridge.urlMap['/my-namespace'];
 
@@ -102,7 +102,7 @@ test('a namespaced server is added to the network bridge', (t) => {
   t.deepEqual(networkBridge.urlMap, {}, 'the urlMap was cleared after the close call');
 });
 
-test('that calling close will trigger the onclose of websockets', (t) => {
+test('that calling close will trigger the onclose of websockets', t => {
   const myServer = new Server('ws://example.com');
   const globalObj = globalObject();
   const originalWebSocket = globalObj.WebSocket;

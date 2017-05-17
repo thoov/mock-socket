@@ -1,7 +1,7 @@
 import test from 'ava';
 import normalize from '../../src/helpers/normalize-url';
 
-test('Unit - Normalize Url - that normalize correctly adds a / to the url', (t) => {
+test('Unit - Normalize Url - that normalize correctly adds a / to the url', t => {
   t.plan(4);
 
   t.is(normalize('ws://example.com'), 'ws://example.com/');

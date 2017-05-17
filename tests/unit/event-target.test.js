@@ -5,7 +5,7 @@ import EventTarget from '../../src/event-target';
 class Mock extends EventTarget {}
 class MockFoo extends EventTarget {}
 
-test('has all the required methods', (t) => {
+test('has all the required methods', t => {
   const mock = new Mock();
 
   t.is(typeof mock.addEventListener, 'function');
@@ -13,14 +13,18 @@ test('has all the required methods', (t) => {
   t.is(typeof mock.dispatchEvent, 'function');
 });
 
-test('adding/removing "message" event listeners works', (t) => {
+test('adding/removing "message" event listeners works', t => {
   const mock = new Mock();
   const eventObject = createEvent({
     type: 'message'
   });
 
-  const fooListener = (event) => { t.is(event.type, 'message'); };
-  const barListener = (event) => { t.is(event.type, 'message'); };
+  const fooListener = event => {
+    t.is(event.type, 'message');
+  };
+  const barListener = event => {
+    t.is(event.type, 'message');
+  };
 
   mock.addEventListener('message', fooListener);
   mock.addEventListener('message', barListener);
@@ -33,15 +37,19 @@ test('adding/removing "message" event listeners works', (t) => {
   mock.dispatchEvent(eventObject);
 });
 
-test('events to different object should not share events', (t) => {
+test('events to different object should not share events', t => {
   const mock = new Mock();
   const mockFoo = new MockFoo();
   const eventObject = createEvent({
     type: 'message'
   });
 
-  const fooListener = (event) => { t.is(event.type, 'message'); };
-  const barListener = (event) => { t.is(event.type, 'message'); };
+  const fooListener = event => {
+    t.is(event.type, 'message');
+  };
+  const barListener = event => {
+    t.is(event.type, 'message');
+  };
 
   mock.addEventListener('message', fooListener);
   mockFoo.addEventListener('message', barListener);
@@ -57,10 +65,14 @@ test('events to different object should not share events', (t) => {
   mockFoo.dispatchEvent(eventObject);
 });
 
-test('that adding the same function twice for the same event type is only added once', (t) => {
+test('that adding the same function twice for the same event type is only added once', t => {
   const mock = new Mock();
-  const fooListener = (event) => { t.is(event.type, 'message'); };
-  const barListener = (event) => { t.is(event.type, 'message'); };
+  const fooListener = event => {
+    t.is(event.type, 'message');
+  };
+  const barListener = event => {
+    t.is(event.type, 'message');
+  };
 
   mock.addEventListener('message', fooListener);
   mock.addEventListener('message', fooListener);
@@ -69,7 +81,7 @@ test('that adding the same function twice for the same event type is only added 
   t.is(mock.listeners.message.length, 2);
 });
 
-test('that dispatching an event with multiple data arguments works correctly', (t) => {
+test('that dispatching an event with multiple data arguments works correctly', t => {
   const mock = new Mock();
   const eventObject = createEvent({
     type: 'message'

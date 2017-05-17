@@ -5,11 +5,11 @@ export default class Event extends EventPrototype {
     super();
 
     if (!type) {
-      throw new TypeError('Failed to construct \'Event\': 1 argument required, but only 0 present.');
+      throw new TypeError("Failed to construct 'Event': 1 argument required, but only 0 present.");
     }
 
     if (typeof eventInitConfig !== 'object') {
-      throw new TypeError('Failed to construct \'Event\': parameter 2 (\'eventInitDict\') is not an object');
+      throw new TypeError("Failed to construct 'Event': parameter 2 ('eventInitDict') is not an object");
     }
 
     const { bubbles, cancelable } = eventInitConfig;

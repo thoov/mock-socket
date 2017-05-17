@@ -2,7 +2,7 @@ import test from 'ava';
 import Server from '../../src/server';
 import IO from '../../src/socket-io';
 
-test.cb('mock socket invokes each handler with unique reference', (t) => {
+test.cb('mock socket invokes each handler with unique reference', t => {
   const socketUrl = 'ws://roomy';
   const server = new Server(socketUrl);
   const socket = new IO(socketUrl);
@@ -33,7 +33,7 @@ test.cb('mock socket invokes each handler with unique reference', (t) => {
   }, 500);
 });
 
-test.cb('mock socket invokes each handler per socket', (t) => {
+test.cb('mock socket invokes each handler per socket', t => {
   const socketUrl = 'ws://roomy';
   const server = new Server(socketUrl);
   const socketA = new IO(socketUrl);

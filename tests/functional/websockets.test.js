@@ -7,7 +7,7 @@ test.afterEach(() => {
   networkBridge.urlMap = {};
 });
 
-test.cb('that creating a websocket with no server invokes the onerror method', (t) => {
+test.cb('that creating a websocket with no server invokes the onerror method', t => {
   const mockSocket = new WebSocket('ws://localhost:8080');
   mockSocket.onerror = function error(event) {
     t.is(event.target.readyState, WebSocket.CLOSED, 'onerror fires as expected');
@@ -15,7 +15,7 @@ test.cb('that creating a websocket with no server invokes the onerror method', (
   };
 });
 
-test.cb('that onopen is called after successfully connection to the server', (t) => {
+test.cb('that onopen is called after successfully connection to the server', t => {
   const server = new Server('ws://localhost:8080');
   const mockSocket = new WebSocket('ws://localhost:8080');
 
@@ -25,7 +25,7 @@ test.cb('that onopen is called after successfully connection to the server', (t)
   };
 });
 
-test.cb('that failing the verifyClient check invokes the onerror method', (t) => {
+test.cb('that failing the verifyClient check invokes the onerror method', t => {
   const server = new Server('ws://localhost:8080', {
     verifyClient: () => false
   });
@@ -37,7 +37,7 @@ test.cb('that failing the verifyClient check invokes the onerror method', (t) =>
   };
 });
 
-test.cb('that failing the verifyClient check removes the websocket from the networkBridge', (t) => {
+test.cb('that failing the verifyClient check removes the websocket from the networkBridge', t => {
   const server = new Server('ws://localhost:8080', {
     verifyClient: () => false
   });
@@ -51,7 +51,7 @@ test.cb('that failing the verifyClient check removes the websocket from the netw
   };
 });
 
-test.cb('that verifyClient is only invoked if it is a function', (t) => {
+test.cb('that verifyClient is only invoked if it is a function', t => {
   const server = new Server('ws://localhost:8080', {
     verifyClient: false
   });
@@ -63,10 +63,10 @@ test.cb('that verifyClient is only invoked if it is a function', (t) => {
   };
 });
 
-test.cb('that onmessage is called after the server sends a message', (t) => {
+test.cb('that onmessage is called after the server sends a message', t => {
   const testServer = new Server('ws://localhost:8080');
 
-  testServer.on('connection', (server) => {
+  testServer.on('connection', server => {
     server.send('Testing');
   });
 
@@ -78,10 +78,10 @@ test.cb('that onmessage is called after the server sends a message', (t) => {
   };
 });
 
-test.cb('that onclose is called after the client closes the connection', (t) => {
+test.cb('that onclose is called after the client closes the connection', t => {
   const testServer = new Server('ws://localhost:8080');
 
-  testServer.on('connection', (server) => {
+  testServer.on('connection', server => {
     server.send('Testing');
   });
 
@@ -97,10 +97,10 @@ test.cb('that onclose is called after the client closes the connection', (t) => 
   };
 });
 
-test.cb('that the server gets called when the client sends a message', (t) => {
+test.cb('that the server gets called when the client sends a message', t => {
   const testServer = new Server('ws://localhost:8080');
 
-  testServer.on('message', (data) => {
+  testServer.on('message', data => {
     t.is(data, 'Testing', 'on message fires as expected');
     t.end();
   });
@@ -112,7 +112,7 @@ test.cb('that the server gets called when the client sends a message', (t) => {
   };
 });
 
-test.cb('that the onopen function will only be called once for each client', (t) => {
+test.cb('that the onopen function will only be called once for each client', t => {
   const socketUrl = 'ws://localhost:8080';
   const mockServer = new Server(socketUrl);
   const websocketFoo = new WebSocket(socketUrl);
@@ -129,7 +129,7 @@ test.cb('that the onopen function will only be called once for each client', (t)
   };
 });
 
-test.cb('closing a client will only close itself and not other clients', (t) => {
+test.cb('closing a client will only close itself and not other clients', t => {
   const server = new Server('ws://localhost:8080');
   const websocketFoo = new WebSocket('ws://localhost:8080');
   const websocketBar = new WebSocket('ws://localhost:8080');
@@ -148,7 +148,7 @@ test.cb('closing a client will only close itself and not other clients', (t) => 
   };
 });
 
-test.cb('mock clients can send messages to the right mock server', (t) => {
+test.cb('mock clients can send messages to the right mock server', t => {
   const serverFoo = new Server('ws://localhost:8080');
   const serverBar = new Server('ws://localhost:8081');
   const dataFoo = 'foo';
@@ -156,18 +156,18 @@ test.cb('mock clients can send messages to the right mock server', (t) => {
   const socketFoo = new WebSocket('ws://localhost:8080');
   const socketBar = new WebSocket('ws://localhost:8081');
 
-  serverFoo.on('connection', (server) => {
+  serverFoo.on('connection', server => {
     t.true(true, 'mock server on connection fires as expected');
 
-    server.on('message', (data) => {
+    server.on('message', data => {
       t.is(data, dataFoo);
     });
   });
 
-  serverBar.on('connection', (server) => {
+  serverBar.on('connection', server => {
     t.true(true, 'mock server on connection fires as expected');
 
-    server.on('message', (data) => {
+    server.on('message', data => {
       t.is(data, dataBar);
       t.end();
     });
@@ -184,7 +184,7 @@ test.cb('mock clients can send messages to the right mock server', (t) => {
   };
 });
 
-test.cb('that closing a websocket removes it from the network bridge', (t) => {
+test.cb('that closing a websocket removes it from the network bridge', t => {
   const server = new Server('ws://localhost:8080');
   const socket = new WebSocket('ws://localhost:8080');
 

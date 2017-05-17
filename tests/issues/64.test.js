@@ -2,7 +2,7 @@ import test from 'ava';
 import Server from '../../src/server';
 import IO from '../../src/socket-io';
 
-test.cb('mock sockets invokes each handler', (t) => {
+test.cb('mock sockets invokes each handler', t => {
   const socketUrl = 'ws://roomy';
   const server = new Server(socketUrl);
   const socket = new IO(socketUrl);

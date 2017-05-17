@@ -20,9 +20,7 @@ class NetworkBridge {
   attachWebSocket(websocket, url) {
     const connectionLookup = this.urlMap[url];
 
-    if (connectionLookup &&
-        connectionLookup.server &&
-        connectionLookup.websockets.indexOf(websocket) === -1) {
+    if (connectionLookup && connectionLookup.server && connectionLookup.websockets.indexOf(websocket) === -1) {
       connectionLookup.websockets.push(websocket);
       return connectionLookup.server;
     }
@@ -34,9 +32,7 @@ class NetworkBridge {
   addMembershipToRoom(websocket, room) {
     const connectionLookup = this.urlMap[websocket.url];
 
-    if (connectionLookup &&
-        connectionLookup.server &&
-        connectionLookup.websockets.indexOf(websocket) !== -1) {
+    if (connectionLookup && connectionLookup.server && connectionLookup.websockets.indexOf(websocket) !== -1) {
       if (!connectionLookup.roomMemberships[room]) {
         connectionLookup.roomMemberships[room] = [];
       }

@@ -20,7 +20,7 @@ class WebSocket extends EventTarget {
     super();
 
     if (!url) {
-      throw new TypeError('Failed to construct \'WebSocket\': 1 argument required, but only 0 present.');
+      throw new TypeError("Failed to construct 'WebSocket': 1 argument required, but only 0 present.");
     }
 
     this.binaryType = 'blob';
@@ -46,7 +46,9 @@ class WebSocket extends EventTarget {
       onopen: {
         configurable: true,
         enumerable: true,
-        get() { return this.listeners.open; },
+        get() {
+          return this.listeners.open;
+        },
         set(listener) {
           this.addEventListener('open', listener);
         }
@@ -54,7 +56,9 @@ class WebSocket extends EventTarget {
       onmessage: {
         configurable: true,
         enumerable: true,
-        get() { return this.listeners.message; },
+        get() {
+          return this.listeners.message;
+        },
         set(listener) {
           this.addEventListener('message', listener);
         }
@@ -62,7 +66,9 @@ class WebSocket extends EventTarget {
       onclose: {
         configurable: true,
         enumerable: true,
-        get() { return this.listeners.close; },
+        get() {
+          return this.listeners.close;
+        },
         set(listener) {
           this.addEventListener('close', listener);
         }
@@ -70,7 +76,9 @@ class WebSocket extends EventTarget {
       onerror: {
         configurable: true,
         enumerable: true,
-        get() { return this.listeners.error; },
+        get() {
+          return this.listeners.error;
+        },
         set(listener) {
           this.addEventListener('error', listener);
         }
@@ -95,9 +103,11 @@ class WebSocket extends EventTarget {
     */
     delay(function delayCallback() {
       if (server) {
-        if (server.options.verifyClient
-          && typeof server.options.verifyClient === 'function'
-          && !server.options.verifyClient()) {
+        if (
+          server.options.verifyClient &&
+          typeof server.options.verifyClient === 'function' &&
+          !server.options.verifyClient()
+        ) {
           this.readyState = WebSocket.CLOSED;
 
           logger(
@@ -153,7 +163,9 @@ class WebSocket extends EventTarget {
   * https://developer.mozilla.org/en-US/docs/Web/API/WebSocket#close()
   */
   close() {
-    if (this.readyState !== WebSocket.OPEN) { return undefined; }
+    if (this.readyState !== WebSocket.OPEN) {
+      return undefined;
+    }
 
     const server = networkBridge.serverLookup(this.url);
     const closeEvent = createCloseEvent({
