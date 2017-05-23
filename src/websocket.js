@@ -120,8 +120,8 @@ class WebSocket extends EventTarget {
           this.dispatchEvent(createCloseEvent({ type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL }));
         } else {
           this.readyState = WebSocket.OPEN;
-          server.dispatchEvent(createEvent({ type: 'connection' }), server, this);
           this.dispatchEvent(createEvent({ type: 'open', target: this }));
+          server.dispatchEvent(createEvent({ type: 'connection' }), server, this);
         }
       } else {
         this.readyState = WebSocket.CLOSED;
@@ -152,7 +152,9 @@ class WebSocket extends EventTarget {
     const server = networkBridge.serverLookup(this.url);
 
     if (server) {
-      server.dispatchEvent(messageEvent, data);
+      delay(() => {
+        server.dispatchEvent(messageEvent, data);
+      }, server);
     }
   }
 
