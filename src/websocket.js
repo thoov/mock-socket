@@ -1,38 +1,77 @@
-import delay from './helpers/delay';
+import URL from 'url-parse';
 import EventTarget from './event-target';
 import networkBridge from './network-bridge';
 import CLOSE_CODES from './helpers/close-codes';
-import normalize from './helpers/normalize-url';
 import logger from './helpers/logger';
 import { createEvent, createMessageEvent, createCloseEvent } from './event-factory';
+import { findDuplicates } from './helpers/array-helpers';
+import utf8ByteLength from './helpers/utf8-byte-length';
+
+import connectionQueue from './queues/connection';
+import sendQueue from './queues/send';
+import closeQueue from './queues/close';
+
+const CONSTRUCTOR_ERROR = "Failed to construct 'WebSocket':";
+const CLOSE_ERROR = "Failed to execute 'close' on 'WebSocket':";
 
 /*
-* The main websocket class which is designed to mimick the native WebSocket class as close
-* as possible.
-*
-* https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
-*/
+ * The main websocket class which is designed to mimick the native WebSocket class as close
+ * as possible.
+ *
+ * https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
+ */
 class WebSocket extends EventTarget {
-  /*
-  * @param {string} url
-  */
   constructor(url, protocol = '') {
     super();
 
     if (!url) {
-      throw new TypeError("Failed to construct 'WebSocket': 1 argument required, but only 0 present.");
+      throw new TypeError(`${CONSTRUCTOR_ERROR} 1 argument required, but only 0 present.`);
     }
 
-    this.binaryType = 'blob';
-    this.url = normalize(url);
-    this.readyState = WebSocket.CONNECTING;
-    this.protocol = '';
+    const urlRecord = new URL(url);
 
+    if (!urlRecord.pathname) {
+      urlRecord.pathname = '/';
+    }
+
+    if (!urlRecord.protocol) {
+      throw new SyntaxError(`${CONSTRUCTOR_ERROR} The URL '${urlRecord.toString()}' is invalid.`);
+    }
+
+    // TODO might need to strip off the :
+    if (urlRecord.protocol !== 'ws:' && urlRecord.protocol !== 'wss:') {
+      throw new SyntaxError(
+        `${CONSTRUCTOR_ERROR} The URL's scheme must be either 'ws' or 'wss'. '${urlRecord.protocol}' is not allowed.`
+      );
+    }
+
+    if (urlRecord.hash) {
+      throw new SyntaxError(
+        `${CONSTRUCTOR_ERROR} The URL contains a fragment identifier ('${urlRecord.hash}'). Fragment identifiers are not allowed in WebSocket URLs.`
+      );
+    }
+
+    this.url = urlRecord.toString();
+
+    this.protocol = '';
     if (typeof protocol === 'string') {
       this.protocol = protocol;
     } else if (Array.isArray(protocol) && protocol.length > 0) {
+      const duplicates = findDuplicates(protocol);
+
+      if (duplicates.length) {
+        throw new SyntaxError(
+          `${CONSTRUCTOR_ERROR} The subprotocol '${duplicates[0]}' is duplicated.`
+        );
+      }
+
       this.protocol = protocol[0];
     }
+
+    this.binaryType = 'blob';
+    this.readyState = WebSocket.CONNECTING;
+    this.extensions = '';
+    this.bufferedAmount = 0;
 
     /*
     * In order to capture the callback function we need to define custom setters.
@@ -85,52 +124,7 @@ class WebSocket extends EventTarget {
       }
     });
 
-    const server = networkBridge.attachWebSocket(this, this.url);
-
-    /*
-    * This delay is needed so that we dont trigger an event before the callbacks have been
-    * setup. For example:
-    *
-    * var socket = new WebSocket('ws://localhost');
-    *
-    * // If we dont have the delay then the event would be triggered right here and this is
-    * // before the onopen had a chance to register itself.
-    *
-    * socket.onopen = () => { // this would never be called };
-    *
-    * // and with the delay the event gets triggered here after all of the callbacks have been
-    * // registered :-)
-    */
-    delay(function delayCallback() {
-      if (server) {
-        if (
-          server.options.verifyClient &&
-          typeof server.options.verifyClient === 'function' &&
-          !server.options.verifyClient()
-        ) {
-          this.readyState = WebSocket.CLOSED;
-
-          logger(
-            'error',
-            `WebSocket connection to '${this.url}' failed: HTTP Authentication failed; no valid credentials available`
-          );
-
-          networkBridge.removeWebSocket(this, this.url);
-          this.dispatchEvent(createEvent({ type: 'error', target: this }));
-          this.dispatchEvent(createCloseEvent({ type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL }));
-        } else {
-          this.readyState = WebSocket.OPEN;
-          this.dispatchEvent(createEvent({ type: 'open', target: this }));
-          server.dispatchEvent(createEvent({ type: 'connection' }), server, this);
-        }
-      } else {
-        this.readyState = WebSocket.CLOSED;
-        this.dispatchEvent(createEvent({ type: 'error', target: this }));
-        this.dispatchEvent(createCloseEvent({ type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL }));
-
-        logger('error', `WebSocket connection to '${this.url}' failed`);
-      }
-    }, this);
+    connectionQueue(this);
   }
 
   /*
@@ -152,9 +146,7 @@ class WebSocket extends EventTarget {
     const server = networkBridge.serverLookup(this.url);
 
     if (server) {
-      delay(() => {
-        server.dispatchEvent(messageEvent, data);
-      }, server);
+      server.dispatchEvent(messageEvent, data);
     }
   }
 
@@ -164,26 +156,36 @@ class WebSocket extends EventTarget {
   *
   * https://developer.mozilla.org/en-US/docs/Web/API/WebSocket#close()
   */
-  close() {
-    if (this.readyState !== WebSocket.OPEN) {
+  close(code, reason) {
+    if (this.readyState === WebSocket.CLOSING || this.readyState === WebSocket.CLOSED) {
       return undefined;
     }
 
-    const server = networkBridge.serverLookup(this.url);
-    const closeEvent = createCloseEvent({
-      type: 'close',
-      target: this,
-      code: CLOSE_CODES.CLOSE_NORMAL
-    });
-
-    networkBridge.removeWebSocket(this, this.url);
-
-    this.readyState = WebSocket.CLOSED;
-    this.dispatchEvent(closeEvent);
-
-    if (server) {
-      server.dispatchEvent(closeEvent, server);
+    if (code) {
+      // TODO: code might need to be converted to a number
+      if (typeof code !== 'number' || code > 4999 || (code < 3000 && code !== 1000)) {
+        // TODO: should be InvalidAccessError;
+        throw new TypeError(
+          `${CLOSE_ERROR} The code must be either 1000, or between 3000 and 4999. ${code} is neither.`
+        );
+      }
     }
+
+    if (reason) {
+      const reasonBytes = utf8ByteLength(reason);
+
+      if (reasonBytes > 123) {
+        throw new SyntaxError(
+          `${CLOSE_ERROR} The message must not be greater than 123 bytes.`
+        );
+      }
+    }
+
+    if (this.readyState === WebSocket.CONNECTING) {
+      this.readyState = WebSocket.CLOSING;
+    }
+
+    closeQueue(this, code, reason);
   }
 }
 
