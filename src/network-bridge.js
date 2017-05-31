@@ -132,4 +132,4 @@ class NetworkBridge {
   }
 }
 
-export default new NetworkBridge(); // Note: this is a singleton
+export default NetworkBridge;

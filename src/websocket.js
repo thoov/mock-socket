@@ -1,15 +1,8 @@
 import URL from 'url-parse';
 import EventTarget from './event-target';
-import networkBridge from './network-bridge';
-import CLOSE_CODES from './helpers/close-codes';
-import logger from './helpers/logger';
-import { createEvent, createMessageEvent, createCloseEvent } from './event-factory';
 import { findDuplicates } from './helpers/array-helpers';
 import utf8ByteLength from './helpers/utf8-byte-length';
-
-import connectionQueue from './queues/connection';
-import sendQueue from './queues/send';
-import closeQueue from './queues/close';
+import { connectionQueue, closeQueue, sendQueue } from './queues/index';
 
 const CONSTRUCTOR_ERROR = "Failed to construct 'WebSocket':";
 const CLOSE_ERROR = "Failed to execute 'close' on 'WebSocket':";
@@ -60,9 +53,7 @@ class WebSocket extends EventTarget {
       const duplicates = findDuplicates(protocol);
 
       if (duplicates.length) {
-        throw new SyntaxError(
-          `${CONSTRUCTOR_ERROR} The subprotocol '${duplicates[0]}' is duplicated.`
-        );
+        throw new SyntaxError(`${CONSTRUCTOR_ERROR} The subprotocol '${duplicates[0]}' is duplicated.`);
       }
 
       this.protocol = protocol[0];
@@ -124,6 +115,10 @@ class WebSocket extends EventTarget {
       }
     });
 
+    if (!this.__getNetworkConnection) {
+      throw new Error('WebSocket must be created via createMocks. Please references this for more details.');
+    }
+
     connectionQueue(this);
   }
 
@@ -133,21 +128,17 @@ class WebSocket extends EventTarget {
   * https://developer.mozilla.org/en-US/docs/Web/API/WebSocket#send()
   */
   send(data) {
+    if (this.readyState === WebSocket.CONNECTING) {
+      // TODO: should be InvalidStateError
+      throw new Error("Failed to execute 'send' on 'WebSocket': Still in CONNECTING state.");
+    }
+
     if (this.readyState === WebSocket.CLOSING || this.readyState === WebSocket.CLOSED) {
-      throw new Error('WebSocket is already in CLOSING or CLOSED state');
+      // Chrome console logs an error and safari does nothing
+      return;
     }
 
-    const messageEvent = createMessageEvent({
-      type: 'message',
-      origin: this.url,
-      data
-    });
-
-    const server = networkBridge.serverLookup(this.url);
-
-    if (server) {
-      server.dispatchEvent(messageEvent, data);
-    }
+    sendQueue(this, data);
   }
 
   /*
@@ -175,9 +166,7 @@ class WebSocket extends EventTarget {
       const reasonBytes = utf8ByteLength(reason);
 
       if (reasonBytes > 123) {
-        throw new SyntaxError(
-          `${CLOSE_ERROR} The message must not be greater than 123 bytes.`
-        );
+        throw new SyntaxError(`${CLOSE_ERROR} The message must not be greater than 123 bytes.`);
       }
     }
 

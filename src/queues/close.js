@@ -1,14 +1,15 @@
 import delay from '../helpers/delay';
-import networkBridge from '../network-bridge';
-import { createCloseEvent } from '../event-factory';
+import WebSocket from '../websocket';
 import CLOSE_CODES from '../helpers/close-codes';
+import { createCloseEvent } from '../event-factory';
 
-export default function closingHandshake(websocket, code, reason) {
+export default function closingHandshake(websocket, code /* reason */) {
   delay(() => {
     websocket.readyState = WebSocket.CLOSED;
+    const networkBridge = websocket.__getNetworkConnection(); // eslint-disable-line no-underscore-dangle
 
-    // If the user agent was required to fail the WebSocket connection, or if the the WebSocket connection was closed after being flagged as full trigger error
-    // this.dispatchEvent('error');
+    // If the user agent was required to fail the WebSocket connection, or if the the WebSocket
+    // connection was closed after being flagged as full trigger error this.dispatchEvent('error');
 
     const server = networkBridge.serverLookup(websocket.url);
     const closeEvent = createCloseEvent({

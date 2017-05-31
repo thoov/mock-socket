@@ -1,8 +1,7 @@
+import URL from 'url-parse';
 import WebSocket from './websocket';
 import EventTarget from './event-target';
-import networkBridge from './network-bridge';
 import CLOSE_CODES from './helpers/close-codes';
-import normalize from './helpers/normalize-url';
 import globalObject from './helpers/global-object';
 import dedupe from './helpers/dedupe';
 import { createEvent, createMessageEvent, createCloseEvent } from './event-factory';
@@ -16,9 +15,15 @@ class Server extends EventTarget {
   */
   constructor(url, options = {}) {
     super();
-    this.url = normalize(url);
+    const urlRecord = new URL(url);
+
+    if (!urlRecord.pathname) {
+      urlRecord.pathname = '/';
+    }
+
+    this.url = urlRecord.toString();
     this.originalWebSocket = null;
-    const server = networkBridge.attachServer(this, this.url);
+    const server = this.__getNetworkConnection().attachServer(this, this.url);
 
     if (!server) {
       this.dispatchEvent(createEvent({ type: 'error' }));
@@ -61,7 +66,7 @@ class Server extends EventTarget {
 
     this.originalWebSocket = null;
 
-    networkBridge.removeServer(this.url);
+    this.__getNetworkConnection().removeServer(this.url);
 
     if (typeof callback === 'function') {
       callback();
@@ -97,7 +102,7 @@ class Server extends EventTarget {
     let { websockets } = options;
 
     if (!websockets) {
-      websockets = networkBridge.websocketsLookup(this.url);
+      websockets = this.__getNetworkConnection().websocketsLookup(this.url);
     }
 
     if (typeof options !== 'object' || arguments.length > 3) {
@@ -137,11 +142,7 @@ class Server extends EventTarget {
   */
   close(options = {}) {
     const { code, reason, wasClean } = options;
-    const listeners = networkBridge.websocketsLookup(this.url);
-
-    // Remove server before notifications to prevent immediate reconnects from
-    // socket onclose handlers
-    networkBridge.removeServer(this.url);
+    const listeners = this.__getNetworkConnection().websocketsLookup(this.url);
 
     listeners.forEach(socket => {
       socket.readyState = WebSocket.CLOSE;
@@ -157,13 +158,14 @@ class Server extends EventTarget {
     });
 
     this.dispatchEvent(createCloseEvent({ type: 'close' }), this);
+    this.__getNetworkConnection().removeServer(this.url);
   }
 
   /*
   * Returns an array of websockets which are listening to this server
   */
   clients() {
-    return networkBridge.websocketsLookup(this.url);
+    return this.__getNetworkConnection().websocketsLookup(this.url);
   }
 
   /*
@@ -173,7 +175,9 @@ class Server extends EventTarget {
   */
   to(room, broadcaster, broadcastList = []) {
     const self = this;
-    const websockets = dedupe(broadcastList.concat(networkBridge.websocketsLookup(this.url, room, broadcaster)));
+    const websockets = dedupe(
+      broadcastList.concat(this.__getNetworkConnection().websocketsLookup(this.url, room, broadcaster))
+    );
 
     return {
       to: (chainedRoom, chainedBroadcaster) => this.to.call(this, chainedRoom, chainedBroadcaster, websockets),
