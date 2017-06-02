@@ -139,6 +139,10 @@ class Server extends EventTarget {
     const { code, reason, wasClean } = options;
     const listeners = networkBridge.websocketsLookup(this.url);
 
+    // Remove server before notifications to prevent immediate reconnects from
+    // socket onclose handlers
+    networkBridge.removeServer(this.url);
+
     listeners.forEach(socket => {
       socket.readyState = WebSocket.CLOSE;
       socket.dispatchEvent(
@@ -153,7 +157,6 @@ class Server extends EventTarget {
     });
 
     this.dispatchEvent(createCloseEvent({ type: 'close' }), this);
-    networkBridge.removeServer(this.url);
   }
 
   /*
