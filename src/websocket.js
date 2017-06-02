@@ -1,17 +1,18 @@
 import URL from 'url-parse';
-import EventTarget from './event-target';
-import { findDuplicates } from './helpers/array-helpers';
-import utf8ByteLength from './helpers/utf8-byte-length';
-import { connectionQueue, closeQueue, sendQueue } from './queues/index';
+import EventTarget from './event/target';
+import { ERROR_PREFIX } from './constants';
+import utf8ByteLength from './utils/utf8-byte-length';
+import { findDuplicates } from './utils/array-helpers';
+import { connectionQueue, closeQueue, sendQueue } from './tasks/index';
 
-const CONSTRUCTOR_ERROR = "Failed to construct 'WebSocket':";
-const CLOSE_ERROR = "Failed to execute 'close' on 'WebSocket':";
+const { CONSTRUCTOR_ERROR, CLOSE_ERROR } = ERROR_PREFIX;
 
 /*
  * The main websocket class which is designed to mimick the native WebSocket class as close
  * as possible.
  *
  * https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
+ * https://html.spec.whatwg.org/multipage/comms.html#network
  */
 class WebSocket extends EventTarget {
   constructor(url, protocol = '') {
@@ -40,7 +41,8 @@ class WebSocket extends EventTarget {
 
     if (urlRecord.hash) {
       throw new SyntaxError(
-        `${CONSTRUCTOR_ERROR} The URL contains a fragment identifier ('${urlRecord.hash}'). Fragment identifiers are not allowed in WebSocket URLs.`
+        `${CONSTRUCTOR_ERROR} The URL contains a fragment identifier ('${urlRecord.hash}').` +
+          ' Fragment identifiers are not allowed in WebSocket URLs.'
       );
     }
 

@@ -1,5 +1,5 @@
-import utf8ByteLength from '../helpers/utf8-byte-length';
-import { createMessageEvent } from '../event-factory';
+import { createMessageEvent } from '../event/factory';
+import utf8ByteLength from '../utils/utf8-byte-length';
 
 export default (websocket, data) => {
   setTimeout(() => {

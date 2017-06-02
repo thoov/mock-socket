@@ -28,3 +28,10 @@ export function findDuplicates(array) {
 
   return Object.keys(uniq).filter(a => uniq[a] > 1);
 }
+
+export function dedupe(arr) {
+  arr.reduce((deduped, b) => {
+    if (deduped.indexOf(b) > -1) return deduped;
+    return deduped.concat(b);
+  }, []);
+}

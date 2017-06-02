@@ -1,11 +1,9 @@
 import WebSocket from '../websocket';
-import logger from '../helpers/logger';
-import CLOSE_CODES from '../helpers/close-codes';
-import { createEvent, createCloseEvent } from '../event-factory';
+import CLOSE_CODES from '../constants';
+import { createEvent, createCloseEvent } from '../event/factory';
 
 export default websocket => {
   setTimeout(() => {
-    // eslint-disable-next-line no-underscore-dangle
     const server = websocket.__getNetworkConnection().attachWebSocket(websocket, websocket.url);
 
     if (server) {
@@ -22,7 +20,7 @@ export default websocket => {
       websocket.dispatchEvent(createEvent({ type: 'error', target: websocket }));
       websocket.dispatchEvent(createCloseEvent({ type: 'close', target: websocket, code: CLOSE_CODES.CLOSE_NORMAL }));
 
-      logger('error', `WebSocket connection to '${websocket.url}' failed`); // TODO: test this
+      console.error(`WebSocket connection to '${websocket.url}' failed`); // TODO: test this
     }
   }, 0);
 };

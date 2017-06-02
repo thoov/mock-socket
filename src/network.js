@@ -1,4 +1,4 @@
-import { reject } from './helpers/array-helpers';
+import { reject } from './utils/array-helpers';
 
 /*
 * The network bridge is a way for the mock websocket object to 'communicate' with

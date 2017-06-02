@@ -1,18 +1,15 @@
 import URL from 'url-parse';
 import WebSocket from './websocket';
-import EventTarget from './event-target';
-import CLOSE_CODES from './helpers/close-codes';
-import globalObject from './helpers/global-object';
-import dedupe from './helpers/dedupe';
-import { createEvent, createMessageEvent, createCloseEvent } from './event-factory';
+import CLOSE_CODES from './constants';
+import EventTarget from './event/target';
+import { dedupe } from './utils/array-helpers';
+import globalObject from './utils/global-object';
+import { createEvent, createMessageEvent, createCloseEvent } from './event/factory';
 
 /*
-* https://github.com/websockets/ws#server-example
-*/
+ * https://github.com/websockets/ws#server-example
+ */
 class Server extends EventTarget {
-  /*
-  * @param {string} url
-  */
   constructor(url, options = {}) {
     super();
     const urlRecord = new URL(url);
@@ -65,7 +62,6 @@ class Server extends EventTarget {
     }
 
     this.originalWebSocket = null;
-
     this.__getNetworkConnection().removeServer(this.url);
 
     if (typeof callback === 'function') {
