@@ -67,8 +67,8 @@
   },
   "lint-staged": {
     "*.js": [
-      "lint",
       "format",
+      "lint",
       "git add"
     ]
   },
