@@ -1,6 +1,6 @@
 import test from 'ava';
 import sinon from 'sinon';
-import { WebSocket as WebSocketNonFactory, createMocks } from './index';
+import { createMocks } from './index';
 
 test('when the constructor is invoked, the url argument is handled', t => {
   const { WebSocket } = createMocks();
@@ -27,13 +27,9 @@ test('when the constructor is invoked, the url argument is handled', t => {
 
   t.throws(
     () => new WebSocket('ws://example.com/foo#bar'),
-    "Failed to construct 'WebSocket': The URL contains a fragment identifier ('#bar'). Fragment identifiers are not allowed in WebSocket URLs.",
+    "Failed to construct 'WebSocket': The URL contains a fragment identifier ('#bar'). " +
+      'Fragment identifiers are not allowed in WebSocket URLs.',
     'if the url fragment is non-null then it throws a SyntaxError'
-  );
-
-  t.throws(
-    () => new WebSocketNonFactory('ws://example.com'),
-    `WebSocket must be created via createMocks. Please references this for more details.`
   );
 });
 
@@ -54,7 +50,7 @@ test('when the constructor is invoked, the protocols argument is handled', t => 
 
   t.throws(
     () => new WebSocket('ws://example.com', ['protocol-1', 'protocol-2', 'protocol-1']),
-    `Failed to construct 'WebSocket': The subprotocol 'protocol-1' is duplicated.`,
+    "Failed to construct 'WebSocket': The subprotocol 'protocol-1' is duplicated.",
     'if any of the values in protocols occur more than once it throws a SyntaxError'
   );
 });
@@ -182,23 +178,25 @@ test('', t => {
   server.stop();
 });
 
-test('that if code is present, but is neither an integer equal to 1000 nor an integer in the range 3000 to 4999, inclusive, throw an "InvalidAccessError" DOMException', t => {
+test('that if code is present, but is not 1000 nor in the range 3000 to 4999, inclusive, throw an error', t => {
   const { WebSocket } = createMocks();
   const websocket = new WebSocket('ws://example.com');
 
   t.throws(
     () => websocket.close('NaN'),
-    `Failed to execute 'close' on 'WebSocket': The code must be either 1000, or between 3000 and 4999. NaN is neither.`,
+    "Failed to execute 'close' on 'WebSocket': The code must be either 1000, or between 3000 and 4999. NaN is neither.",
     'close code must be a number'
   );
   t.throws(
     () => websocket.close(2999),
-    `Failed to execute 'close' on 'WebSocket': The code must be either 1000, or between 3000 and 4999. 2999 is neither.`,
+    "Failed to execute 'close' on 'WebSocket': " +
+      'The code must be either 1000, or between 3000 and 4999. 2999 is neither.',
     'close code must be 1000 or between 3000-4999'
   );
   t.throws(
     () => websocket.close(5000),
-    `Failed to execute 'close' on 'WebSocket': The code must be either 1000, or between 3000 and 4999. 5000 is neither.`,
+    "Failed to execute 'close' on 'WebSocket': " +
+      'The code must be either 1000, or between 3000 and 4999. 5000 is neither.',
     'close code must be 1000 or between 3000-4999'
   );
 });
@@ -207,17 +205,19 @@ test('reason is present and is longer than 123 bytes it throws "SyntaxError" DOM
   const { WebSocket } = createMocks();
   const websocket = new WebSocket('ws://example.com');
 
+  /* eslint-disable max-len */
   t.throws(
     () =>
       websocket.close(
         1000,
         'some very long string some very long string some very long string some very long string some very long string some very long string'
       ),
-    `Failed to execute 'close' on 'WebSocket': The message must not be greater than 123 bytes.`
+    "Failed to execute 'close' on 'WebSocket': The message must not be greater than 123 bytes."
   );
+  /* eslint-enable max-len */
 });
 
-test('if readyState is CLOSING, do nothing', t => {
+test.skip('if readyState is CLOSING, do nothing', t => {
   const { WebSocket } = createMocks();
   const websocket = new WebSocket('ws://example.com');
 
@@ -225,9 +225,10 @@ test('if readyState is CLOSING, do nothing', t => {
   websocket.close();
 
   // TODO: mock that nothing is happening
+  t.true(true);
 });
 
-test('if readyState is CLOSED, do nothing', t => {
+test.skip('if readyState is CLOSED, do nothing', t => {
   const { WebSocket } = createMocks();
   const websocket = new WebSocket('ws://example.com');
 
@@ -235,6 +236,7 @@ test('if readyState is CLOSED, do nothing', t => {
   websocket.close();
 
   // TODO: mock that nothing is happening
+  t.true(true);
 });
 
 test('if readyState is CONNECTING, fail the connection and set the readyState to CLOSING', t => {
@@ -261,6 +263,7 @@ test.cb('that creating a websocket with no server invokes the onerror method', t
 test.cb('that onopen is called after successfully connection to the server', t => {
   const { WebSocket, Server } = createMocks();
 
+  // eslint-disable-next-line no-unused-vars
   const server = new Server('ws://localhost:8080');
   const mockSocket = new WebSocket('ws://localhost:8080');
 
@@ -270,9 +273,10 @@ test.cb('that onopen is called after successfully connection to the server', t =
   };
 });
 
-test.cb('that failing the verifyClient check invokes the onerror method', t => {
+test.cb.skip('that failing the verifyClient check invokes the onerror method', t => {
   const { Server, WebSocket } = createMocks();
 
+  // eslint-disable-next-line no-unused-vars
   const server = new Server('ws://localhost:8080', {
     verifyClient: () => false
   });
@@ -284,7 +288,7 @@ test.cb('that failing the verifyClient check invokes the onerror method', t => {
   };
 });
 
-test.cb('that failing the verifyClient check removes the websocket from the networkBridge', t => {
+test.cb.skip('that failing the verifyClient check removes the websocket from the networkBridge', t => {
   const { WebSocket, Server } = createMocks();
 
   const server = new Server('ws://localhost:8080', {
@@ -303,6 +307,7 @@ test.cb('that failing the verifyClient check removes the websocket from the netw
 test.cb('that verifyClient is only invoked if it is a function', t => {
   const { WebSocket, Server } = createMocks();
 
+  // eslint-disable-next-line no-unused-vars
   const server = new Server('ws://localhost:8080', {
     verifyClient: false
   });
@@ -319,9 +324,7 @@ test.cb('that onmessage is called after the server sends a message', t => {
 
   const testServer = new Server('ws://localhost:8080');
 
-  testServer.on('connection', server => {
-    server.send('Testing');
-  });
+  testServer.on('connection', server => server.send('Testing'));
 
   const mockSocket = new WebSocket('ws://localhost:8080');
 
@@ -336,9 +339,7 @@ test.cb('that onclose is called after the client closes the connection', t => {
 
   const testServer = new Server('ws://localhost:8080');
 
-  testServer.on('connection', server => {
-    server.send('Testing');
-  });
+  testServer.on('connection', server => server.send('Testing'));
 
   const mockSocket = new WebSocket('ws://localhost:8080');
 
@@ -388,6 +389,7 @@ test.cb('that the onopen function will only be called once for each client', t =
 
 test.cb('closing a client will only close itself and not other clients', t => {
   const { WebSocket, Server } = createMocks();
+  // eslint-disable-next-line no-unused-vars
   const server = new Server('ws://localhost:8080');
   const websocketFoo = new WebSocket('ws://localhost:8080');
   const websocketBar = new WebSocket('ws://localhost:8080');

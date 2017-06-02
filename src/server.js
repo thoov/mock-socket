@@ -1,7 +1,7 @@
 import URL from 'url-parse';
 import WebSocket from './websocket';
-import CLOSE_CODES from './constants';
 import EventTarget from './event/target';
+import { CLOSE_CODES } from './constants';
 import { dedupe } from './utils/array-helpers';
 import globalObject from './utils/global-object';
 import { createEvent, createMessageEvent, createCloseEvent } from './event/factory';

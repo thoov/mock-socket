@@ -1,8 +1,7 @@
 import URL from 'url-parse';
 import delay from './utils/delay';
-import CLOSE_CODES from './constants';
 import EventTarget from './event/target';
-import networkBridge from './network';
+import { CLOSE_CODES } from './constants';
 import { createEvent, createMessageEvent, createCloseEvent } from './event/factory';
 
 /*
@@ -11,9 +10,6 @@ import { createEvent, createMessageEvent, createCloseEvent } from './event/facto
 * http://socket.io/docs/
 */
 class SocketIO extends EventTarget {
-  /*
-  * @param {string} url
-  */
   constructor(url = 'socket.io', protocol = '') {
     super();
 
@@ -34,7 +30,7 @@ class SocketIO extends EventTarget {
       this.protocol = protocol[0];
     }
 
-    const server = networkBridge.attachWebSocket(this, this.url);
+    const server = this.__getNetworkConnection().attachWebSocket(this, this.url);
 
     /*
     * Delay triggering the connection events so they can be defined in time.
@@ -83,8 +79,8 @@ class SocketIO extends EventTarget {
       return undefined;
     }
 
-    const server = networkBridge.serverLookup(this.url);
-    networkBridge.removeWebSocket(this, this.url);
+    const server = this.__getNetworkConnection().serverLookup(this.url);
+    this.__getNetworkConnection().removeWebSocket(this, this.url);
 
     this.readyState = SocketIO.CLOSED;
     this.dispatchEvent(
@@ -130,7 +126,7 @@ class SocketIO extends EventTarget {
       data
     });
 
-    const server = networkBridge.serverLookup(this.url);
+    const server = this.__getNetworkConnection().serverLookup(this.url);
 
     if (server) {
       server.dispatchEvent(messageEvent, ...data);
@@ -160,14 +156,14 @@ class SocketIO extends EventTarget {
     }
 
     const self = this;
-    const server = networkBridge.serverLookup(this.url);
+    const server = this.__getNetworkConnection().serverLookup(this.url);
     if (!server) {
       throw new Error(`SocketIO can not find a server at the specified URL (${this.url})`);
     }
 
     return {
       emit(event, data) {
-        server.emit(event, data, { websockets: networkBridge.websocketsLookup(self.url, null, self) });
+        server.emit(event, data, { websockets: this.__getNetworkConnection().websocketsLookup(self.url, null, self) });
       },
       to(room) {
         return server.to(room, self);
@@ -191,7 +187,7 @@ class SocketIO extends EventTarget {
    * http://socket.io/docs/rooms-and-namespaces/#joining-and-leaving
    */
   join(room) {
-    networkBridge.addMembershipToRoom(this, room);
+    this.__getNetworkConnection().addMembershipToRoom(this, room);
   }
 
   /*
@@ -200,7 +196,7 @@ class SocketIO extends EventTarget {
    * http://socket.io/docs/rooms-and-namespaces/#joining-and-leaving
    */
   leave(room) {
-    networkBridge.removeMembershipFromRoom(this, room);
+    this.__getNetworkConnection().removeMembershipFromRoom(this, room);
   }
 
   to(room) {
@@ -243,20 +239,4 @@ SocketIO.OPEN = 1;
 SocketIO.CLOSING = 2;
 SocketIO.CLOSED = 3;
 
-/*
-* Static constructor methods for the IO Socket
-*/
-const IO = function ioConstructor(url) {
-  return new SocketIO(url);
-};
-
-/*
-* Alias the raw IO() constructor
-*/
-IO.connect = function ioConnect(url) {
-  /* eslint-disable new-cap */
-  return IO(url);
-  /* eslint-enable new-cap */
-};
-
-export default IO;
+export default SocketIO;

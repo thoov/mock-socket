@@ -117,10 +117,6 @@ class WebSocket extends EventTarget {
       }
     });
 
-    if (!this.__getNetworkConnection) {
-      throw new Error('WebSocket must be created via createMocks. Please references this for more details.');
-    }
-
     connectionQueue(this);
   }
 

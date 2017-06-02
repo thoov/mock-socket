@@ -2,32 +2,37 @@ import test from 'ava';
 import { createMocks } from './index';
 
 test('it can be instantiated without a url', t => {
-  const socket = io();
+  const { SocketIO } = createMocks();
+  const socket = SocketIO();
   t.truthy(socket);
 });
 
 test('it accepts a url', t => {
-  const socket = io('http://localhost');
+  const { SocketIO } = createMocks();
+  const socket = SocketIO('http://localhost');
   t.truthy(socket);
 });
 
 test('it accepts an opts object paramter', t => {
-  const socket = io('http://localhost', { a: 'apple' });
+  const { SocketIO } = createMocks();
+  const socket = SocketIO('http://localhost', { a: 'apple' });
   t.truthy(socket);
 });
 
 test('it can equivalently use a connect method', t => {
-  const socket = io.connect('http://localhost');
+  const { SocketIO } = createMocks();
+  const socket = SocketIO.connect('http://localhost');
   t.truthy(socket);
 });
 
-test.cb.skip('it can broadcast to other connected sockets', t => {
+test.cb('it can broadcast to other connected sockets', t => {
+  const { SocketIO, Server } = createMocks();
   const url = 'ws://not-real/';
   const myServer = new Server(url);
-  const socketFoo = io(url);
-  const socketBar = io(url);
+  const socketFoo = SocketIO(url);
+  const socketBar = SocketIO(url);
 
-  myServer.on('connection', (server, socket) => {
+  myServer.on('connection', () => {
     socketFoo.broadcast.emit('Testing');
   });
 
@@ -37,32 +42,34 @@ test.cb.skip('it can broadcast to other connected sockets', t => {
     t.end();
   });
 
-  socketBar.on('Testing', socket => {
+  socketBar.on('Testing', () => {
     t.true(true);
     myServer.close();
     t.end();
   });
 });
 
-test.cb.skip('it can broadcast to other connected sockets in a room', t => {
+test.cb('it can broadcast to other connected sockets in a room', t => {
+  const { SocketIO, Server } = createMocks();
   const roomKey = 'room-64';
   const url = 'ws://not-real/';
 
   const myServer = new Server(url);
+  const socketFoo = SocketIO(url);
+
   myServer.on('connection', (server, socket) => {
     socketFoo.broadcast.to(roomKey).emit('Testing', socket);
   });
 
-  const socketFoo = io(url);
   socketFoo.join(roomKey);
   socketFoo.on('Testing', () => t.fail(null, null, 'Socket Foo should be excluded from broadcast'));
 
-  const socketBar = io(url);
+  const socketBar = SocketIO(url);
   socketBar.on('Testing', () => t.fail(null, null, 'Socket Bar should be excluded from broadcast'));
 
-  const socketFooBar = io(url);
+  const socketFooBar = SocketIO(url);
   socketFooBar.join(roomKey);
-  socketFooBar.on('Testing', socket => {
+  socketFooBar.on('Testing', () => {
     t.true(true);
     myServer.close();
     t.end();
@@ -70,8 +77,9 @@ test.cb.skip('it can broadcast to other connected sockets in a room', t => {
 });
 
 test.cb('client triggers the server connection event', t => {
+  const { SocketIO, Server } = createMocks();
   const server = new Server('foobar');
-  const socket = io('foobar');
+  const socket = SocketIO('foobar');
 
   server.on('connection', () => {
     t.true(true);
@@ -82,8 +90,9 @@ test.cb('client triggers the server connection event', t => {
 });
 
 test.cb('client triggers the server connect event', t => {
+  const { SocketIO, Server } = createMocks();
   const server = new Server('foobar');
-  const socket = io('foobar');
+  const socket = SocketIO('foobar');
 
   server.on('connect', () => {
     t.true(true);
@@ -94,8 +103,9 @@ test.cb('client triggers the server connect event', t => {
 });
 
 test.cb('server triggers the client connect event', t => {
+  const { SocketIO, Server } = createMocks();
   const server = new Server('foobar');
-  const socket = io('foobar');
+  const socket = SocketIO('foobar');
 
   socket.on('connect', () => {
     t.true(true);
@@ -106,7 +116,8 @@ test.cb('server triggers the client connect event', t => {
 });
 
 test.cb('no connection triggers the client error event', t => {
-  const socket = io('foobar');
+  const { SocketIO } = createMocks();
+  const socket = SocketIO('foobar');
 
   socket.on('error', () => {
     t.true(true);
@@ -116,12 +127,12 @@ test.cb('no connection triggers the client error event', t => {
 });
 
 test.cb('client and server receive an event', t => {
-  const server = new Server('foobar');
-  server.on('client-event', data => {
-    server.emit('server-response', data);
-  });
+  const { SocketIO, Server } = createMocks();
 
-  const socket = io('foobar');
+  const server = new Server('foobar');
+  server.on('client-event', data => server.emit('server-response', data));
+
+  const socket = SocketIO('foobar');
   socket.on('server-response', data => {
     t.is('payload', data);
     socket.disconnect();
@@ -135,12 +146,14 @@ test.cb('client and server receive an event', t => {
 });
 
 test.cb('Server closing triggers the client disconnect event', t => {
+  const { SocketIO, Server } = createMocks();
+
   const server = new Server('foobar');
   server.on('connect', () => {
     server.close();
   });
 
-  const socket = io('foobar');
+  const socket = SocketIO('foobar');
   socket.on('disconnect', () => {
     t.true(true);
     socket.disconnect();
@@ -149,6 +162,8 @@ test.cb('Server closing triggers the client disconnect event', t => {
 });
 
 test.cb('Server receives disconnect when socket is closed', t => {
+  const { SocketIO, Server } = createMocks();
+
   const server = new Server('foobar');
   server.on('disconnect', () => {
     t.true(true);
@@ -156,13 +171,15 @@ test.cb('Server receives disconnect when socket is closed', t => {
     t.end();
   });
 
-  const socket = io('foobar');
+  const socket = SocketIO('foobar');
   socket.on('connect', () => {
     socket.disconnect();
   });
 });
 
 test.cb('Client can submit an event without a payload', t => {
+  const { SocketIO, Server } = createMocks();
+
   const server = new Server('foobar');
   server.on('client-event', () => {
     t.true(true);
@@ -170,13 +187,15 @@ test.cb('Client can submit an event without a payload', t => {
     t.end();
   });
 
-  const socket = io('foobar');
+  const socket = SocketIO('foobar');
   socket.on('connect', () => {
     socket.emit('client-event');
   });
 });
 
 test.cb('Client also has the send method available', t => {
+  const { SocketIO, Server } = createMocks();
+
   const server = new Server('foobar');
   server.on('message', data => {
     t.is(data, 'hullo!');
@@ -184,15 +203,17 @@ test.cb('Client also has the send method available', t => {
     t.end();
   });
 
-  const socket = io('foobar');
+  const socket = SocketIO('foobar');
   socket.on('connect', () => {
     socket.send('hullo!');
   });
 });
 
 test.cb('a socket can join and leave a room', t => {
+  const { SocketIO, Server } = createMocks();
+
   const server = new Server('ws://roomy');
-  const socket = io('ws://roomy');
+  const socket = SocketIO('ws://roomy');
 
   socket.on('good-response', () => {
     t.true(true);
@@ -207,9 +228,11 @@ test.cb('a socket can join and leave a room', t => {
 });
 
 test.cb('a socket can emit to a room', t => {
+  const { SocketIO, Server } = createMocks();
+
   const server = new Server('ws://roomy');
-  const socketFoo = io('ws://roomy');
-  const socketBar = io('ws://roomy');
+  const socketFoo = SocketIO('ws://roomy');
+  const socketBar = SocketIO('ws://roomy');
 
   socketFoo.on('connect', () => {
     socketFoo.join('room');
@@ -227,6 +250,8 @@ test.cb('a socket can emit to a room', t => {
 });
 
 test.cb('Client can emit with multiple arguments', t => {
+  const { SocketIO, Server } = createMocks();
+
   const server = new Server('foobar');
   server.on('client-event', (...data) => {
     t.is(data.length, 3);
@@ -237,19 +262,21 @@ test.cb('Client can emit with multiple arguments', t => {
     t.end();
   });
 
-  const socket = io('foobar');
+  const socket = SocketIO('foobar');
   socket.on('connect', () => {
     socket.emit('client-event', 'foo', 'bar', 'baz');
   });
 });
 
 test.cb('Server can emit with multiple arguments', t => {
+  const { SocketIO, Server } = createMocks();
+
   const server = new Server('foobar');
   server.on('connection', () => {
     server.emit('server-emit', 'foo', 'bar');
   });
 
-  const socket = io('foobar');
+  const socket = SocketIO('foobar');
   socket.on('server-emit', (...data) => {
     t.is(data.length, 2);
     t.is(data[0], 'foo');
@@ -260,9 +287,11 @@ test.cb('Server can emit with multiple arguments', t => {
 });
 
 test.cb('Server can emit to multiple rooms', t => {
+  const { SocketIO, Server } = createMocks();
+
   const server = new Server('ws://chat');
-  const socket1 = io('ws://chat');
-  const socket2 = io('ws://chat');
+  const socket1 = SocketIO('ws://chat');
+  const socket2 = SocketIO('ws://chat');
 
   let connectedCount = 0;
   const checkConnected = () => {
@@ -273,7 +302,7 @@ test.cb('Server can emit to multiple rooms', t => {
   };
 
   let goodResponses = 0;
-  const checkGoodResponses = socketId => {
+  const checkGoodResponses = () => {
     goodResponses += 1;
     if (goodResponses === 2) {
       t.true(true);

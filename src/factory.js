@@ -1,12 +1,17 @@
 import Server from './server';
+import Network from './network';
+import SocketIO from './socket-io';
 import WebSocket from './websocket';
-import NetworkBridge from './network';
 
 export default () => {
-  const networkBridge = new NetworkBridge();
+  const networkInstance = new Network();
 
-  Server.prototype.__getNetworkConnection = () => networkBridge;
-  WebSocket.prototype.__getNetworkConnection = () => networkBridge;
+  SocketIO.prototype.__getNetworkConnection = () => networkInstance;
+  Server.prototype.__getNetworkConnection = () => networkInstance;
+  WebSocket.prototype.__getNetworkConnection = () => networkInstance;
 
-  return { WebSocket, Server };
+  const IO = url => new SocketIO(url);
+  IO.connect = url => IO(url);
+
+  return { WebSocket, SocketIO: IO, Server };
 };

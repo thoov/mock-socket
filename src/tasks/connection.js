@@ -1,5 +1,5 @@
 import WebSocket from '../websocket';
-import CLOSE_CODES from '../constants';
+import { CLOSE_CODES } from '../constants';
 import { createEvent, createCloseEvent } from '../event/factory';
 
 export default websocket => {
