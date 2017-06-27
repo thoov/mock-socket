@@ -32,7 +32,7 @@ class Server extends EventTarget {
     }
 
     if (typeof options.handleProtocols === 'undefined') {
-      options.handleProtocols = (protocol) => protocol;
+      options.handleProtocols = protocol => protocol;
     }
 
     this.options = options;

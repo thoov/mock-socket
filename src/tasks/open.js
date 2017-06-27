@@ -8,9 +8,7 @@ function handleProtocols(server, protocol) {
     const duplicates = findDuplicates(protocol);
 
     if (duplicates.length) {
-      throw new SyntaxError(
-        `${ERROR_PREFIX.CONSTRUCTOR_ERROR} The subprotocol '${duplicates[0]}' is duplicated.`
-      );
+      throw new SyntaxError(`${ERROR_PREFIX.CONSTRUCTOR_ERROR} The subprotocol '${duplicates[0]}' is duplicated.`);
     }
   } else {
     protocol = [protocol];

@@ -63,11 +63,7 @@ test.cb('when the constructor is invoked, an array protocol argument is handled'
   const websocket = new WebSocket('ws://example.com', ['protocol-2', 'protocol-1']);
 
   setTimeout(() => {
-    t.is(
-      websocket.protocol,
-      'protocol-2',
-      'if protocols is an array, set protocols to the first protocol'
-    );
+    t.is(websocket.protocol, 'protocol-2', 'if protocols is an array, set protocols to the first protocol');
 
     t.end();
   }, 0);
@@ -78,7 +74,8 @@ test('when the constructor is invoked, an array protocol argument w/ duplicates 
 
   // eslint-disable-next-line no-unused-vars
   const server = new Server('ws://example.com');
-  t.throws(() => new WebSocket('ws://example.com', ['protocol-1', 'protocol-2', 'protocol-1']),
+  t.throws(
+    () => new WebSocket('ws://example.com', ['protocol-1', 'protocol-2', 'protocol-1']),
     "Failed to construct 'WebSocket': The subprotocol 'protocol-1' is duplicated.",
     'if any of the values in protocols occur more than once it throws a SyntaxError'
   );
@@ -183,13 +180,13 @@ test('that if code is present, but is not 1000 nor in the range 3000 to 4999, in
   t.throws(
     () => websocket.close(2999),
     "Failed to execute 'close' on 'WebSocket': " +
-    'The code must be either 1000, or between 3000 and 4999. 2999 is neither.',
+      'The code must be either 1000, or between 3000 and 4999. 2999 is neither.',
     'close code must be 1000 or between 3000-4999'
   );
   t.throws(
     () => websocket.close(5000),
     "Failed to execute 'close' on 'WebSocket': " +
-    'The code must be either 1000, or between 3000 and 4999. 5000 is neither.',
+      'The code must be either 1000, or between 3000 and 4999. 5000 is neither.',
     'close code must be 1000 or between 3000-4999'
   );
 });
@@ -203,7 +200,7 @@ test('reason is present and is longer than 123 bytes it throws "SyntaxError" DOM
       websocket.close(
         1000,
         'some very long string some very long string some very long string ' +
-        'some very long string some very long string some very long string'
+          'some very long string some very long string some very long string'
       ),
     "Failed to execute 'close' on 'WebSocket': The message must not be greater than 123 bytes."
   );
