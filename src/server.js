@@ -31,42 +31,11 @@ class Server extends EventTarget {
       options.verifiyClient = null;
     }
 
+    if (typeof options.handleProtocols === 'undefined') {
+      options.handleProtocols = (protocol) => protocol;
+    }
+
     this.options = options;
-
-    this.start();
-  }
-
-  /*
-  * Attaches the mock websocket object to the global object
-  */
-  start() {
-    const globalObj = globalObject();
-
-    if (globalObj.WebSocket) {
-      this.originalWebSocket = globalObj.WebSocket;
-    }
-
-    globalObj.WebSocket = WebSocket;
-  }
-
-  /*
-  * Removes the mock websocket object from the global object
-  */
-  stop(callback = () => {}) {
-    const globalObj = globalObject();
-
-    if (this.originalWebSocket) {
-      globalObj.WebSocket = this.originalWebSocket;
-    } else {
-      delete globalObj.WebSocket;
-    }
-
-    this.originalWebSocket = null;
-    this.__getNetworkConnection().removeServer(this.url);
-
-    if (typeof callback === 'function') {
-      callback();
-    }
   }
 
   /*

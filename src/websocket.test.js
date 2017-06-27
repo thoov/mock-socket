@@ -5,7 +5,11 @@ import { createMocks } from './index';
 test('when the constructor is invoked, the url argument is handled', t => {
   const { WebSocket } = createMocks();
 
-  t.is(new WebSocket('ws://example.com').url, 'ws://example.com/', 'the url gets parsed');
+  t.is(new WebSocket('ws://example.com').url, 'ws://example.com/');
+  t.is(new WebSocket('ws://example.com/').url, 'ws://example.com/');
+  t.is(new WebSocket('ws://example.com:7000').url, 'ws://example.com:7000/');
+  t.is(new WebSocket('ws://example.com/foo').url, 'ws://example.com/foo');
+  t.is(new WebSocket('ws://example.com/foo/').url, 'ws://example.com/foo/');
 
   t.throws(
     () => new WebSocket(),
@@ -33,35 +37,63 @@ test('when the constructor is invoked, the url argument is handled', t => {
   );
 });
 
-test('when the constructor is invoked, the protocols argument is handled', t => {
-  const { WebSocket } = createMocks();
+test.cb('when the constructor is invoked, a string protocol argument is handled', t => {
+  const { WebSocket, Server } = createMocks();
 
-  t.is(
-    new WebSocket('ws://example.com', 'example-protocol').protocol,
-    'example-protocol',
-    'if protocols is a string, set protocols to a sequence consisting of just that string'
-  );
+  // eslint-disable-next-line no-unused-vars
+  const server = new Server('ws://example.com');
+  const websocket = new WebSocket('ws://example.com', 'protocol-1');
 
-  t.is(
-    new WebSocket('ws://example.com', ['example-protocol', 'another-protocol']).protocol,
-    'example-protocol',
-    'if protocols is an array, set protocols to a sequence consisting of just that string' // TODO fix this message
-  );
+  setTimeout(() => {
+    t.is(
+      websocket.protocol,
+      'protocol-1',
+      'if protocols is a string, set protocols to a sequence consisting of just that string'
+    );
 
-  t.throws(
-    () => new WebSocket('ws://example.com', ['protocol-1', 'protocol-2', 'protocol-1']),
+    t.end();
+  }, 0);
+});
+
+test.cb('when the constructor is invoked, an array protocol argument is handled', t => {
+  const { WebSocket, Server } = createMocks();
+
+  // eslint-disable-next-line no-unused-vars
+  const server = new Server('ws://example.com');
+  const websocket = new WebSocket('ws://example.com', ['protocol-2', 'protocol-1']);
+
+  setTimeout(() => {
+    t.is(
+      websocket.protocol,
+      'protocol-2',
+      'if protocols is an array, set protocols to the first protocol'
+    );
+
+    t.end();
+  }, 0);
+});
+
+test('when the constructor is invoked, an array protocol argument w/ duplicates throws an error', t => {
+  const { WebSocket, Server } = createMocks();
+
+  // eslint-disable-next-line no-unused-vars
+  const server = new Server('ws://example.com');
+  t.throws(() => new WebSocket('ws://example.com', ['protocol-1', 'protocol-2', 'protocol-1']),
     "Failed to construct 'WebSocket': The subprotocol 'protocol-1' is duplicated.",
     'if any of the values in protocols occur more than once it throws a SyntaxError'
   );
 });
 
-test('that after construction, the url getter returns the websocket url', t => {
-  const { WebSocket } = createMocks();
+test('when the constructor is invoked, the protocols argument throws if a protocol is not supported', t => {
+  const { WebSocket, Server } = createMocks();
 
-  t.is(
-    new WebSocket('ws://example.com').url,
-    'ws://example.com/',
-    "the url attribute's getter must return this WebSocket object's url, serialized"
+  // eslint-disable-next-line no-unused-vars
+  const server = new Server('ws://example.com', { handleProtocols: () => false });
+
+  t.throws(
+    () => new WebSocket('ws://example.com', ['protocol-1', 'protocol-2', 'protocol-3']),
+    "Failed to construct 'WebSocket': A subprotocol is not supported.",
+    'if any protocol is not supported it throws a SyntaxError'
   );
 });
 
@@ -72,10 +104,6 @@ test('that after construction, all attributes are correctly set', t => {
   t.is(new WebSocket('ws://example').extensions, '', 'the extensions attribute is initially an empty string');
   t.is(new WebSocket('ws://example').bufferedAmount, 0, 'the bufferedAmount is set to 0');
   t.is(new WebSocket('ws://example').binaryType, 'blob', 'the binaryType is set to blob');
-});
-
-test('that the static attributes are correctly set', t => {
-  const { WebSocket } = createMocks();
 
   t.is(WebSocket.CONNECTING, 0, 'CONNECTING is correctly set');
   t.is(WebSocket.OPEN, 1, 'OPEN is correctly set');
@@ -88,16 +116,24 @@ test.cb('that once the connection queue is called, if there is a server it conne
 
   const onopenSpy = sinon.spy();
   const onerrorSpy = sinon.spy();
-  const instance = new WebSocket('ws://example.com/foo');
-  const serverInstance = new Server('ws://example.com/foo');
-  serverInstance.start();
-  instance.onopen = onopenSpy;
+  const websocket = new WebSocket('ws://example.com/foo');
+  const server = new Server('ws://example.com/foo');
+  websocket.onopen = onopenSpy;
 
   setTimeout(() => {
-    t.is(instance.readyState, 1);
+    t.is(websocket.readyState, 1);
     t.true(onopenSpy.calledOnce);
     t.true(onerrorSpy.notCalled);
-    serverInstance.stop(t.end());
+
+    t.deepEqual(websocket.__getNetworkConnection().urlMap, {
+      'ws://example.com/foo': {
+        websockets: [websocket],
+        server,
+        roomMemberships: {}
+      }
+    });
+
+    t.end();
   }, 0);
 });
 
@@ -106,48 +142,24 @@ test.cb('that once the connection queue is called, if there is no server it fail
 
   const onopenSpy = sinon.spy();
   const onerrorSpy = sinon.spy();
-  const instance = new WebSocket('ws://example.com/foo');
-  instance.onopen = onopenSpy;
-  instance.onerror = onerrorSpy;
+  const websocket = new WebSocket('ws://example.com/foo');
+  websocket.onopen = onopenSpy;
+  websocket.onerror = onerrorSpy;
 
   setTimeout(() => {
-    t.is(instance.readyState, 3);
+    t.is(websocket.readyState, 3);
     t.true(onopenSpy.notCalled);
     t.true(onerrorSpy.calledOnce);
+
+    t.deepEqual(websocket.__getNetworkConnection().urlMap, {});
+
     t.end();
   }, 0);
 });
 
-test.cb.skip('that once the connection queue is called, the server can set the protocol', t => {
-  const { WebSocket, Server } = createMocks();
-
-  const instance = new WebSocket('ws://example.com/foo');
-  const serverInstance = new Server('ws://example.com/foo');
-  serverInstance.start();
-
-  instance.onopen = () => {
-    t.is(instance.prototype, 'foo-bar');
-    serverInstance.stop(t.end());
-  };
-});
-
-test.cb.skip('that once the connection queue is called, the server can set the extensions', t => {
-  const { WebSocket, Server } = createMocks();
-
-  const instance = new WebSocket('ws://example.com/foo');
-  const serverInstance = new Server('ws://example.com/foo');
-  serverInstance.start();
-
-  instance.onopen = () => {
-    t.is(instance.extensions, 'foo-bar');
-    serverInstance.stop(t.end());
-  };
-});
-
 test('calling send while the websocket is connecting throws an error', t => {
   const { WebSocket, Server } = createMocks();
-  const server = new Server('ws://example.com');
-  server.start();
+  const server = new Server('ws://example.com'); // eslint-disable-line no-unused-vars
 
   t.throws(
     () => {
@@ -157,25 +169,6 @@ test('calling send while the websocket is connecting throws an error', t => {
     "Failed to execute 'send' on 'WebSocket': Still in CONNECTING state.",
     'calling send while the websocket is connecting throws an error'
   );
-
-  server.stop();
-});
-
-test('', t => {
-  const { WebSocket, Server } = createMocks();
-  const server = new Server('ws://example.com');
-  server.start();
-
-  t.throws(
-    () => {
-      const websocket = new WebSocket('ws://example.com');
-      websocket.send('foo-bar');
-    },
-    "Failed to execute 'send' on 'WebSocket': Still in CONNECTING state.",
-    'calling send while the websocket is connecting throws an error'
-  );
-
-  server.stop();
 });
 
 test('that if code is present, but is not 1000 nor in the range 3000 to 4999, inclusive, throw an error', t => {
@@ -190,13 +183,13 @@ test('that if code is present, but is not 1000 nor in the range 3000 to 4999, in
   t.throws(
     () => websocket.close(2999),
     "Failed to execute 'close' on 'WebSocket': " +
-      'The code must be either 1000, or between 3000 and 4999. 2999 is neither.',
+    'The code must be either 1000, or between 3000 and 4999. 2999 is neither.',
     'close code must be 1000 or between 3000-4999'
   );
   t.throws(
     () => websocket.close(5000),
     "Failed to execute 'close' on 'WebSocket': " +
-      'The code must be either 1000, or between 3000 and 4999. 5000 is neither.',
+    'The code must be either 1000, or between 3000 and 4999. 5000 is neither.',
     'close code must be 1000 or between 3000-4999'
   );
 });
@@ -205,16 +198,15 @@ test('reason is present and is longer than 123 bytes it throws "SyntaxError" DOM
   const { WebSocket } = createMocks();
   const websocket = new WebSocket('ws://example.com');
 
-  /* eslint-disable max-len */
   t.throws(
     () =>
       websocket.close(
         1000,
-        'some very long string some very long string some very long string some very long string some very long string some very long string'
+        'some very long string some very long string some very long string ' +
+        'some very long string some very long string some very long string'
       ),
     "Failed to execute 'close' on 'WebSocket': The message must not be greater than 123 bytes."
   );
-  /* eslint-enable max-len */
 });
 
 test.skip('if readyState is CLOSING, do nothing', t => {
@@ -444,21 +436,21 @@ test.cb('mock clients can send messages to the right mock server', t => {
   };
 });
 
-test.cb('that closing a websocket removes it from the network bridge', t => {
+test.cb('that closing a websocket removes it from the network', t => {
   const { WebSocket, Server } = createMocks();
   const server = new Server('ws://localhost:8080');
   const socket = new WebSocket('ws://localhost:8080');
 
   socket.onopen = function open() {
     const urlMap = socket.__getNetworkConnection().urlMap['ws://localhost:8080/'];
-    t.is(urlMap.websockets.length, 1, 'the websocket is in the network bridge');
-    t.deepEqual(urlMap.websockets[0], this, 'the websocket is in the network bridge');
+    t.is(urlMap.websockets.length, 1, 'the websocket is in the network');
+    t.deepEqual(urlMap.websockets[0], this, 'the websocket is in the network');
     this.close();
   };
 
   socket.onclose = function close() {
     const urlMap = socket.__getNetworkConnection().urlMap['ws://localhost:8080/'];
-    t.is(urlMap.websockets.length, 0, 'the websocket was removed from the network bridge');
+    t.is(urlMap.websockets.length, 0, 'the websocket was removed from the network');
     server.close();
     t.end();
   };

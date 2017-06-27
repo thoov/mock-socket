@@ -2,8 +2,7 @@ import URL from 'url-parse';
 import EventTarget from './event/target';
 import { ERROR_PREFIX } from './constants';
 import utf8ByteLength from './utils/utf8-byte-length';
-import { findDuplicates } from './utils/array-helpers';
-import { connectionQueue, closeQueue, sendQueue } from './tasks/index';
+import { openQueue, closeQueue, sendQueue } from './tasks/index';
 
 const { CONSTRUCTOR_ERROR, CLOSE_ERROR } = ERROR_PREFIX;
 
@@ -32,7 +31,6 @@ class WebSocket extends EventTarget {
       throw new SyntaxError(`${CONSTRUCTOR_ERROR} The URL '${urlRecord.toString()}' is invalid.`);
     }
 
-    // TODO might need to strip off the :
     if (urlRecord.protocol !== 'ws:' && urlRecord.protocol !== 'wss:') {
       throw new SyntaxError(
         `${CONSTRUCTOR_ERROR} The URL's scheme must be either 'ws' or 'wss'. '${urlRecord.protocol}' is not allowed.`
@@ -49,18 +47,6 @@ class WebSocket extends EventTarget {
     this.url = urlRecord.toString();
 
     this.protocol = '';
-    if (typeof protocol === 'string') {
-      this.protocol = protocol;
-    } else if (Array.isArray(protocol) && protocol.length > 0) {
-      const duplicates = findDuplicates(protocol);
-
-      if (duplicates.length) {
-        throw new SyntaxError(`${CONSTRUCTOR_ERROR} The subprotocol '${duplicates[0]}' is duplicated.`);
-      }
-
-      this.protocol = protocol[0];
-    }
-
     this.binaryType = 'blob';
     this.readyState = WebSocket.CONNECTING;
     this.extensions = '';
@@ -117,7 +103,7 @@ class WebSocket extends EventTarget {
       }
     });
 
-    connectionQueue(this);
+    openQueue(this, protocol);
   }
 
   /*
