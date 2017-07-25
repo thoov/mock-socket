@@ -181,6 +181,15 @@ class SocketIO extends EventTarget {
   }
 
   /*
+   * Remove event listener
+   *
+   * https://socket.io/docs/client-api/#socket-on-eventname-callback
+   */
+  off(type) {
+    this.removeEventListener(type);
+  }
+
+  /*
    * Join a room on a server
    *
    * http://socket.io/docs/rooms-and-namespaces/#joining-and-leaving
