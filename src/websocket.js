@@ -125,11 +125,9 @@ class WebSocket extends EventTarget {
         } else {
           if (server.options.selectProtocol && typeof server.options.selectProtocol === 'function') {
             const selectedProtocol = server.options.selectProtocol(protocols);
-            if (
-              selectedProtocol === false ||
-              selectedProtocol === undefined ||
-              protocols.indexOf(selectedProtocol) === -1
-            ) {
+            const isFilled = selectedProtocol !== '';
+            const isRequested = protocols.indexOf(selectedProtocol) !== -1;
+            if (isFilled && !isRequested) {
               this.readyState = WebSocket.CLOSED;
 
               logger('error', `WebSocket connection to '${this.url}' failed: Invalid Sub-Protocol`);
