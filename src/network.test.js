@@ -1,17 +1,15 @@
 import test from 'ava';
-import networkBridge from '../../src/network-bridge';
+import Network from './network';
 
 const fakeObject = { foo: 'bar' };
 
-test.afterEach(() => {
-  networkBridge.urlMap = {};
-});
-
 test('that network bridge has no connections be defualt', t => {
+  const networkBridge = new Network();
   t.deepEqual(networkBridge.urlMap, {}, 'Url map is empty by default');
 });
 
 test('that network bridge has no connections be defualt', t => {
+  const networkBridge = new Network();
   const result = networkBridge.attachWebSocket(fakeObject, 'ws://localhost:8080');
 
   t.truthy(!result, 'no server was returned as a server must be added first');
@@ -19,6 +17,7 @@ test('that network bridge has no connections be defualt', t => {
 });
 
 test('that attachServer adds a server to url map', t => {
+  const networkBridge = new Network();
   const result = networkBridge.attachServer(fakeObject, 'ws://localhost:8080');
   const connection = networkBridge.urlMap['ws://localhost:8080'];
 
@@ -28,6 +27,7 @@ test('that attachServer adds a server to url map', t => {
 });
 
 test('that attachServer does nothing if a server is already attached to a given url', t => {
+  const networkBridge = new Network();
   const result = networkBridge.attachServer(fakeObject, 'ws://localhost:8080');
   const result2 = networkBridge.attachServer({ hello: 'world' }, 'ws://localhost:8080');
   const connection = networkBridge.urlMap['ws://localhost:8080'];
@@ -39,6 +39,7 @@ test('that attachServer does nothing if a server is already attached to a given 
 });
 
 test('that attachWebSocket will add a websocket to the url map', t => {
+  const networkBridge = new Network();
   const resultServer = networkBridge.attachServer(fakeObject, 'ws://localhost:8080');
   const resultWebSocket = networkBridge.attachWebSocket(fakeObject, 'ws://localhost:8080');
   const connection = networkBridge.urlMap['ws://localhost:8080'];
@@ -50,6 +51,7 @@ test('that attachWebSocket will add a websocket to the url map', t => {
 });
 
 test('that attachWebSocket will add the same websocket only once', t => {
+  const networkBridge = new Network();
   const resultServer = networkBridge.attachServer(fakeObject, 'ws://localhost:8080');
   const resultWebSocket = networkBridge.attachWebSocket(fakeObject, 'ws://localhost:8080');
   const resultWebSocket2 = networkBridge.attachWebSocket(fakeObject, 'ws://localhost:8080');
@@ -63,6 +65,7 @@ test('that attachWebSocket will add the same websocket only once', t => {
 });
 
 test('that server and websocket lookups return the correct objects', t => {
+  const networkBridge = new Network();
   networkBridge.attachServer(fakeObject, 'ws://localhost:8080');
   networkBridge.attachWebSocket(fakeObject, 'ws://localhost:8080');
 
@@ -75,6 +78,7 @@ test('that server and websocket lookups return the correct objects', t => {
 });
 
 test('that removing server and websockets works correctly', t => {
+  const networkBridge = new Network();
   networkBridge.attachServer(fakeObject, 'ws://localhost:8080');
   networkBridge.attachWebSocket(fakeObject, 'ws://localhost:8080');
 
@@ -91,6 +95,7 @@ test('that removing server and websockets works correctly', t => {
 });
 
 test('a socket can join and leave a room', t => {
+  const networkBridge = new Network();
   const fakeSocket = { url: 'ws://roomy' };
 
   networkBridge.attachServer(fakeObject, 'ws://roomy');

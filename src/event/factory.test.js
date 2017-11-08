@@ -1,5 +1,5 @@
 import test from 'ava';
-import { createEvent, createMessageEvent, createCloseEvent } from '../../src/event-factory';
+import { createEvent, createMessageEvent, createCloseEvent } from './factory';
 
 const fakeObject = { foo: 'bar' };
 

@@ -24,22 +24,15 @@ Javascript mocking library for <a href="https://developer.mozilla.org/en-US/docs
 ## Installation
 
 ```shell
-yarn add mock-socket --dev
+yarn add --dev mock-socket # or npm install --dev mock-socket
 ```
 
 ## Usage
 
-To use within a node environment you can simply import or require the files directly. This
-option is great for phantomjs or CI environments.
-
 ```js
-import { WebSocket, Server, SocketIO } from 'mock-socket';
+import { createMocks } from 'mock-socket';
 
-// OR
-
-const mockServer = require('mock-socket').Server;
-const socketIO = require('mock-socket').SocketIO;
-const mockWebSocket = require('mock-socket').WebSocket;
+const { MockWebSocket, MockServer } = createMocks();
 ```
 
 ## Native WebSocket Example
@@ -58,9 +51,18 @@ function Chat() {
 
 ```js
 // chat-test.js
-import { Server } from 'mock-socket';
+import { createMocks } from 'mock-socket';
+const { MockWebSocket, Server } = createMocks();
 
 describe('Chat Unit Test', () => {
+  let wsReference;
+  beforeEach(() => {
+    wsReference = window.WebSocket;
+    window.WebSocket = MockWebSocket;
+  });
+
+  afterEach(_ => window.WebSocket = wsReference);
+
   it('basic test', (done) => {
     const mockServer = new Server('ws://localhost:8080');
     mockServer.on('connection', server => {
@@ -76,8 +78,8 @@ describe('Chat Unit Test', () => {
       const messageLen = chatApp.messages.length;
       assert.equal(messageLen, 2, '2 messages where sent from the s server');
 
-      mockServer.stop(done);
-    }, 100);
+      done();
+    }, 0);
   });
 });
 ```

@@ -1,4 +1,4 @@
-import EventPrototype from './event-prototype';
+import EventPrototype from './prototype';
 
 export default class Event extends EventPrototype {
   constructor(type, eventInitConfig = {}) {
