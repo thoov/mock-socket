@@ -202,3 +202,122 @@ test.cb('that closing a websocket removes it from the network bridge', t => {
     t.end();
   };
 });
+
+test.cb('that failing the selectProtocol check invokes the onerror method', t => {
+  const server = new Server('ws://localhost:8080', {
+    selectProtocol: () => false
+  });
+  const mockSocket = new WebSocket('ws://localhost:8080');
+
+  mockSocket.onerror = function open(event) {
+    t.is(event.target.readyState, WebSocket.CLOSED, 'onerror fires as expected');
+    t.end();
+  };
+});
+
+test.cb('that failing the selectProtocol check removes the websocket from the networkBridge', t => {
+  const server = new Server('ws://localhost:8080', {
+    selectProtocol: () => false
+  });
+  const mockSocket = new WebSocket('ws://localhost:8080');
+
+  mockSocket.onclose = function close() {
+    const urlMap = networkBridge.urlMap['ws://localhost:8080/'];
+    t.is(urlMap.websockets.length, 0, 'the websocket was removed from the network bridge');
+    server.close();
+    t.end();
+  };
+});
+
+test.cb('that selectProtocol is only invoked if it is a function', t => {
+  const server = new Server('ws://localhost:8080', {
+    selectProtocol: false
+  });
+  const mockSocket = new WebSocket('ws://localhost:8080');
+
+  mockSocket.onopen = function open(event) {
+    t.is(event.target.readyState, WebSocket.OPEN, 'onopen fires as expected');
+    t.end();
+  };
+});
+
+test.cb('that selectProtocol should be invoked with a empty string if unspecified', t => {
+  const server = new Server('ws://localhost:8080', {
+    selectProtocol(protocols) {
+      t.deepEqual(protocols, ['']);
+      return '';
+    }
+  });
+  const mockSocket = new WebSocket('ws://localhost:8080');
+
+  mockSocket.onopen = function open(event) {
+    t.is(event.target.readyState, WebSocket.OPEN, 'onopen fires as expected');
+    t.is(event.target.protocol, '');
+    t.end();
+  };
+});
+
+test.cb('that selectProtocol should be invoked with a single protocol', t => {
+  const server = new Server('ws://localhost:8080', {
+    selectProtocol(protocols) {
+      t.deepEqual(protocols, ['text']);
+      return 'text';
+    }
+  });
+  const mockSocket = new WebSocket('ws://localhost:8080', 'text');
+
+  mockSocket.onopen = function open(event) {
+    t.is(event.target.readyState, WebSocket.OPEN, 'onopen fires as expected');
+    t.is(event.target.protocol, 'text');
+    t.end();
+  };
+});
+
+test.cb('that selectProtocol should be able to select any of the requested protocols', t => {
+  const server = new Server('ws://localhost:8080', {
+    selectProtocol(protocols) {
+      t.deepEqual(protocols, ['text', 'binary']);
+      return 'binary';
+    }
+  });
+  const mockSocket = new WebSocket('ws://localhost:8080', ['text', 'binary']);
+
+  mockSocket.onopen = function open(event) {
+    t.is(event.target.readyState, WebSocket.OPEN, 'onopen fires as expected');
+    t.is(event.target.protocol, 'binary');
+    t.end();
+  };
+});
+
+test.cb('that client should close if the subprotocol is not of the selected set', t => {
+  const server = new Server('ws://localhost:8080', {
+    selectProtocol(protocols) {
+      t.deepEqual(protocols, ['text']);
+      return 'unsupported';
+    }
+  });
+  const mockSocket = new WebSocket('ws://localhost:8080', 'text');
+
+  mockSocket.onclose = function close() {
+    const urlMap = networkBridge.urlMap['ws://localhost:8080/'];
+    t.is(urlMap.websockets.length, 0, 'the websocket was removed from the network bridge');
+    server.close();
+    t.end();
+  };
+});
+
+test.cb('the server should be able to select _none_ of the protocols from the client', t => {
+  const server = new Server('ws://localhost:8080', {
+    selectProtocol(protocols) {
+      t.deepEqual(protocols, ['text', 'binary']);
+      return '';
+    }
+  });
+  const mockSocket = new WebSocket('ws://localhost:8080', ['text', 'binary']);
+
+  mockSocket.onopen = function open(event) {
+    t.is(event.target.readyState, WebSocket.OPEN, 'onopen fires as expected');
+    t.is(event.target.protocol, '');
+    t.end();
+  };
+});
