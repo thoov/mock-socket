@@ -203,6 +203,20 @@ test.cb('that closing a websocket removes it from the network bridge', t => {
   };
 });
 
+test.cb('that it is possible to simulate an error from the server to the clients', t => {
+  const server = new Server('ws://localhost:8080');
+  const socket = new WebSocket('ws://localhost:8080');
+
+  socket.onopen = function open() {
+    server.simulate('error');
+  };
+
+  socket.onerror = function error() {
+    t.pass('On error was called after it was simulated');
+    t.end();
+  };
+});
+
 test.cb('that failing the selectProtocol check invokes the onerror method', t => {
   const server = new Server('ws://localhost:8080', {
     selectProtocol: () => false

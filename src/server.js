@@ -25,8 +25,8 @@ class Server extends EventTarget {
       throw new Error('A mock server is already listening on this url');
     }
 
-    if (typeof options.verifiyClient === 'undefined') {
-      options.verifiyClient = null;
+    if (typeof options.verifyClient === 'undefined') {
+      options.verifyClient = null;
     }
 
     if (typeof options.selectProtocol === 'undefined') {
@@ -192,6 +192,21 @@ class Server extends EventTarget {
    */
   in(...args) {
     return this.to.apply(null, args);
+  }
+
+  /*
+   * Simulate an event from the server to the clients. Useful for
+   * simulating errors.
+   */
+  simulate(event) {
+    const listeners = networkBridge.websocketsLookup(this.url);
+
+    if (event === 'error') {
+      listeners.forEach(socket => {
+        socket.readyState = WebSocket.CLOSE;
+        socket.dispatchEvent(createEvent({ type: 'error' }));
+      });
+    }
   }
 }
 
