@@ -29,6 +29,10 @@ class Server extends EventTarget {
       options.verifyClient = null;
     }
 
+    if (typeof options.selectProtocol === 'undefined') {
+      options.selectProtocol = null;
+    }
+
     this.options = options;
 
     this.start();

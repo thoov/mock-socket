@@ -19,6 +19,8 @@ class WebSocket extends EventTarget {
   constructor(url, protocol = '') {
     super();
 
+    let protocols;
+
     if (!url) {
       throw new TypeError("Failed to construct 'WebSocket': 1 argument required, but only 0 present.");
     }
@@ -30,8 +32,10 @@ class WebSocket extends EventTarget {
 
     if (typeof protocol === 'string') {
       this.protocol = protocol;
+      protocols = [protocol];
     } else if (Array.isArray(protocol) && protocol.length > 0) {
       this.protocol = protocol[0];
+      protocols = [...protocol];
     }
 
     /*
@@ -119,6 +123,22 @@ class WebSocket extends EventTarget {
           this.dispatchEvent(createEvent({ type: 'error', target: this }));
           this.dispatchEvent(createCloseEvent({ type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL }));
         } else {
+          if (server.options.selectProtocol && typeof server.options.selectProtocol === 'function') {
+            const selectedProtocol = server.options.selectProtocol(protocols);
+            const isFilled = selectedProtocol !== '';
+            const isRequested = protocols.indexOf(selectedProtocol) !== -1;
+            if (isFilled && !isRequested) {
+              this.readyState = WebSocket.CLOSED;
+
+              logger('error', `WebSocket connection to '${this.url}' failed: Invalid Sub-Protocol`);
+
+              networkBridge.removeWebSocket(this, this.url);
+              this.dispatchEvent(createEvent({ type: 'error', target: this }));
+              this.dispatchEvent(createCloseEvent({ type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL }));
+              return;
+            }
+            this.protocol = selectedProtocol;
+          }
           this.readyState = WebSocket.OPEN;
           this.dispatchEvent(createEvent({ type: 'open', target: this }));
           server.dispatchEvent(createEvent({ type: 'connection' }), server, this);
