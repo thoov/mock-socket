@@ -90,7 +90,7 @@ function Chat() {
   const chatSocket = new io('http://localhost:8080');
   this.messages = [];
 
-  socket.on('chat-message', data => {
+  chatSocket.on('chat-message', data => {
     this.messages.push(data);
   };
 }
