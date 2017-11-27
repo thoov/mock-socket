@@ -1,7 +1,7 @@
 import WebSocket from './websocket';
 import EventTarget from './event-target';
 import networkBridge from './network-bridge';
-import CLOSE_CODES from './helpers/close-codes';
+import { CLOSE_CODES } from './constants';
 import normalize from './helpers/normalize-url';
 import globalObject from './helpers/global-object';
 import dedupe from './helpers/dedupe';
