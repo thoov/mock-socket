@@ -1,7 +1,7 @@
 import delay from './helpers/delay';
 import EventTarget from './event-target';
 import networkBridge from './network-bridge';
-import CLOSE_CODES from './helpers/close-codes';
+import { CLOSE_CODES, ERROR_PREFIX } from './constants';
 import normalize from './helpers/normalize-url';
 import logger from './helpers/logger';
 import { createEvent, createMessageEvent, createCloseEvent } from './event-factory';
@@ -22,7 +22,7 @@ class WebSocket extends EventTarget {
     let protocols;
 
     if (!url) {
-      throw new TypeError("Failed to construct 'WebSocket': 1 argument required, but only 0 present.");
+      throw new TypeError(`${ERROR_PREFIX.CONSTRUCTOR_ERROR} 1 argument required, but only 0 present.`);
     }
 
     this.binaryType = 'blob';
