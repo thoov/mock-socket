@@ -1,6 +1,6 @@
 import test from 'ava';
-import { createEvent } from '../../src/event-factory';
-import EventTarget from '../../src/event-target';
+import { createEvent } from '../../src/event/factory';
+import EventTarget from '../../src/event/target';
 
 class Mock extends EventTarget {}
 class MockFoo extends EventTarget {}

@@ -1,6 +1,6 @@
-import Event from './helpers/event';
-import MessageEvent from './helpers/message-event';
-import CloseEvent from './helpers/close-event';
+import Event from './event';
+import MessageEvent from './message';
+import CloseEvent from './close';
 
 /*
 * Creates an Event object and extends it to allow full modification of

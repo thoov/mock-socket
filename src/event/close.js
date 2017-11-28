@@ -1,20 +1,21 @@
-import EventPrototype from './event-prototype';
+import EventPrototype from './prototype';
+import { ERROR_PREFIX } from '../constants';
 
 export default class CloseEvent extends EventPrototype {
   constructor(type, eventInitConfig = {}) {
     super();
 
     if (!type) {
-      throw new TypeError("Failed to construct 'CloseEvent': 1 argument required, but only 0 present.");
+      throw new TypeError(`${ERROR_PREFIX.EVENT.CLOSE} 1 argument required, but only 0 present.`);
     }
 
     if (typeof eventInitConfig !== 'object') {
-      throw new TypeError("Failed to construct 'CloseEvent': parameter 2 ('eventInitDict') is not an object");
+      throw new TypeError(`${ERROR_PREFIX.EVENT.CLOSE} parameter 2 ('eventInitDict') is not an object`);
     }
 
     const { bubbles, cancelable, code, reason, wasClean } = eventInitConfig;
 
-    this.type = String(type);
+    this.type = `${type}`;
     this.timeStamp = Date.now();
     this.target = null;
     this.srcElement = null;
@@ -26,8 +27,8 @@ export default class CloseEvent extends EventPrototype {
     this.cancelable = cancelable ? Boolean(cancelable) : false;
     this.canncelBubble = false;
     this.bubbles = bubbles ? Boolean(bubbles) : false;
-    this.code = typeof code === 'number' ? Number(code) : 0;
-    this.reason = reason ? String(reason) : '';
+    this.code = typeof code === 'number' ? parseInt(code, 10) : 0;
+    this.reason = `${reason || ''}`;
     this.wasClean = wasClean ? Boolean(wasClean) : false;
   }
 }

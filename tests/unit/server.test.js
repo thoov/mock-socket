@@ -1,7 +1,7 @@
 import test from 'ava';
 import Server from '../../src/server';
 import WebSocket from '../../src/websocket';
-import EventTarget from '../../src/event-target';
+import EventTarget from '../../src/event/target';
 import networkBridge from '../../src/network-bridge';
 import globalObject from '../../src/helpers/global-object';
 

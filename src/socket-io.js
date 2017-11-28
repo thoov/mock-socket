@@ -1,10 +1,10 @@
 import delay from './helpers/delay';
-import EventTarget from './event-target';
+import EventTarget from './event/target';
 import networkBridge from './network-bridge';
 import { CLOSE_CODES } from './constants';
 import normalize from './helpers/normalize-url';
 import logger from './helpers/logger';
-import { createEvent, createMessageEvent, createCloseEvent } from './event-factory';
+import { createEvent, createMessageEvent, createCloseEvent } from './event/factory';
 
 /*
 * The socket-io class is designed to mimick the real API as closely as possible.
