@@ -1,6 +1,6 @@
 import test from 'ava';
 import WebSocket from '../../src/websocket';
-import EventTarget from '../../src/event-target';
+import EventTarget from '../../src/event/target';
 
 test.skip('that not passing a url throws an error', t => {
   t.throws(() => {

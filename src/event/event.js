@@ -1,20 +1,21 @@
-import EventPrototype from './event-prototype';
+import EventPrototype from './prototype';
+import { ERROR_PREFIX } from '../constants';
 
 export default class Event extends EventPrototype {
   constructor(type, eventInitConfig = {}) {
     super();
 
     if (!type) {
-      throw new TypeError("Failed to construct 'Event': 1 argument required, but only 0 present.");
+      throw new TypeError(`${ERROR_PREFIX.EVENT_ERROR} 1 argument required, but only 0 present.`);
     }
 
     if (typeof eventInitConfig !== 'object') {
-      throw new TypeError("Failed to construct 'Event': parameter 2 ('eventInitDict') is not an object");
+      throw new TypeError(`${ERROR_PREFIX.EVENT_ERROR} parameter 2 ('eventInitDict') is not an object.`);
     }
 
     const { bubbles, cancelable } = eventInitConfig;
 
-    this.type = String(type);
+    this.type = `${type}`;
     this.timeStamp = Date.now();
     this.target = null;
     this.srcElement = null;

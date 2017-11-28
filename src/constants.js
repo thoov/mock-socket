@@ -19,5 +19,10 @@ export const CLOSE_CODES = {
 };
 
 export const ERROR_PREFIX = {
-  CONSTRUCTOR_ERROR: "Failed to construct 'WebSocket':"
+  CONSTRUCTOR_ERROR: "Failed to construct 'WebSocket':",
+  EVENT: {
+    CONSTRUCT: "Failed to construct 'Event':",
+    MESSAGE: "Failed to construct 'MessageEvent':",
+    CLOSE: "Failed to construct 'CloseEvent':"
+  }
 };
