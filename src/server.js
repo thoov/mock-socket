@@ -1,8 +1,8 @@
+import URL from 'url-parse';
 import WebSocket from './websocket';
 import EventTarget from './event/target';
 import networkBridge from './network-bridge';
 import { CLOSE_CODES } from './constants';
-import normalize from './helpers/normalize-url';
 import globalObject from './helpers/global-object';
 import dedupe from './helpers/dedupe';
 import { createEvent, createMessageEvent, createCloseEvent } from './event/factory';
@@ -16,7 +16,14 @@ class Server extends EventTarget {
   */
   constructor(url, options = {}) {
     super();
-    this.url = normalize(url);
+    const urlRecord = new URL(url);
+
+    if (!urlRecord.pathname) {
+      urlRecord.pathname = '/';
+    }
+
+    this.url = urlRecord.toString();
+
     this.originalWebSocket = null;
     const server = networkBridge.attachServer(this, this.url);
 
