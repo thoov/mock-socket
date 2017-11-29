@@ -1,8 +1,8 @@
+import URL from 'url-parse';
 import delay from './helpers/delay';
 import EventTarget from './event/target';
 import networkBridge from './network-bridge';
 import { CLOSE_CODES, ERROR_PREFIX } from './constants';
-import normalize from './helpers/normalize-url';
 import logger from './helpers/logger';
 import { createEvent, createMessageEvent, createCloseEvent } from './event/factory';
 
@@ -26,7 +26,13 @@ class WebSocket extends EventTarget {
     }
 
     this.binaryType = 'blob';
-    this.url = normalize(url);
+    const urlRecord = new URL(url);
+
+    if (!urlRecord.pathname) {
+      urlRecord.pathname = '/';
+    }
+
+    this.url = urlRecord.toString();
     this.readyState = WebSocket.CONNECTING;
     this.protocol = '';
 
