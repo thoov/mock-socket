@@ -6,7 +6,7 @@ export default function urlVerification(url) {
   const { pathname, protocol, hash } = urlRecord;
 
   if (!url) {
-    throw new SyntaxError(`${ERROR_PREFIX.CONSTRUCTOR_ERROR} 1 argument required, but only 0 present.`);
+    throw new TypeError(`${ERROR_PREFIX.CONSTRUCTOR_ERROR} 1 argument required, but only 0 present.`);
   }
 
   if (!pathname) {

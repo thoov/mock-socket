@@ -4,7 +4,7 @@ import urlVerification from '../../src/helpers/url-verification';
 test('that no url throws an error', t => {
   const error = t.throws(() => {
     urlVerification();
-  }, SyntaxError);
+  }, TypeError);
 
   t.is(error.message, "Failed to construct 'WebSocket': 1 argument required, but only 0 present.");
 });
