@@ -255,10 +255,10 @@ test.cb('that selectProtocol is only invoked if it is a function', t => {
   };
 });
 
-test.cb('that selectProtocol should be invoked with a empty string if unspecified', t => {
+test.cb('that selectProtocol should be invoked with an empty array if unspecified', t => {
   const server = new Server('ws://localhost:8080', {
     selectProtocol(protocols) {
-      t.deepEqual(protocols, ['']);
+      t.deepEqual(protocols, []);
       return '';
     }
   });

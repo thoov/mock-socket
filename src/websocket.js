@@ -1,8 +1,9 @@
-import URL from 'url-parse';
+import urlVerification from './helpers/url-verification';
+import protocolVerification from './helpers/protocol-verification';
 import delay from './helpers/delay';
 import EventTarget from './event/target';
 import networkBridge from './network-bridge';
-import { CLOSE_CODES, ERROR_PREFIX } from './constants';
+import { CLOSE_CODES } from './constants';
 import logger from './helpers/logger';
 import { createEvent, createMessageEvent, createCloseEvent } from './event/factory';
 
@@ -13,36 +14,15 @@ import { createEvent, createMessageEvent, createCloseEvent } from './event/facto
 * https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
 */
 class WebSocket extends EventTarget {
-  /*
-  * @param {string} url
-  */
-  constructor(url, protocol = '') {
+  constructor(url, protocols) {
     super();
 
-    let protocols;
-
-    if (!url) {
-      throw new TypeError(`${ERROR_PREFIX.CONSTRUCTOR_ERROR} 1 argument required, but only 0 present.`);
-    }
+    this.url = urlVerification(url);
+    protocols = protocolVerification(protocols);
+    this.protocol = protocols[0] || '';
 
     this.binaryType = 'blob';
-    const urlRecord = new URL(url);
-
-    if (!urlRecord.pathname) {
-      urlRecord.pathname = '/';
-    }
-
-    this.url = urlRecord.toString();
     this.readyState = WebSocket.CONNECTING;
-    this.protocol = '';
-
-    if (typeof protocol === 'string') {
-      this.protocol = protocol;
-      protocols = [protocol];
-    } else if (Array.isArray(protocol) && protocol.length > 0) {
-      this.protocol = protocol[0];
-      protocols = [...protocol];
-    }
 
     /*
     * In order to capture the callback function we need to define custom setters.
