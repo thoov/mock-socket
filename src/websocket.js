@@ -24,57 +24,6 @@ class WebSocket extends EventTarget {
     this.binaryType = 'blob';
     this.readyState = WebSocket.CONNECTING;
 
-    /*
-    * In order to capture the callback function we need to define custom setters.
-    * To illustrate:
-    *   mySocket.onopen = function() { alert(true) };
-    *
-    * The only way to capture that function and hold onto it for later is with the
-    * below code:
-    */
-    Object.defineProperties(this, {
-      onopen: {
-        configurable: true,
-        enumerable: true,
-        get() {
-          return this.listeners.open;
-        },
-        set(listener) {
-          this.addEventListener('open', listener);
-        }
-      },
-      onmessage: {
-        configurable: true,
-        enumerable: true,
-        get() {
-          return this.listeners.message;
-        },
-        set(listener) {
-          this.addEventListener('message', listener);
-        }
-      },
-      onclose: {
-        configurable: true,
-        enumerable: true,
-        get() {
-          return this.listeners.close;
-        },
-        set(listener) {
-          this.addEventListener('close', listener);
-        }
-      },
-      onerror: {
-        configurable: true,
-        enumerable: true,
-        get() {
-          return this.listeners.error;
-        },
-        set(listener) {
-          this.addEventListener('error', listener);
-        }
-      }
-    });
-
     const server = networkBridge.attachWebSocket(this, this.url);
 
     /*
@@ -137,6 +86,38 @@ class WebSocket extends EventTarget {
         logger('error', `WebSocket connection to '${this.url}' failed`);
       }
     }, this);
+  }
+
+  get onopen() {
+    return this.listeners.open;
+  }
+
+  get onmessage() {
+    return this.listeners.message;
+  }
+
+  get onclose() {
+    return this.listeners.close;
+  }
+
+  get onerror() {
+    return this.listeners.error;
+  }
+
+  set onopen(listener) {
+    this.addEventListener('open', listener);
+  }
+
+  set onmessage(listener) {
+    this.addEventListener('message', listener);
+  }
+
+  set onclose(listener) {
+    this.addEventListener('close', listener);
+  }
+
+  set onerror(listener) {
+    this.addEventListener('error', listener);
   }
 
   /*
