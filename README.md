@@ -8,23 +8,20 @@ Javascript mocking library for <a href="https://developer.mozilla.org/en-US/docs
 
 <p align="center">
   <a href="https://travis-ci.org/thoov/mock-socket">
-    <img src="https://travis-ci.org/thoov/mock-socket.svg?branch=master" alt="Build Status">
+    <img src="https://img.shields.io/travis/thoov/mock-socket.svg?style=for-the-badge" alt="Build Status">
   </a>
   <a href="https://codeclimate.com/github/thoov/mock-socket/coverage">
-    <img src="https://codeclimate.com/github/thoov/mock-socket/badges/coverage.svg" alt="Code Coverage">
+    <img src="https://img.shields.io/codeclimate/coverage/github/thoov/mock-socket.svg?style=for-the-badge" alt="Code Coverage">
   </a>
-  <a href="https://codeclimate.com/github/thoov/mock-socket">
-    <img src="https://codeclimate.com/github/thoov/mock-socket/badges/gpa.svg" alt="Code GPA">
-  </a>
-  <a href="http://badge.fury.io/js/mock-socket">
-    <img src="https://badge.fury.io/js/mock-socket.svg" alt="NPM Version">
+  <a href="https://www.npmjs.com/package/mock-socket">
+    <img src="https://img.shields.io/npm/v/mock-socket.svg?style=for-the-badge" alt="NPM Version">
   </a>
 </p>
 
 ## Installation
 
 ```shell
-yarn add mock-socket --dev
+npm install mock-socket --dev
 ```
 
 ## Usage
