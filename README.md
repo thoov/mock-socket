@@ -10,8 +10,8 @@ Javascript mocking library for <a href="https://developer.mozilla.org/en-US/docs
   <a href="https://travis-ci.org/thoov/mock-socket">
     <img src="https://img.shields.io/travis/thoov/mock-socket.svg?style=for-the-badge" alt="Build Status">
   </a>
-  <a href="https://codeclimate.com/github/thoov/mock-socket/coverage">
-    <img src="https://img.shields.io/codeclimate/coverage/github/thoov/mock-socket.svg?style=for-the-badge" alt="Code Coverage">
+  <a href="https://github.com/thoov/mock-socket/blob/master/LICENSE.txt">
+    <img src="https://img.shields.io/github/license/thoov/mock-socket.svg?style=for-the-badge" alt="Code Coverage">
   </a>
   <a href="https://www.npmjs.com/package/mock-socket">
     <img src="https://img.shields.io/npm/v/mock-socket.svg?style=for-the-badge" alt="NPM Version">
