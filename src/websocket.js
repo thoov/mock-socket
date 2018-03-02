@@ -105,19 +105,19 @@ class WebSocket extends EventTarget {
   }
 
   set onopen(listener) {
-    this.addEventListener('open', listener);
+    this.listeners.open = [listener];
   }
 
   set onmessage(listener) {
-    this.addEventListener('message', listener);
+    this.listeners.message = [listener];
   }
 
   set onclose(listener) {
-    this.addEventListener('close', listener);
+    this.listeners.close = [listener];
   }
 
   set onerror(listener) {
-    this.addEventListener('error', listener);
+    this.listeners.error = [listener];
   }
 
   /*
