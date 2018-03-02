@@ -90,5 +90,24 @@ test.cb('reassigning websocket onerror listener should replace previous listener
 
   t.false(firstListenerCalled, 'The first listener should not be called');
   t.true(secondListenerCalled, 'Only the second listener should be called');
+  mockServer.close();
+  t.end();
+});
+
+test.cb('reassigning websocket null listener should clear previous listeners', t => {
+  const socketUrl = 'ws://localhost:8080';
+  const mockServer = new Server(socketUrl);
+  const mockSocket = new WebSocket(socketUrl);
+
+  let listenerCalled = false;
+
+  mockSocket.onerror = () => {
+    listenerCalled = true;
+  };
+  mockSocket.onerror = null;
+
+  mockServer.simulate('error');
+
+  t.false(listenerCalled, 'The first listener should not be called');
   t.end();
 });
