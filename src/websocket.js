@@ -1,11 +1,13 @@
+import lengthInUtf8Bytes from './helpers/byte-length';
 import urlVerification from './helpers/url-verification';
 import protocolVerification from './helpers/protocol-verification';
 import delay from './helpers/delay';
 import EventTarget from './event/target';
 import networkBridge from './network-bridge';
-import { CLOSE_CODES } from './constants';
+import { CLOSE_CODES, ERROR_PREFIX } from './constants';
 import logger from './helpers/logger';
 import { createEvent, createMessageEvent, createCloseEvent } from './event/factory';
+import { closeWebSocketConnection, failWebSocketConnection } from './algorithms/close';
 
 /*
 * The main websocket class which is designed to mimick the native WebSocket class as close
@@ -146,30 +148,33 @@ class WebSocket extends EventTarget {
   }
 
   /*
-  * Closes the WebSocket connection or connection attempt, if any.
-  * If the connection is already CLOSED, this method does nothing.
-  *
-  * https://developer.mozilla.org/en-US/docs/Web/API/WebSocket#close()
-  */
-  close() {
-    if (this.readyState !== WebSocket.OPEN) {
-      return undefined;
+   * https://html.spec.whatwg.org/multipage/web-sockets.html#dom-websocket-close
+   */
+  close(code, reason) {
+    if (code !== undefined) {
+      if (typeof code !== 'number' || (code !== 1000 && (code < 3000 || code > 4999))) {
+        throw new TypeError(
+          `${ERROR_PREFIX.CLOSE_ERROR} The code must be either 1000, or between 3000 and 4999. ${code} is neither.`
+        );
+      }
     }
 
-    const server = networkBridge.serverLookup(this.url);
-    const closeEvent = createCloseEvent({
-      type: 'close',
-      target: this,
-      code: CLOSE_CODES.CLOSE_NORMAL
-    });
+    if (reason !== undefined) {
+      const length = lengthInUtf8Bytes(reason);
 
-    networkBridge.removeWebSocket(this, this.url);
+      if (length > 123) {
+        throw new SyntaxError(`${ERROR_PREFIX.CLOSE_ERROR} The message must not be greater than 123 bytes.`);
+      }
+    }
 
-    this.readyState = WebSocket.CLOSED;
-    this.dispatchEvent(closeEvent);
+    if (this.readyState === WebSocket.CLOSING || this.readyState === WebSocket.CLOSED) {
+      return;
+    }
 
-    if (server) {
-      server.dispatchEvent(closeEvent, server);
+    if (this.readyState === WebSocket.CONNECTING) {
+      failWebSocketConnection(this, code, reason);
+    } else {
+      closeWebSocketConnection(this, code, reason);
     }
   }
 }
