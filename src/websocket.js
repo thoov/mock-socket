@@ -1,4 +1,4 @@
-import { TextEncoder } from 'text-encoding';
+import lengthInUtf8Bytes from './helpers/byte-length';
 import urlVerification from './helpers/url-verification';
 import protocolVerification from './helpers/protocol-verification';
 import delay from './helpers/delay';
@@ -160,10 +160,9 @@ class WebSocket extends EventTarget {
     }
 
     if (reason !== undefined) {
-      // this is not supported in IE/EDGE
-      const encoded = new TextEncoder('utf-8').encode(reason);
+      const length = lengthInUtf8Bytes(reason);
 
-      if (encoded.byteLength > 123) {
+      if (length > 123) {
         throw new SyntaxError(`${ERROR_PREFIX.CLOSE_ERROR} The message must not be greater than 123 bytes.`);
       }
     }
