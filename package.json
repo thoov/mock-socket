@@ -73,6 +73,7 @@
     ]
   },
   "dependencies": {
+    "text-encoding": "^0.6.4",
     "url-parse": "^1.2.0"
   }
 }

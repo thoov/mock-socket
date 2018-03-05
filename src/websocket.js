@@ -1,3 +1,4 @@
+import { TextEncoder } from 'text-encoding';
 import urlVerification from './helpers/url-verification';
 import protocolVerification from './helpers/protocol-verification';
 import delay from './helpers/delay';
@@ -150,15 +151,15 @@ class WebSocket extends EventTarget {
    * https://html.spec.whatwg.org/multipage/web-sockets.html#dom-websocket-close
    */
   close(code, reason) {
-    if (code) {
+    if (code !== undefined) {
       if (typeof code !== 'number' || (code !== 1000 && (code < 3000 || code > 4999))) {
-        throw new Error(
+        throw new TypeError(
           `${ERROR_PREFIX.CLOSE_ERROR} The code must be either 1000, or between 3000 and 4999. ${code} is neither.`
         );
       }
     }
 
-    if (reason) {
+    if (reason !== undefined) {
       // this is not supported in IE/EDGE
       const encoded = new TextEncoder('utf-8').encode(reason);
 
