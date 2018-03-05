@@ -5,9 +5,9 @@ env:
 language: node_js
 
 node_js:
-  - node
-  - lts/*
   - 6
+  - 8
+  - 9
 
 cache: yarn
 
