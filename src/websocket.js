@@ -107,18 +107,22 @@ class WebSocket extends EventTarget {
   }
 
   set onopen(listener) {
+    delete this.listeners.open;
     this.addEventListener('open', listener);
   }
 
   set onmessage(listener) {
+    delete this.listeners.message;
     this.addEventListener('message', listener);
   }
 
   set onclose(listener) {
+    delete this.listeners.close;
     this.addEventListener('close', listener);
   }
 
   set onerror(listener) {
+    delete this.listeners.error;
     this.addEventListener('error', listener);
   }
 
