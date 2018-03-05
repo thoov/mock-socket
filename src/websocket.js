@@ -88,22 +88,6 @@ class WebSocket extends EventTarget {
     }, this);
   }
 
-  /*
-  * Ties a listener function to an event type which can later be invoked via the
-  * dispatchEvent method.
-  * This method will replace all existing listeners with the given listener.
-  *
-  * @param {string} type - the type of event (ie: 'open', 'message', etc.)
-  * @param {function} listener - the callback function to invoke whenever an event is dispatched matching the given type
-  */
-  replaceEventListener(type, listener) {
-    if (typeof listener === 'function') {
-      this.listeners[type] = [listener];
-    } else if (listener === null) {
-      this.listeners[type] = [];
-    }
-  }
-
   get onopen() {
     return this.listeners.open;
   }
@@ -121,19 +105,23 @@ class WebSocket extends EventTarget {
   }
 
   set onopen(listener) {
-    this.replaceEventListener('open', listener);
+    delete this.listeners.open;
+    this.addEventListener('open', listener);
   }
 
   set onmessage(listener) {
-    this.replaceEventListener('message', listener);
+    delete this.listeners.message;
+    this.addEventListener('message', listener);
   }
 
   set onclose(listener) {
-    this.replaceEventListener('close', listener);
+    delete this.listeners.close;
+    this.addEventListener('close', listener);
   }
 
   set onerror(listener) {
-    this.replaceEventListener('error', listener);
+    delete this.listeners.error;
+    this.addEventListener('error', listener);
   }
 
   /*
