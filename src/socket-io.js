@@ -29,7 +29,7 @@ class SocketIO extends EventTarget {
     this.readyState = SocketIO.CONNECTING;
     this.protocol = '';
 
-    if (typeof protocol === 'string') {
+    if (typeof protocol === 'string' || (typeof protocol === 'object' && protocol !== null)) {
       this.protocol = protocol;
     } else if (Array.isArray(protocol) && protocol.length > 0) {
       this.protocol = protocol[0];
@@ -256,16 +256,16 @@ SocketIO.CLOSED = 3;
 /*
 * Static constructor methods for the IO Socket
 */
-const IO = function ioConstructor(url) {
-  return new SocketIO(url);
+const IO = function ioConstructor(url, protocol) {
+  return new SocketIO(url, protocol);
 };
 
 /*
 * Alias the raw IO() constructor
 */
-IO.connect = function ioConnect(url) {
+IO.connect = function ioConnect(url, protocol) {
   /* eslint-disable new-cap */
-  return IO(url);
+  return IO(url, protocol);
   /* eslint-enable new-cap */
 };
 
