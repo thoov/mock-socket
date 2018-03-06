@@ -12,9 +12,22 @@ test('it accepts a url', t => {
   t.truthy(socket);
 });
 
-test('it accepts an opts object paramter', t => {
-  const socket = io('http://localhost', { a: 'apple' });
+test('it accepts an opts object parameter', t => {
+  const protocol = { a: 'apple' };
+  const socket = io('http://localhost', protocol);
   t.truthy(socket);
+  t.is(socket.protocol, protocol);
+});
+
+test.cb('it includes opts object parameter in server connection callback', t => {
+  const url = 'ws://not-real/';
+  const myServer = new Server(url);
+  const protocol = { a: 'apple' };
+  const socket = io(url, protocol);
+  myServer.on('connection', (server, instance) => {
+    t.is(instance.protocol, protocol);
+    t.end();
+  });
 });
 
 test('it can equivalently use a connect method', t => {
