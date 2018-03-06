@@ -183,9 +183,13 @@ class WebSocket extends EventTarget {
   }
 }
 
-WebSocket.prototype.CONNECTING = WebSocket.CONNECTING = 0;
-WebSocket.prototype.OPEN = WebSocket.OPEN = 1;
-WebSocket.prototype.CLOSING = WebSocket.CLOSING = 2;
-WebSocket.prototype.CLOSED = WebSocket.CLOSED = 3;
+WebSocket.CONNECTING = 0;
+WebSocket.prototype.CONNECTING = WebSocket.CONNECTING;
+WebSocket.OPEN = 1;
+WebSocket.prototype.OPEN = WebSocket.OPEN;
+WebSocket.CLOSING = 2;
+WebSocket.prototype.CLOSING = WebSocket.CLOSING;
+WebSocket.CLOSED = 3;
+WebSocket.prototype.CLOSED = WebSocket.CLOSED;
 
 export default WebSocket;
