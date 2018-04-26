@@ -106,6 +106,8 @@ class SocketIO extends EventTarget {
         server
       );
     }
+
+    return this;
   }
 
   /*
@@ -114,7 +116,7 @@ class SocketIO extends EventTarget {
   * https://github.com/socketio/socket.io-client/blob/master/lib/socket.js#L383
   */
   disconnect() {
-    this.close();
+    return this.close();
   }
 
   /*
@@ -136,6 +138,8 @@ class SocketIO extends EventTarget {
     if (server) {
       server.dispatchEvent(messageEvent, ...data);
     }
+
+    return this;
   }
 
   /*
@@ -147,6 +151,7 @@ class SocketIO extends EventTarget {
   */
   send(data) {
     this.emit('message', data);
+    return this;
   }
 
   /*
@@ -169,6 +174,7 @@ class SocketIO extends EventTarget {
     return {
       emit(event, data) {
         server.emit(event, data, { websockets: networkBridge.websocketsLookup(self.url, null, self) });
+        return self;
       },
       to(room) {
         return server.to(room, self);
@@ -184,6 +190,7 @@ class SocketIO extends EventTarget {
   */
   on(type, callback) {
     this.addEventListener(type, callback);
+    return this;
   }
 
   /*
