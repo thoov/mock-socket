@@ -2,6 +2,7 @@ import lengthInUtf8Bytes from './helpers/byte-length';
 import urlVerification from './helpers/url-verification';
 import protocolVerification from './helpers/protocol-verification';
 import delay from './helpers/delay';
+import normalizeSendData from './helpers/normalize-send';
 import EventTarget from './event/target';
 import networkBridge from './network-bridge';
 import { CLOSE_CODES, ERROR_PREFIX } from './constants';
@@ -13,7 +14,7 @@ import { closeWebSocketConnection, failWebSocketConnection } from './algorithms/
 * The main websocket class which is designed to mimick the native WebSocket class as close
 * as possible.
 *
-* https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
+* https://html.spec.whatwg.org/multipage/web-sockets.html
 */
 class WebSocket extends EventTarget {
   constructor(url, protocols) {
@@ -126,20 +127,17 @@ class WebSocket extends EventTarget {
     this.addEventListener('error', listener);
   }
 
-  /*
-  * Transmits data to the server over the WebSocket connection.
-  *
-  * https://developer.mozilla.org/en-US/docs/Web/API/WebSocket#send()
-  */
   send(data) {
     if (this.readyState === WebSocket.CLOSING || this.readyState === WebSocket.CLOSED) {
       throw new Error('WebSocket is already in CLOSING or CLOSED state');
     }
 
+    // TODO: handle bufferedAmount
+
     const messageEvent = createMessageEvent({
       type: 'message',
       origin: this.url,
-      data
+      data: normalizeSendData(data)
     });
 
     const server = networkBridge.serverLookup(this.url);
@@ -151,9 +149,6 @@ class WebSocket extends EventTarget {
     }
   }
 
-  /*
-   * https://html.spec.whatwg.org/multipage/web-sockets.html#dom-websocket-close
-   */
   close(code, reason) {
     if (code !== undefined) {
       if (typeof code !== 'number' || (code !== 1000 && (code < 3000 || code > 4999))) {

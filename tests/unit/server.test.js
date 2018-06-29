@@ -117,3 +117,18 @@ test('that calling close will trigger the onclose of websockets', t => {
   t.is(myServer.originalWebSocket, null, 'server forgets about the original websocket');
   t.deepEqual(globalObj.WebSocket, originalWebSocket, 'the original websocket is returned to the global object');
 });
+
+test.cb('that send will normalize data', t => {
+  const myServer = new Server('ws://not-real/');
+
+  myServer.on('connection', (server, socket) => {
+    myServer.send([1, 2]);
+  });
+
+  const socketFoo = new WebSocket('ws://not-real/');
+  socketFoo.onmessage = message => {
+    t.is(message.data, '1,2', 'data non string, non blob/arraybuffers get toStringed');
+    myServer.close();
+    t.end();
+  };
+});

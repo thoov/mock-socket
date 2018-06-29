@@ -5,6 +5,7 @@ import networkBridge from './network-bridge';
 import { CLOSE_CODES } from './constants';
 import globalObject from './helpers/global-object';
 import dedupe from './helpers/dedupe';
+import normalizeSendData from './helpers/normalize-send';
 import { createEvent, createMessageEvent, createCloseEvent } from './event/factory';
 
 /*
@@ -113,6 +114,9 @@ class Server extends EventTarget {
 
     if (typeof options !== 'object' || arguments.length > 3) {
       data = Array.prototype.slice.call(arguments, 1, arguments.length);
+      data = data.map(item => normalizeSendData(item));
+    } else {
+      data = normalizeSendData(data);
     }
 
     websockets.forEach(socket => {
