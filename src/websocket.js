@@ -2,6 +2,7 @@ import delay from './helpers/delay';
 import logger from './helpers/logger';
 import EventTarget from './event/target';
 import networkBridge from './network-bridge';
+import proxyFactory from './helpers/proxy-factory';
 import lengthInUtf8Bytes from './helpers/byte-length';
 import { CLOSE_CODES, ERROR_PREFIX } from './constants';
 import urlVerification from './helpers/url-verification';
@@ -9,14 +10,13 @@ import normalizeSendData from './helpers/normalize-send';
 import protocolVerification from './helpers/protocol-verification';
 import { createEvent, createMessageEvent, createCloseEvent } from './event/factory';
 import { closeWebSocketConnection, failWebSocketConnection } from './algorithms/close';
-import proxyFactory from './helpers/proxy-factory';
 
 /*
-* The main websocket class which is designed to mimick the native WebSocket class as close
-* as possible.
-*
-* https://html.spec.whatwg.org/multipage/web-sockets.html
-*/
+ * The main websocket class which is designed to mimick the native WebSocket class as close
+ * as possible.
+ *
+ * https://html.spec.whatwg.org/multipage/web-sockets.html
+ */
 class WebSocket extends EventTarget {
   constructor(url, protocols) {
     super();
@@ -31,19 +31,19 @@ class WebSocket extends EventTarget {
     const server = networkBridge.attachWebSocket(this, this.url);
 
     /*
-    * This delay is needed so that we dont trigger an event before the callbacks have been
-    * setup. For example:
-    *
-    * var socket = new WebSocket('ws://localhost');
-    *
-    * // If we dont have the delay then the event would be triggered right here and this is
-    * // before the onopen had a chance to register itself.
-    *
-    * socket.onopen = () => { // this would never be called };
-    *
-    * // and with the delay the event gets triggered here after all of the callbacks have been
-    * // registered :-)
-    */
+     * This delay is needed so that we dont trigger an event before the callbacks have been
+     * setup. For example:
+     *
+     * var socket = new WebSocket('ws://localhost');
+     *
+     * If we dont have the delay then the event would be triggered right here and this is
+     * before the onopen had a chance to register itself.
+     *
+     * socket.onopen = () => { // this would never be called };
+     *
+     * and with the delay the event gets triggered here after all of the callbacks have been
+     * registered :-)
+     */
     delay(function delayCallback() {
       if (server) {
         if (
@@ -80,7 +80,7 @@ class WebSocket extends EventTarget {
           }
           this.readyState = WebSocket.OPEN;
           this.dispatchEvent(createEvent({ type: 'open', target: this }));
-          server.dispatchEvent(createEvent({ type: 'connection' }), proxyFactory(this, server));
+          server.dispatchEvent(createEvent({ type: 'connection' }), proxyFactory(this));
         }
       } else {
         this.readyState = WebSocket.CLOSED;

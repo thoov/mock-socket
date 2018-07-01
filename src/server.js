@@ -1,10 +1,10 @@
 import URL from 'url-parse';
 import WebSocket from './websocket';
-import EventTarget from './event/target';
-import networkBridge from './network-bridge';
-import { CLOSE_CODES } from './constants';
-import globalObject from './helpers/global-object';
 import dedupe from './helpers/dedupe';
+import EventTarget from './event/target';
+import { CLOSE_CODES } from './constants';
+import networkBridge from './network-bridge';
+import globalObject from './helpers/global-object';
 import normalizeSendData from './helpers/normalize-send';
 import { createEvent, createMessageEvent, createCloseEvent } from './event/factory';
 
@@ -40,8 +40,8 @@ class Server extends EventTarget {
   }
 
   /*
-  * Attaches the mock websocket object to the global object
-  */
+   * Attaches the mock websocket object to the global object
+   */
   start() {
     const globalObj = globalObject();
 
@@ -53,8 +53,8 @@ class Server extends EventTarget {
   }
 
   /*
-  * Removes the mock websocket object from the global object
-  */
+   * Removes the mock websocket object from the global object
+   */
   stop(callback = () => {}) {
     const globalObj = globalObject();
 
@@ -74,24 +74,24 @@ class Server extends EventTarget {
   }
 
   /*
-  * This is the main function for the mock server to subscribe to the on events.
-  *
-  * ie: mockServer.on('connection', function() { console.log('a mock client connected'); });
-  *
-  * @param {string} type - The event key to subscribe to. Valid keys are: connection, message, and close.
-  * @param {function} callback - The callback which should be called when a certain event is fired.
-  */
+   * This is the main function for the mock server to subscribe to the on events.
+   *
+   * ie: mockServer.on('connection', function() { console.log('a mock client connected'); });
+   *
+   * @param {string} type - The event key to subscribe to. Valid keys are: connection, message, and close.
+   * @param {function} callback - The callback which should be called when a certain event is fired.
+   */
   on(type, callback) {
     this.addEventListener(type, callback);
   }
 
   /*
-  * Closes the connection and triggers the onclose method of all listening
-  * websockets. After that it removes itself from the urlMap so another server
-  * could add itself to the url.
-  *
-  * @param {object} options
-  */
+   * Closes the connection and triggers the onclose method of all listening
+   * websockets. After that it removes itself from the urlMap so another server
+   * could add itself to the url.
+   *
+   * @param {object} options
+   */
   close(options = {}) {
     const { code, reason, wasClean } = options;
     const listeners = networkBridge.websocketsLookup(this.url);
@@ -117,8 +117,8 @@ class Server extends EventTarget {
   }
 
   /*
-  * Sends a generic message event to all mock clients.
-  */
+   * Sends a generic message event to all mock clients.
+   */
   emit(event, data, options = {}) {
     let { websockets } = options;
 
@@ -158,18 +158,18 @@ class Server extends EventTarget {
   }
 
   /*
-  * Returns an array of websockets which are listening to this server
-  * TOOD: this should return a set and not be a method
-  */
+   * Returns an array of websockets which are listening to this server
+   * TOOD: this should return a set and not be a method
+   */
   clients() {
     return networkBridge.websocketsLookup(this.url);
   }
 
   /*
-  * Prepares a method to submit an event to members of the room
-  *
-  * e.g. server.to('my-room').emit('hi!');
-  */
+   * Prepares a method to submit an event to members of the room
+   *
+   * e.g. server.to('my-room').emit('hi!');
+   */
   to(room, broadcaster, broadcastList = []) {
     const self = this;
     const websockets = dedupe(broadcastList.concat(networkBridge.websocketsLookup(this.url, room, broadcaster)));
