@@ -9,8 +9,8 @@ test.cb('websocket onmessage fired before onopen', t => {
 
   let onOpenCalled = false;
 
-  mockServer.on('connection', () => {
-    mockServer.send('test message');
+  mockServer.on('connection', socket => {
+    socket.send('test message');
   });
 
   mockSocket.onopen = () => {

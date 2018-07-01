@@ -66,8 +66,8 @@ test.cb('that verifyClient is only invoked if it is a function', t => {
 test.cb('that onmessage is called after the server sends a message', t => {
   const testServer = new Server('ws://localhost:8080');
 
-  testServer.on('connection', server => {
-    server.send('Testing');
+  testServer.on('connection', socket => {
+    socket.send('Testing');
   });
 
   const mockSocket = new WebSocket('ws://localhost:8080');
@@ -81,8 +81,8 @@ test.cb('that onmessage is called after the server sends a message', t => {
 test.cb('that onclose is called after the client closes the connection', t => {
   const testServer = new Server('ws://localhost:8080');
 
-  testServer.on('connection', server => {
-    server.send('Testing');
+  testServer.on('connection', socket => {
+    socket.send('Testing');
   });
 
   const mockSocket = new WebSocket('ws://localhost:8080');
@@ -100,9 +100,11 @@ test.cb('that onclose is called after the client closes the connection', t => {
 test.cb('that the server gets called when the client sends a message', t => {
   const testServer = new Server('ws://localhost:8080');
 
-  testServer.on('message', data => {
-    t.is(data, 'Testing', 'on message fires as expected');
-    t.end();
+  testServer.on('connection', socket => {
+    socket.on('message', data => {
+      t.is(data, 'Testing', 'on message fires as expected');
+      t.end();
+    });
   });
 
   const mockSocket = new WebSocket('ws://localhost:8080');

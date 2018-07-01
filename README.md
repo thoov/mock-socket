@@ -60,9 +60,9 @@ import { Server } from 'mock-socket';
 describe('Chat Unit Test', () => {
   it('basic test', (done) => {
     const mockServer = new Server('ws://localhost:8080');
-    mockServer.on('connection', server => {
-      mockServer.send('test message 1');
-      mockServer.send('test message 2');
+    mockServer.on('connection', socket => {
+      socket.send('test message 1');
+      socket.send('test message 2');
     });
 
     // Now when Chat tries to do new WebSocket() it
@@ -100,7 +100,7 @@ import { SocketIO, Server } from 'mock-socket';
 describe('Chat Unit Test', () => {
   it('basic test', (done) => {
     const mockServer = new Server('http://localhost:8080');
-    mockServer.on('connection', server => {
+    mockServer.on('connection', socket => {
       mockServer.emit('chat-message', 'test message 1');
       mockServer.emit('chat-message', 'test message 2');
     });
