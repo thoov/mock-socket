@@ -1,14 +1,15 @@
-import lengthInUtf8Bytes from './helpers/byte-length';
-import urlVerification from './helpers/url-verification';
-import protocolVerification from './helpers/protocol-verification';
 import delay from './helpers/delay';
-import normalizeSendData from './helpers/normalize-send';
+import logger from './helpers/logger';
 import EventTarget from './event/target';
 import networkBridge from './network-bridge';
+import lengthInUtf8Bytes from './helpers/byte-length';
 import { CLOSE_CODES, ERROR_PREFIX } from './constants';
-import logger from './helpers/logger';
+import urlVerification from './helpers/url-verification';
+import normalizeSendData from './helpers/normalize-send';
+import protocolVerification from './helpers/protocol-verification';
 import { createEvent, createMessageEvent, createCloseEvent } from './event/factory';
 import { closeWebSocketConnection, failWebSocketConnection } from './algorithms/close';
+import proxyFactory from './helpers/proxy-factory';
 
 /*
 * The main websocket class which is designed to mimick the native WebSocket class as close
@@ -79,7 +80,7 @@ class WebSocket extends EventTarget {
           }
           this.readyState = WebSocket.OPEN;
           this.dispatchEvent(createEvent({ type: 'open', target: this }));
-          server.dispatchEvent(createEvent({ type: 'connection' }), server, this);
+          server.dispatchEvent(createEvent({ type: 'connection' }), proxyFactory(this, server));
         }
       } else {
         this.readyState = WebSocket.CLOSED;
@@ -135,7 +136,7 @@ class WebSocket extends EventTarget {
     // TODO: handle bufferedAmount
 
     const messageEvent = createMessageEvent({
-      type: 'message',
+      type: 'server::message',
       origin: this.url,
       data: normalizeSendData(data)
     });
@@ -144,7 +145,7 @@ class WebSocket extends EventTarget {
 
     if (server) {
       delay(() => {
-        server.dispatchEvent(messageEvent, data);
+        this.dispatchEvent(messageEvent, data);
       }, server);
     }
   }

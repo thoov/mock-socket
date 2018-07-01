@@ -43,26 +43,6 @@ test('that calling clients() returns the correct clients', t => {
   myServer.close();
 });
 
-test.cb('that calling clients() returns the correct clients', t => {
-  const myServer = new Server('ws://not-real/');
-
-  myServer.on('connection', (server, socket) => {
-    myServer.send('Testing', { websocket: socket });
-  });
-
-  const socketFoo = new WebSocket('ws://not-real/');
-  const socketBar = new WebSocket('ws://not-real/');
-  socketFoo.onmessage = () => {
-    t.true(true, 'socketFoo onmessage was correctly called');
-  };
-
-  socketBar.onmessage = () => {
-    t.true(true, 'socketBar onmessage was correctly called');
-    myServer.close();
-    t.end();
-  };
-});
-
 test.cb('that calling close will trigger the onclose of websockets', t => {
   const myServer = new Server('ws://not-real/');
   let counter = 0;
@@ -121,13 +101,83 @@ test('that calling close will trigger the onclose of websockets', t => {
 test.cb('that send will normalize data', t => {
   const myServer = new Server('ws://not-real/');
 
-  myServer.on('connection', (server, socket) => {
-    myServer.send([1, 2]);
+  myServer.on('connection', socket => {
+    socket.send([1, 2]);
   });
 
   const socketFoo = new WebSocket('ws://not-real/');
   socketFoo.onmessage = message => {
     t.is(message.data, '1,2', 'data non string, non blob/arraybuffers get toStringed');
+    myServer.close();
+    t.end();
+  };
+});
+
+test.cb('that the server socket callback argument is correctly scoped: send method', t => {
+  const myServer = new Server('ws://not-real/');
+  let counter = 0;
+
+  myServer.on('connection', socket => {
+    counter += 1;
+    socket.send('a message');
+  });
+
+  const socket1 = new WebSocket('ws://not-real/');
+  const socket2 = new WebSocket('ws://not-real/');
+  socket1.onmessage = message => {
+    t.is(message.data, 'a message');
+    t.is(counter, 1);
+  };
+  socket2.onmessage = message => {
+    t.is(message.data, 'a message');
+    t.is(counter, 2);
+    myServer.close();
+    t.end();
+  };
+});
+
+test.cb('that the server socket callback argument is correctly scoped: on method', t => {
+  const myServer = new Server('ws://not-real/');
+  let counter = 0;
+
+  myServer.on('connection', socket => {
+    socket.on('message', data => {
+      counter += 1;
+
+      t.is(data, `hello${counter}`);
+      if (counter === 2) {
+        myServer.close();
+        t.end();
+      }
+    });
+  });
+
+  const socket1 = new WebSocket('ws://not-real/');
+  const socket2 = new WebSocket('ws://not-real/');
+  socket1.send('hello1');
+  socket2.send('hello2');
+});
+
+test.cb('that the server socket callback argument is correctly scoped: close method', t => {
+  const myServer = new Server('ws://not-real/');
+
+  myServer.on('connection', socket => {
+    socket.on('message', data => {
+      socket.close({ code: parseInt(data, 10) });
+    });
+  });
+
+  const socket1 = new WebSocket('ws://not-real/');
+  const socket2 = new WebSocket('ws://not-real/');
+  socket1.send('1001');
+  socket2.send('1002');
+
+  socket1.onclose = event => {
+    t.is(event.code, 1001);
+  };
+
+  socket2.onclose = event => {
+    t.is(event.code, 1002);
     myServer.close();
     t.end();
   };

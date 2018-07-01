@@ -8,13 +8,7 @@ import dedupe from './helpers/dedupe';
 import normalizeSendData from './helpers/normalize-send';
 import { createEvent, createMessageEvent, createCloseEvent } from './event/factory';
 
-/*
-* https://github.com/websockets/ws#server-example
-*/
 class Server extends EventTarget {
-  /*
-  * @param {string} url
-  */
   constructor(url, options = {}) {
     super();
     const urlRecord = new URL(url);
@@ -42,7 +36,6 @@ class Server extends EventTarget {
     }
 
     this.options = options;
-
     this.start();
   }
 
@@ -93,13 +86,34 @@ class Server extends EventTarget {
   }
 
   /*
-  * This send function will notify all mock clients via their onmessage callbacks that the server
-  * has a message for them.
+  * Closes the connection and triggers the onclose method of all listening
+  * websockets. After that it removes itself from the urlMap so another server
+  * could add itself to the url.
   *
-  * @param {*} data - Any javascript object which will be crafted into a MessageObject.
+  * @param {object} options
   */
-  send(data, options = {}) {
-    this.emit('message', data, options);
+  close(options = {}) {
+    const { code, reason, wasClean } = options;
+    const listeners = networkBridge.websocketsLookup(this.url);
+
+    // Remove server before notifications to prevent immediate reconnects from
+    // socket onclose handlers
+    networkBridge.removeServer(this.url);
+
+    listeners.forEach(socket => {
+      socket.readyState = WebSocket.CLOSE;
+      socket.dispatchEvent(
+        createCloseEvent({
+          type: 'close',
+          target: socket,
+          code: code || CLOSE_CODES.CLOSE_NORMAL,
+          reason: reason || '',
+          wasClean
+        })
+      );
+    });
+
+    this.dispatchEvent(createCloseEvent({ type: 'close' }), this);
   }
 
   /*
@@ -144,38 +158,8 @@ class Server extends EventTarget {
   }
 
   /*
-  * Closes the connection and triggers the onclose method of all listening
-  * websockets. After that it removes itself from the urlMap so another server
-  * could add itself to the url.
-  *
-  * @param {object} options
-  */
-  close(options = {}) {
-    const { code, reason, wasClean } = options;
-    const listeners = networkBridge.websocketsLookup(this.url);
-
-    // Remove server before notifications to prevent immediate reconnects from
-    // socket onclose handlers
-    networkBridge.removeServer(this.url);
-
-    listeners.forEach(socket => {
-      socket.readyState = WebSocket.CLOSE;
-      socket.dispatchEvent(
-        createCloseEvent({
-          type: 'close',
-          target: socket,
-          code: code || CLOSE_CODES.CLOSE_NORMAL,
-          reason: reason || '',
-          wasClean
-        })
-      );
-    });
-
-    this.dispatchEvent(createCloseEvent({ type: 'close' }), this);
-  }
-
-  /*
   * Returns an array of websockets which are listening to this server
+  * TOOD: this should return a set and not be a method
   */
   clients() {
     return networkBridge.websocketsLookup(this.url);

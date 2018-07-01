@@ -40,8 +40,8 @@ test.cb('reassigning websocket onmessage listener should replace previous listen
     secondListenerCalled = true;
   };
 
-  mockServer.on('connection', () => {
-    mockServer.send('test message');
+  mockServer.on('connection', socket => {
+    socket.send('test message');
     t.false(firstListenerCalled, 'The first listener should not be called');
     t.true(secondListenerCalled, 'Only the second listener should be called');
     mockServer.close();
