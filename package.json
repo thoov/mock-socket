@@ -53,7 +53,9 @@
     "rollup-plugin-buble": "^0.15.0",
     "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-node-resolve": "^3.0.0",
-    "systemjs": "^0.20.12"
+    "systemjs": "^0.20.12",
+    "typescript": "^2.9.2",
+    "typescript-eslint-parser": "^16.0.1"
   },
   "ava": {
     "files": [
