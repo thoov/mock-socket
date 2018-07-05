@@ -1,13 +1,13 @@
 {
   "name": "mock-socket",
-  "version": "7.1.0",
+  "version": "8.0.0",
   "description": "Javascript mocking library for websockets and socket.io",
   "main": "./dist/mock-socket",
   "directories": {
     "test": "tests"
   },
   "engines": {
-    "node": ">= 4"
+    "node": ">= 6"
   },
   "scripts": {
     "test": "cross-env NODE_ENV=test ava --serial --verbose",
