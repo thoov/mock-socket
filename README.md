@@ -52,10 +52,6 @@ class ChatApp {
     this.connection.onmessage = (event) => {
       this.messages.push(event.data);
     };
-    
-    this.connection.onclose = (event) => {
-      this.messages = [];
-    };
   }
   
   sendMessage(message) {
@@ -75,19 +71,14 @@ test.cb('that chat app can be mocked', t => {
   });
   
   const app = new ChatApp(fakeURL);
-  app.sendMessage('test message 1'); // NOTE: this line creates a micro task
+  app.sendMessage('test message from app'); // NOTE: this line creates a micro task
   
-  // NOTE: this timeout is for creating another micro task
+  // NOTE: this timeout is for creating another micro task that will happen after the above one
   setTimeout(() => {  
-	  t.is(app.messages.length, 1);
+    t.is(app.messages.length, 1);
     t.is(app.messages[0], 'test message from mock server', 'we have subbed our websocket backend');
-    
-    // This will send a `close` event
-    mockServer.stop(() => {
-      t.is(app.messages.length, 0);
-      t.done();
-    });
-  }, 0);
+    mockServer.stop(t.done);
+  }, 100);
 });
 ```
 
@@ -170,7 +161,7 @@ test.cb('that socket.io works', t => {
     t.is(app.messages.length, 1);
     t.is(app.messages[0], 'test message from mock server', 'we have subbed our websocket backend');
     
-    mockServer.stop();
+    mockServer.stop(t.done);
   }, 100);
 });
 ```
