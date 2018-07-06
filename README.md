@@ -23,8 +23,8 @@ Javascript mocking library for <a href="https://developer.mozilla.org/en-US/docs
 - [Installation](#installation)
 - [Basic Usage](#usage)
 - [Advanced Usage](#advanced-usage)
-- [Typescript Support](#advanced-usage)
-- [Socket.IO](#socket.io)
+- [Typescript Support](#typescript-support)
+- [Socket.IO](#socket-io)
 - [Contributing](#contributing)
 - [Feedback](#feedback)
 
@@ -102,7 +102,8 @@ test.cb('that chat app can be mocked', t => {
 import { WebSocket, Server } from 'mock-socket';
 
 /*
- * By default the global WebSocket object is stubbed out. However, if you need to stub something else out you can like so:
+ * By default the global WebSocket object is stubbed out. However, 
+ * if you need to stub something else out you can like so:
  */
  
 window.WebSocket = WebSocket; // Here we stub out the window object
@@ -125,11 +126,11 @@ mockServer.clients() // array of all connected clients
 mockServer.emit('room', 'message');
 mockServer.stop(optionalCallback);
 ```
-## Typescript
+## Typescript Support
 
 A [declaration file](https://github.com/thoov/mock-socket/blob/master/index.d.ts) is included by default. If you notice any issues with the types please create an issue or a PR!
 
-## Socket.IO
+## Socket IO
 
 [Socket.IO](https://socket.io/) has **limited support**. Below is a similar example to the one above but modified to show off socket.io support.
 
@@ -152,16 +153,10 @@ class ChatApp {
   }
 }
 
-test.cb('arrays are equal', t => {
+test.cb('that socket.io works', t => {
   const fakeURL = 'ws://localhost:8080';
   const mockServer = new Server(fakeURL);
   
-  /*
-   * This step is very important! It tells our chat app to use the mocked
-   * websocket object instead of the native one. The great thing
-   * about this is that our actual code did not need to change and
-   * thus is agnostic to how we test it.
-   */
   window.io = SocketIO;
   
   mockServer.on('connection', socket => {
@@ -174,9 +169,8 @@ test.cb('arrays are equal', t => {
   const app = new ChatApp(fakeURL);
   app.sendMessage('test message from app');
   
-  // NOTE: TODO
-  setTimeout(() => {  
-	  t.is(app.messages.length, 1);
+  setTimeout(() => {
+    t.is(app.messages.length, 1);
     t.is(app.messages[0], 'test message from mock server', 'we have subbed our websocket backend');
     
     mockServer.stop();
