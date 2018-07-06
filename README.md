@@ -35,7 +35,7 @@ npm install mock-socket
 ```
 
 ```js
-import { Server } from 'mock-socket';
+import { WebSocket, Server } from 'mock-socket';
 ```
 
 ## Usage
