@@ -34,11 +34,8 @@ Javascript mocking library for <a href="https://developer.mozilla.org/en-US/docs
 npm install mock-socket
 ```
 
-To use within a node environment you can simply import or require the files directly. This
-option is great for phantomjs or CI environments.
-
 ```js
-import { WebSocket, Server } from 'mock-socket';
+import { Server } from 'mock-socket';
 ```
 
 ## Usage
