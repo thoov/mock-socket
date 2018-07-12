@@ -36,9 +36,9 @@ declare module 'mock-socket' {
     readonly options?: ServerOptions;
 
     start(): void;
-    stop(callback: VoidFunction): void;
+    stop(callback: () => void): void;
 
-    on(type: string, callback: VoidFunction): void;
+    on(type: string, callback: (socket: WebSocket) => void): void;
     close(options: CloseOptions): void;
     emit(event: Event, data: any, options: EmitOptions): void;
 
