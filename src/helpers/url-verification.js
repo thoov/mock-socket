@@ -26,7 +26,9 @@ export default function urlVerification(url) {
   if (hash !== '') {
     /* eslint-disable max-len */
     throw new SyntaxError(
-      `${ERROR_PREFIX.CONSTRUCTOR_ERROR} The URL contains a fragment identifier ('${hash}'). Fragment identifiers are not allowed in WebSocket URLs.`
+      `${
+        ERROR_PREFIX.CONSTRUCTOR_ERROR
+      } The URL contains a fragment identifier ('${hash}'). Fragment identifiers are not allowed in WebSocket URLs.`
     );
     /* eslint-enable max-len */
   }

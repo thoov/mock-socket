@@ -201,7 +201,10 @@ test.cb('Server can emit to multiple rooms', t => {
   const checkConnected = () => {
     connectedCount += 1;
     if (connectedCount === 2) {
-      server.to('room1').to('room2').emit('good-response');
+      server
+        .to('room1')
+        .to('room2')
+        .emit('good-response');
     }
   };
 
