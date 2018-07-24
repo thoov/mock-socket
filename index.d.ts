@@ -44,7 +44,7 @@ declare module 'mock-socket' {
 
     clients(): WebSocket[];
     to(room: any, broadcaster: any, broadcastList: object): ToReturnObject;
-    in(any): ToReturnObject;
+    in(any: any): ToReturnObject;
     simulate(event: Event): void;
 
     public of(url: USVString): Server;
