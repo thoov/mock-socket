@@ -15,7 +15,7 @@ declare module 'mock-socket' {
     readonly OPEN: 1;
     readonly CLOSING: 2;
     readonly CLOSED: 3;
-    readonly readState: number;
+    readonly readyState: number;
     readonly bufferedAmount: number;
 
     onopen: EventHandlerNonNull;
