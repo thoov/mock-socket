@@ -6,6 +6,18 @@ import { CLOSE_CODES } from './constants';
 import logger from './helpers/logger';
 import { createEvent, createMessageEvent, createCloseEvent } from './event/factory';
 
+const hasOwnProperty = Object.prototype.hasOwnProperty;
+
+function isEmptyObject(object) {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const key in object) {
+    if (hasOwnProperty.call(object, key)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 /*
  * The socket-io class is designed to mimick the real API as closely as possible.
  *
@@ -19,12 +31,18 @@ class SocketIO extends EventTarget {
     super();
 
     this.binaryType = 'blob';
-    const urlRecord = new URL(url);
+    const urlRecord = new URL(url, true);
 
     if (!urlRecord.pathname) {
       urlRecord.pathname = '/';
     }
-    if (urlRecord.query !== '') {
+
+    this.query = urlRecord.query;
+
+    if (
+      (typeof urlRecord.query === 'string' && urlRecord.query.length) ||
+      (typeof urlRecord.query === 'object' && !isEmptyObject(urlRecord.query))
+    ) {
       urlRecord.query = '';
     }
 

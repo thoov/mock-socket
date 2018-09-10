@@ -92,3 +92,13 @@ test.cb('it removes query parameters', t => {
     t.end();
   });
 });
+
+test.cb('it includes query object parameter in server connection callback', t => {
+  const myServer = new Server('ws://not-real/');
+  const socket = io('ws://not-real/?a=1&b=2');
+  myServer.on('connection', (server, instance) => {
+    t.deepEqual(instance.query, { a: '1', b: '2' });
+    myServer.close();
+    t.end();
+  });
+});
