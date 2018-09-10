@@ -26,6 +26,7 @@ test.cb('it includes opts object parameter in server connection callback', t => 
   const socket = io(url, protocol);
   myServer.on('connection', (server, instance) => {
     t.is(instance.protocol, protocol);
+    myServer.close();
     t.end();
   });
 });
