@@ -83,3 +83,12 @@ test.cb.skip('it can broadcast to other connected sockets in a room', t => {
     t.end();
   });
 });
+
+test.cb('it removes query parameters', t => {
+  const myServer = new Server('ws://not-real/');
+  const socket = io('ws://not-real/?a=1');
+  myServer.on('connection', (server, instance) => {
+    myServer.close();
+    t.end();
+  });
+});

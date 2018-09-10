@@ -24,6 +24,9 @@ class SocketIO extends EventTarget {
     if (!urlRecord.pathname) {
       urlRecord.pathname = '/';
     }
+    if (urlRecord.query !== '') {
+      urlRecord.query = '';
+    }
 
     this.url = urlRecord.toString();
     this.readyState = SocketIO.CONNECTING;
