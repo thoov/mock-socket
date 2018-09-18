@@ -3,6 +3,13 @@
 // Definitions by: Travis Hoover <https://github.com/thoov/mock-socket>
 
 declare module 'mock-socket' {
+  class EventTarget {
+    listeners: any;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions): void;
+    dispatchEvent(evt: Event): boolean;
+    removeEventListener(type: string, listener?: EventListenerOrEventListenerObject | null, options?: EventListenerOptions | boolean): void;
+  }
+
   //
   // https://html.spec.whatwg.org/multipage/web-sockets.html#websocket
   //
