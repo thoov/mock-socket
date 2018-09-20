@@ -16,6 +16,11 @@ declare module 'mock-socket' {
   class WebSocket extends EventTarget {
     constructor(url?: USVString, protocols?: string|string[]);
 
+    static readonly CONNECTING: 0;
+    static readonly OPEN: 1;
+    static readonly CLOSING: 2;
+    static readonly CLOSED: 3;
+
     readonly url: USVString;
 
     readonly CONNECTING: 0;
