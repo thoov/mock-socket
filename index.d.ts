@@ -3,11 +3,23 @@
 // Definitions by: Travis Hoover <https://github.com/thoov/mock-socket>
 
 declare module 'mock-socket' {
+  class EventTarget {
+    listeners: any;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions): void;
+    dispatchEvent(evt: Event): boolean;
+    removeEventListener(type: string, listener?: EventListenerOrEventListenerObject | null, options?: EventListenerOptions | boolean): void;
+  }
+
   //
   // https://html.spec.whatwg.org/multipage/web-sockets.html#websocket
   //
   class WebSocket extends EventTarget {
     constructor(url?: USVString, protocols?: string|string[]);
+
+    static readonly CONNECTING: 0;
+    static readonly OPEN: 1;
+    static readonly CLOSING: 2;
+    static readonly CLOSED: 3;
 
     readonly url: USVString;
 
@@ -15,7 +27,7 @@ declare module 'mock-socket' {
     readonly OPEN: 1;
     readonly CLOSING: 2;
     readonly CLOSED: 3;
-    readonly readState: number;
+    readonly readyState: number;
     readonly bufferedAmount: number;
 
     onopen: EventHandlerNonNull;
@@ -36,14 +48,14 @@ declare module 'mock-socket' {
     readonly options?: ServerOptions;
 
     start(): void;
-    stop(callback: () => void): void;
+    stop(callback?: () => void): void;
 
     on(type: string, callback: (socket: WebSocket) => void): void;
-    close(options: CloseOptions): void;
-    emit(event: Event, data: any, options: EmitOptions): void;
+    close(options?: CloseOptions): void;
+    emit(event: string, data: any, options?: EmitOptions): void;
 
     clients(): WebSocket[];
-    to(room: any, broadcaster: any, broadcastList: object): ToReturnObject;
+    to(room: any, broadcaster: any, broadcastList?: object): ToReturnObject;
     in(any: any): ToReturnObject;
     simulate(event: Event): void;
 
