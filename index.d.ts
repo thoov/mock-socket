@@ -14,14 +14,14 @@ declare module 'mock-socket' {
   // https://html.spec.whatwg.org/multipage/web-sockets.html#websocket
   //
   class WebSocket extends EventTarget {
-    constructor(url?: USVString, protocols?: string|string[]);
+    constructor(url?: string, protocols?: string|string[]);
 
     static readonly CONNECTING: 0;
     static readonly OPEN: 1;
     static readonly CLOSING: 2;
     static readonly CLOSED: 3;
 
-    readonly url: USVString;
+    readonly url: string;
 
     readonly CONNECTING: 0;
     readonly OPEN: 1;
@@ -39,11 +39,11 @@ declare module 'mock-socket' {
 
     onmessage: EventHandlerNonNull;
     binaryType: BinaryType;
-    send(data: USVString | Blob | ArrayBuffer | ArrayBufferView): void;
+    send(data: string | Blob | ArrayBuffer | ArrayBufferView): void;
   }
 
   class Server extends EventTarget {
-    constructor(url: USVString, options?: ServerOptions);
+    constructor(url: string, options?: ServerOptions);
 
     readonly options?: ServerOptions;
 
@@ -59,7 +59,7 @@ declare module 'mock-socket' {
     in(any: any): ToReturnObject;
     simulate(event: Event): void;
 
-    public of(url: USVString): Server;
+    public of(url: string): Server;
   }
 
   interface CloseOptions {
