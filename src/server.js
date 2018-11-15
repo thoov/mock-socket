@@ -101,7 +101,7 @@ class Server extends EventTarget {
     networkBridge.removeServer(this.url);
 
     listeners.forEach(socket => {
-      socket.readyState = WebSocket.CLOSE;
+      socket.readyState = WebSocket.CLOSED;
       socket.dispatchEvent(
         createCloseEvent({
           type: 'close',
@@ -198,7 +198,7 @@ class Server extends EventTarget {
 
     if (event === 'error') {
       listeners.forEach(socket => {
-        socket.readyState = WebSocket.CLOSE;
+        socket.readyState = WebSocket.CLOSED;
         socket.dispatchEvent(createEvent({ type: 'error' }));
       });
     }
