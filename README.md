@@ -64,7 +64,7 @@ test.cb('that chat app can be mocked', t => {
   const mockServer = new Server(fakeURL);
   
   mockServer.on('connection', socket => {
-    socket.on('message', data => {
+    socket.addEventListener('message', data => {
       t.is(data, 'test message from app', 'we have intercepted the message and can assert on it');
       socket.send('test message from mock server');
     });
@@ -103,8 +103,8 @@ window.WebSocket = WebSocket; // Here we stub out the window object
 const mockServer = new Server('ws://localhost:8080');
   
 mockServer.on('connection', socket => {
-  socket.on('message', () => {});
-  socket.on('close', () => {});
+  socket.addEventListener('message', () => {});
+  socket.addEventListener('close', () => {});
   
   socket.send('message');
   socket.close();
