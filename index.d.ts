@@ -78,7 +78,7 @@ declare module 'mock-socket' {
   }
 
   interface ServerOptions {
-    verifyClient: () => any;
-    selectProtocol: () => any;
+    verifyClient?: () => boolean;
+    selectProtocol?: (protocols: string[]) => string | null;
   }
 }
