@@ -1,5 +1,6 @@
 import URL from 'url-parse';
 import WebSocket from './websocket';
+import IO, { SocketIO } from './socket-io';
 import dedupe from './helpers/dedupe';
 import EventTarget from './event/target';
 import { CLOSE_CODES } from './constants';
@@ -126,11 +127,16 @@ class Server extends EventTarget {
       websockets = networkBridge.websocketsLookup(this.url);
     }
 
-    if (typeof options !== 'object' || arguments.length > 3) {
-      data = Array.prototype.slice.call(arguments, 1, arguments.length);
-      data = data.map(item => normalizeSendData(item));
-    } else {
-      data = normalizeSendData(data);
+    let isSocketIO = websockets.some(websocket => websocket instanceof SocketIO);
+    if (! isSocketIO) {
+      // only normalize data for plain WebSockets
+      // SocketIO handles deserialization of objects
+      if (typeof options !== 'object' || arguments.length > 3) {
+        data = Array.prototype.slice.call(arguments, 1, arguments.length);
+        data = data.map(item => normalizeSendData(item));
+      } else {
+        data = normalizeSendData(data);
+      }
     }
 
     websockets.forEach(socket => {
