@@ -9,10 +9,12 @@ export default function protocolVerification(protocols = []) {
     protocols = [protocols];
   }
 
-  const uniq = protocols.map(p => ({ count: 1, protocol: p })).reduce((a, b) => {
-    a[b.protocol] = (a[b.protocol] || 0) + b.count;
-    return a;
-  }, {});
+  const uniq = protocols
+    .map(p => ({ count: 1, protocol: p }))
+    .reduce((a, b) => {
+      a[b.protocol] = (a[b.protocol] || 0) + b.count;
+      return a;
+    }, {});
 
   const duplicates = Object.keys(uniq).filter(a => uniq[a] > 1);
 

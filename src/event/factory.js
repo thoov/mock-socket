@@ -3,11 +3,11 @@ import MessageEvent from './message';
 import CloseEvent from './close';
 
 /*
-* Creates an Event object and extends it to allow full modification of
-* its properties.
-*
-* @param {object} config - within config you will need to pass type and optionally target
-*/
+ * Creates an Event object and extends it to allow full modification of
+ * its properties.
+ *
+ * @param {object} config - within config you will need to pass type and optionally target
+ */
 function createEvent(config) {
   const { type, target } = config;
   const eventObject = new Event(type);
@@ -22,11 +22,11 @@ function createEvent(config) {
 }
 
 /*
-* Creates a MessageEvent object and extends it to allow full modification of
-* its properties.
-*
-* @param {object} config - within config: type, origin, data and optionally target
-*/
+ * Creates a MessageEvent object and extends it to allow full modification of
+ * its properties.
+ *
+ * @param {object} config - within config: type, origin, data and optionally target
+ */
 function createMessageEvent(config) {
   const { type, origin, data, target } = config;
   const messageEvent = new MessageEvent(type, {
@@ -44,11 +44,11 @@ function createMessageEvent(config) {
 }
 
 /*
-* Creates a CloseEvent object and extends it to allow full modification of
-* its properties.
-*
-* @param {object} config - within config: type and optionally target, code, and reason
-*/
+ * Creates a CloseEvent object and extends it to allow full modification of
+ * its properties.
+ *
+ * @param {object} config - within config: type and optionally target, code, and reason
+ */
 function createCloseEvent(config) {
   const { code, reason, type, target } = config;
   let { wasClean } = config;
