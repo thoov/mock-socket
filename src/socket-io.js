@@ -7,14 +7,14 @@ import logger from './helpers/logger';
 import { createEvent, createMessageEvent, createCloseEvent } from './event/factory';
 
 /*
-* The socket-io class is designed to mimick the real API as closely as possible.
-*
-* http://socket.io/docs/
-*/
+ * The socket-io class is designed to mimick the real API as closely as possible.
+ *
+ * http://socket.io/docs/
+ */
 class SocketIO extends EventTarget {
   /*
-  * @param {string} url
-  */
+   * @param {string} url
+   */
   constructor(url = 'socket.io', protocol = '') {
     super();
 
@@ -38,8 +38,8 @@ class SocketIO extends EventTarget {
     const server = networkBridge.attachWebSocket(this, this.url);
 
     /*
-    * Delay triggering the connection events so they can be defined in time.
-    */
+     * Delay triggering the connection events so they can be defined in time.
+     */
     delay(function delayCallback() {
       if (server) {
         this.readyState = SocketIO.OPEN;
@@ -76,9 +76,9 @@ class SocketIO extends EventTarget {
   }
 
   /*
-  * Closes the SocketIO connection or connection attempt, if any.
-  * If the connection is already CLOSED, this method does nothing.
-  */
+   * Closes the SocketIO connection or connection attempt, if any.
+   * If the connection is already CLOSED, this method does nothing.
+   */
   close() {
     if (this.readyState !== SocketIO.OPEN) {
       return undefined;
@@ -111,17 +111,17 @@ class SocketIO extends EventTarget {
   }
 
   /*
-  * Alias for Socket#close
-  *
-  * https://github.com/socketio/socket.io-client/blob/master/lib/socket.js#L383
-  */
+   * Alias for Socket#close
+   *
+   * https://github.com/socketio/socket.io-client/blob/master/lib/socket.js#L383
+   */
   disconnect() {
     return this.close();
   }
 
   /*
-  * Submits an event to the server with a payload
-  */
+   * Submits an event to the server with a payload
+   */
   emit(event, ...data) {
     if (this.readyState !== SocketIO.OPEN) {
       throw new Error('SocketIO is already in CLOSING or CLOSED state');
@@ -143,23 +143,23 @@ class SocketIO extends EventTarget {
   }
 
   /*
-  * Submits a 'message' event to the server.
-  *
-  * Should behave exactly like WebSocket#send
-  *
-  * https://github.com/socketio/socket.io-client/blob/master/lib/socket.js#L113
-  */
+   * Submits a 'message' event to the server.
+   *
+   * Should behave exactly like WebSocket#send
+   *
+   * https://github.com/socketio/socket.io-client/blob/master/lib/socket.js#L113
+   */
   send(data) {
     this.emit('message', data);
     return this;
   }
 
   /*
-  * For broadcasting events to other connected sockets.
-  *
-  * e.g. socket.broadcast.emit('hi!');
-  * e.g. socket.broadcast.to('my-room').emit('hi!');
-  */
+   * For broadcasting events to other connected sockets.
+   *
+   * e.g. socket.broadcast.emit('hi!');
+   * e.g. socket.broadcast.to('my-room').emit('hi!');
+   */
   get broadcast() {
     if (this.readyState !== SocketIO.OPEN) {
       throw new Error('SocketIO is already in CLOSING or CLOSED state');
@@ -186,8 +186,8 @@ class SocketIO extends EventTarget {
   }
 
   /*
-  * For registering events to be received from the server
-  */
+   * For registering events to be received from the server
+   */
   on(type, callback) {
     this.addEventListener(type, callback);
     return this;
@@ -261,15 +261,15 @@ SocketIO.CLOSING = 2;
 SocketIO.CLOSED = 3;
 
 /*
-* Static constructor methods for the IO Socket
-*/
+ * Static constructor methods for the IO Socket
+ */
 const IO = function ioConstructor(url, protocol) {
   return new SocketIO(url, protocol);
 };
 
 /*
-* Alias the raw IO() constructor
-*/
+ * Alias the raw IO() constructor
+ */
 IO.connect = function ioConnect(url, protocol) {
   /* eslint-disable new-cap */
   return IO(url, protocol);
