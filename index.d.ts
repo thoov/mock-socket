@@ -10,6 +10,13 @@ declare module 'mock-socket' {
     removeEventListener(type: string, listener?: EventListenerOrEventListenerObject | null, options?: EventListenerOptions | boolean): void;
   }
 
+  interface WebSocketCallbackMap {
+    close: () => void;
+    error: (err: Error) => void;
+    message: (message: string | Blob | ArrayBuffer | ArrayBufferView) => void;
+    open: () => void;
+  }
+
   //
   // https://html.spec.whatwg.org/multipage/web-sockets.html#websocket
   //
@@ -40,6 +47,7 @@ declare module 'mock-socket' {
     onmessage: EventHandlerNonNull;
     binaryType: BinaryType;
     send(data: string | Blob | ArrayBuffer | ArrayBufferView): void;
+    on<K extends keyof WebSocketCallbackMap>(type: K, callback: WebSocketCallbackMap[K]): void;
   }
 
   class Server extends EventTarget {
