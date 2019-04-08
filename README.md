@@ -133,7 +133,7 @@ class ChatApp {
     
     this.connection.on('chat-message', data => {
       this.messages.push(event.data);
-    };
+    });
   }
   
   sendMessage(message) {
