@@ -18,7 +18,9 @@ class NetworkBridge {
    * @param {string} url
    */
   attachWebSocket(websocket, url) {
-    const connectionLookup = this.urlMap[url];
+    const queryIndex = url.indexOf('?');
+    const serverURL = queryIndex >= 0 ? url.slice(0, queryIndex) : url;
+    const connectionLookup = this.urlMap[serverURL];
 
     if (connectionLookup && connectionLookup.server && connectionLookup.websockets.indexOf(websocket) === -1) {
       connectionLookup.websockets.push(websocket);
