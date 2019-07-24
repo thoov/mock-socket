@@ -1,4 +1,5 @@
 import test from 'ava';
+
 import networkBridge from '../../src/network-bridge';
 
 const fakeObject = { foo: 'bar' };
@@ -7,11 +8,19 @@ test.afterEach(() => {
   networkBridge.urlMap = {};
 });
 
-test('that network bridge has no connections be defualt', t => {
+test('that url query parameters are ignored', t => {
+  networkBridge.attachServer(fakeObject, 'wss://not-real/');
+  networkBridge.attachWebSocket({}, 'wss://not-real/?foo=42');
+  networkBridge.attachWebSocket({}, 'wss://not-real/?foo=0');
+  const connection = networkBridge.urlMap['wss://not-real/'];
+  t.is(connection.websockets.length, 2, 'two websockets have been attached to the same connection');
+});
+
+test('that network bridge has no connections by default', t => {
   t.deepEqual(networkBridge.urlMap, {}, 'Url map is empty by default');
 });
 
-test('that network bridge has no connections be defualt', t => {
+test('that network bridge has no connections by default', t => {
   const result = networkBridge.attachWebSocket(fakeObject, 'ws://localhost:8080');
 
   t.truthy(!result, 'no server was returned as a server must be added first');
