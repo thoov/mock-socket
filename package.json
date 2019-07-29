@@ -9,7 +9,7 @@
     "test": "tests"
   },
   "engines": {
-    "node": ">= 8"
+    "node": ">= 6"
   },
   "scripts": {
     "build": "rm -rf dist && rollup -c rollup.config.js",
@@ -82,9 +82,5 @@
       "eslint",
       "git add"
     ]
-  },
-  "volta": {
-    "node": "10.16.0",
-    "yarn": "1.17.3"
   }
 }
