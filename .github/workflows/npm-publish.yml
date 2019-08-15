@@ -1,12 +1,9 @@
-name: Node.js Package
+name: Publish to NPM and Github
 
 on:
-  pull_request:
-    branches:
-      - master
   push:
-    branches:
-      - master
+    tags:
+      - *
 
 jobs:
   build:
@@ -24,7 +21,6 @@ jobs:
       - name: npm install, build and test
         run: |
           npm install
-          npm run build --if-present
           npm test
 
   publish-npm:
