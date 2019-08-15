@@ -14,6 +14,7 @@
   "scripts": {
     "build": "rm -rf dist && rollup -c rollup.config.js",
     "lint": "eslint src tests",
+    "prepublishOnly": "yarn test && yarn build",
     "test": "ava --serial --verbose",
     "test:coverage": "nyc ava --serial"
   },
