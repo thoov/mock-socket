@@ -114,6 +114,23 @@ test.cb('that the server gets called when the client sends a message', t => {
   };
 });
 
+test.cb('that the server gets called when the client sends a message using URL with query parameters', t => {
+  const testServer = new Server('ws://localhost:8080');
+
+  testServer.on('connection', socket => {
+    socket.on('message', data => {
+      t.is(data, 'Testing', 'on message fires as expected');
+      t.end();
+    });
+  });
+
+  const mockSocket = new WebSocket('ws://localhost:8080?foo=bar');
+
+  mockSocket.onopen = function open() {
+    this.send('Testing');
+  };
+});
+
 test.cb('that the onopen function will only be called once for each client', t => {
   const socketUrl = 'ws://localhost:8080';
   const mockServer = new Server(socketUrl);
