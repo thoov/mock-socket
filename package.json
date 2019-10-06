@@ -77,7 +77,7 @@
     "printWidth": 120
   },
   "lint-staged": {
-    "*.{js,md}": [
+    "*.{js}": [
       "prettier --write",
       "eslint",
       "git add"
