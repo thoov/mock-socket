@@ -1,8 +1,6 @@
 # Folders to exclude
 dist
 node_modules
-coverage
-.nyc_output
 
 # Individual files to exclude
 .DS_Store
