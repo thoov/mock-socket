@@ -1,11 +1,8 @@
-.nyc_output
-coverage
 tests
+.github
+.git
 
 .babelrc
 .eslintrc
 .npmignore
-.nycrc
-.travis.yml
 rollup.config.js
-yarn-error.log
