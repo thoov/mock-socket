@@ -103,13 +103,20 @@ test.cb('that send will normalize data', t => {
 
   myServer.on('connection', socket => {
     socket.send([1, 2]);
+    socket.send({ foo: 'bar' });
   });
 
   const socketFoo = new WebSocket('ws://not-real/');
+  let counter = 0;
   socketFoo.onmessage = message => {
-    t.is(message.data, '1,2', 'data non string, non blob/arraybuffers get toStringed');
-    myServer.close();
-    t.end();
+    if (counter === 0) {
+      t.is(message.data, '1,2', 'data non string, non blob/arraybuffers get toStringed');
+      counter += 1;
+    } else if (counter === 1) {
+      t.is(message.data.foo, 'bar', 'object does not get toStringed');
+      myServer.close();
+      t.end();
+    }
   };
 });
 
