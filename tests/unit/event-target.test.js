@@ -37,6 +37,35 @@ test('adding/removing "message" event listeners works', t => {
   mock.dispatchEvent(eventObject);
 });
 
+test('adding/removing "message" for objects with handleEvent function works', t => {
+  const mock = new Mock();
+  const eventObject = createEvent({
+    type: 'message'
+  });
+
+  const fooListener = {
+    handleEvent: event => {
+      t.is(event.type, 'message');
+    }
+  };
+
+  const barListener = {
+    handleEvent: event => {
+      t.is(event.type, 'message');
+    }
+  };
+
+  mock.addEventListener('message', fooListener);
+  mock.addEventListener('message', barListener);
+  mock.dispatchEvent(eventObject);
+
+  mock.removeEventListener('message', fooListener);
+  mock.dispatchEvent(eventObject);
+
+  mock.removeEventListener('message', barListener);
+  mock.dispatchEvent(eventObject);
+});
+
 test('events to different object should not share events', t => {
   const mock = new Mock();
   const mockFoo = new MockFoo();
@@ -49,6 +78,38 @@ test('events to different object should not share events', t => {
   };
   const barListener = event => {
     t.is(event.type, 'message');
+  };
+
+  mock.addEventListener('message', fooListener);
+  mockFoo.addEventListener('message', barListener);
+  mock.dispatchEvent(eventObject);
+  mockFoo.dispatchEvent(eventObject);
+
+  mock.removeEventListener('message', fooListener);
+  mock.dispatchEvent(eventObject);
+  mockFoo.dispatchEvent(eventObject);
+
+  mockFoo.removeEventListener('message', barListener);
+  mock.dispatchEvent(eventObject);
+  mockFoo.dispatchEvent(eventObject);
+});
+
+test('events to different object should not share events', t => {
+  const mock = new Mock();
+  const mockFoo = new MockFoo();
+  const eventObject = createEvent({
+    type: 'message'
+  });
+
+  const fooListener = {
+    handleEvent: event => {
+      t.is(event.type, 'message');
+    }
+  };
+  const barListener = {
+    handleEvent: event => {
+      t.is(event.type, 'message');
+    }
   };
 
   mock.addEventListener('message', fooListener);
@@ -81,6 +142,26 @@ test('that adding the same function twice for the same event type is only added 
   t.is(mock.listeners.message.length, 2);
 });
 
+test('that adding the same function twice for the same event type is only added once', t => {
+  const mock = new Mock();
+  const fooListener = {
+    handleEvent: event => {
+      t.is(event.type, 'message');
+    }
+  };
+  const barListener = {
+    handleEvent: event => {
+      t.is(event.type, 'message');
+    }
+  };
+
+  mock.addEventListener('message', fooListener);
+  mock.addEventListener('message', fooListener);
+  mock.addEventListener('message', barListener);
+
+  t.is(mock.listeners.message.length, 2);
+});
+
 test('that dispatching an event with multiple data arguments works correctly', t => {
   const mock = new Mock();
   const eventObject = createEvent({
@@ -92,6 +173,25 @@ test('that dispatching an event with multiple data arguments works correctly', t
     t.is(data[0], 'foo');
     t.is(data[1], 'bar');
     t.is(data[2], 'baz');
+  };
+
+  mock.addEventListener('message', fooListener);
+  mock.dispatchEvent(eventObject, 'foo', 'bar', 'baz');
+});
+
+test('that dispatching an event with multiple data arguments works correctly', t => {
+  const mock = new Mock();
+  const eventObject = createEvent({
+    type: 'message'
+  });
+
+  const fooListener = {
+    handleEvent: (...data) => {
+      t.is(data.length, 3);
+      t.is(data[0], 'foo');
+      t.is(data[1], 'bar');
+      t.is(data[2], 'baz');
+    }
   };
 
   mock.addEventListener('message', fooListener);

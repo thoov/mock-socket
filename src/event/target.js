@@ -29,6 +29,15 @@ class EventTarget {
       if (filter(this.listeners[type], item => item === listener).length === 0) {
         this.listeners[type].push(listener);
       }
+    } else if (typeof listener === 'object' && Object.prototype.hasOwnProperty.call(listener, 'handleEvent')) {
+      if (!Array.isArray(this.listeners[type])) {
+        this.listeners[type] = [];
+      }
+
+      // Only add the same function once
+      if (filter(this.listeners[type], item => item === listener.handleEvent).length === 0) {
+        this.listeners[type].push(listener.handleEvent);
+      }
     }
   }
 
