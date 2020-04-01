@@ -203,6 +203,15 @@ class SocketIO extends EventTarget {
   }
 
   /*
+   * Check if listeners have already been added for an event
+   *
+   * https://socket.io/docs/client-api/#socket-on-eventname-callback
+   */
+  hasListeners(type) {
+    return this.hastEventListeners(type);
+  }
+
+  /*
    * Join a room on a server
    *
    * http://socket.io/docs/rooms-and-namespaces/#joining-and-leaving

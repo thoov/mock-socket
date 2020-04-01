@@ -10,6 +10,7 @@ test('has all the required methods', t => {
 
   t.is(typeof mock.addEventListener, 'function');
   t.is(typeof mock.removeEventListener, 'function');
+  t.is(typeof mock.hastEventListeners, 'function');
   t.is(typeof mock.dispatchEvent, 'function');
 });
 
@@ -96,4 +97,31 @@ test('that dispatching an event with multiple data arguments works correctly', t
 
   mock.addEventListener('message', fooListener);
   mock.dispatchEvent(eventObject, 'foo', 'bar', 'baz');
+});
+
+test('checking for existing "message" event listeners works', t => {
+  const mock = new Mock();
+  const fooListener = () => {};
+
+  t.is(mock.hastEventListeners('message'), false);
+
+  mock.addEventListener('message', fooListener);
+  t.is(mock.hastEventListeners('message'), true);
+
+  mock.removeEventListener('message', fooListener);
+  t.is(mock.hastEventListeners('message'), false);
+});
+
+test('checking for existing event listeners should not share events', t => {
+  const mock = new Mock();
+
+  const fooListener = () => {};
+  const barListener = () => {};
+
+  mock.addEventListener('another-message', barListener);
+  t.is(mock.hastEventListeners('message'), false);
+
+  mock.removeEventListener('another-message', fooListener);
+  mock.addEventListener('message', fooListener);
+  t.is(mock.hastEventListeners('another-message'), true);
 });

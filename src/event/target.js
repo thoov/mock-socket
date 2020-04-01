@@ -45,6 +45,21 @@ class EventTarget {
   }
 
   /*
+   * Checks if a given event type has registered event listeners
+   *
+   * @param {string} type - the type of event (ie: 'open', 'message', etc.)
+   */
+  hastEventListeners(type) {
+    const listeners = this.listeners[type];
+
+    if (!Array.isArray(listeners)) {
+      return false;
+    }
+
+    return !!listeners.length;
+  }
+
+  /*
    * Invokes all listener functions that are listening to the given event.type property. Each
    * listener will be passed the event as the first argument.
    *
