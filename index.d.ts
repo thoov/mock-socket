@@ -37,14 +37,14 @@ declare module 'mock-socket' {
     readonly readyState: number;
     readonly bufferedAmount: number;
 
-    onopen: EventHandlerNonNull;
-    onerror: EventHandlerNonNull;
-    onclose: EventHandlerNonNull;
+    onclose: (event: CloseEvent) => any;
+    onerror: (event: Event) => any;
+    onopen: (event: Event) => any;
     readonly extensions: string;
     readonly protocol: string;
     close(code?: number, reason?: string): void;
 
-    onmessage: EventHandlerNonNull;
+    onmessage: (event: MessageEvent) => any;
     binaryType: BinaryType;
     send(data: string | Blob | ArrayBuffer | ArrayBufferView): void;
     on<K extends keyof WebSocketCallbackMap>(type: K, callback: WebSocketCallbackMap[K]): void;
