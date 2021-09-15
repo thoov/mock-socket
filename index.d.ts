@@ -17,6 +17,33 @@ declare module 'mock-socket' {
     open: () => void;
   }
 
+  interface OpenEvent {
+    type: string;
+    target: WebSocket;
+  }
+
+  interface ErrorEvent {
+    error: any;
+    message: string;
+    type: string;
+    target: WebSocket;
+  }
+
+  interface CloseEvent {
+    wasClean: boolean;
+    code: number;
+    reason: string;
+    type: string;
+    target: WebSocket;
+  }
+
+  type Data = string | Buffer | ArrayBuffer | Buffer[];
+  interface MessageEvent {
+    data: Data;
+    type: string;
+    target: WebSocket;
+  }
+
   //
   // https://html.spec.whatwg.org/multipage/web-sockets.html#websocket
   //
@@ -37,14 +64,14 @@ declare module 'mock-socket' {
     readonly readyState: number;
     readonly bufferedAmount: number;
 
-    onopen: EventHandlerNonNull;
-    onerror: EventHandlerNonNull;
-    onclose: EventHandlerNonNull;
+    onopen: (event: OpenEvent) => void;
+    onerror: (event: ErrorEvent) => void;
+    onclose: (event: CloseEvent) => void;
+    onmessage: (event: MessageEvent) => void;
     readonly extensions: string;
     readonly protocol: string;
     close(code?: number, reason?: string): void;
 
-    onmessage: EventHandlerNonNull;
     binaryType: BinaryType;
     send(data: string | Blob | ArrayBuffer | ArrayBufferView): void;
     on<K extends keyof WebSocketCallbackMap>(type: K, callback: WebSocketCallbackMap[K]): void;
