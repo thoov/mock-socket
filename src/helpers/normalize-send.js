@@ -1,5 +1,6 @@
 export default function normalizeSendData(data) {
-  if (Object.prototype.toString.call(data) !== '[object Blob]' && !(data instanceof ArrayBuffer)) {
+  const type = Object.prototype.toString.call(data);
+  if (type !== '[object Blob]' && !(data instanceof ArrayBuffer) && type !== '[object Object]') {
     data = String(data);
   }
 
