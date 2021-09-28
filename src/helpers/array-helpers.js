@@ -1,4 +1,4 @@
-export function reject(array, callback) {
+export function reject(array = [], callback) {
   const results = [];
   array.forEach(itemInArray => {
     if (!callback(itemInArray)) {
@@ -9,7 +9,7 @@ export function reject(array, callback) {
   return results;
 }
 
-export function filter(array, callback) {
+export function filter(array = [], callback) {
   const results = [];
   array.forEach(itemInArray => {
     if (callback(itemInArray)) {
