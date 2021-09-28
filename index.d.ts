@@ -21,7 +21,7 @@ declare module 'mock-socket' {
   // https://html.spec.whatwg.org/multipage/web-sockets.html#websocket
   //
   class WebSocket extends EventTarget {
-    constructor(url?: string, protocols?: string|string[]);
+    constructor(url?: string | URL, protocols?: string|string[]);
 
     static readonly CONNECTING: 0;
     static readonly OPEN: 1;
