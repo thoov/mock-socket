@@ -196,10 +196,23 @@ class SocketIO extends EventTarget {
   /*
    * Remove event listener
    *
-   * https://socket.io/docs/client-api/#socket-on-eventname-callback
+   * https://github.com/component/emitter#emitteroffevent-fn
    */
-  off(type) {
-    this.removeEventListener(type);
+  off(type, callback) {
+    this.removeEventListener(type, callback);
+  }
+
+  /*
+   * Check if listeners have already been added for an event
+   *
+   * https://github.com/component/emitter#emitterhaslistenersevent
+   */
+  hasListeners(type) {
+    const listeners = this.listeners[type];
+    if (!Array.isArray(listeners)) {
+      return false;
+    }
+    return !!listeners.length;
   }
 
   /*
