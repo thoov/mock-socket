@@ -1,6 +1,8 @@
 tests
 .github
 .git
+.idea
+src
 
 .babelrc
 .eslintrc
