@@ -82,3 +82,26 @@ test.cb.skip('it can broadcast to other connected sockets in a room', t => {
     t.end();
   });
 });
+
+test('it confirms if event listeners of a specific type have been registered', t => {
+  const socket = io();
+  function fooMessageHandler() {}
+  function barMessageListener() {}
+
+  t.is(socket.hasListeners('foo-message'), false);
+  t.is(socket.hasListeners('bar-message'), false);
+
+  socket.on('foo-message', fooMessageHandler);
+  t.is(socket.hasListeners('foo-message'), true);
+  t.is(socket.hasListeners('bar-message'), false);
+
+  socket.on('bar-message', barMessageListener);
+  t.is(socket.hasListeners('bar-message'), true);
+
+  socket.off('foo-message', fooMessageHandler);
+  t.is(socket.hasListeners('foo-message'), false);
+  t.is(socket.hasListeners('bar-message'), true);
+
+  socket.off('bar-message', barMessageListener);
+  t.is(socket.hasListeners('bar-message'), false);
+});
