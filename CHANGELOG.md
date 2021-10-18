@@ -1,6 +1,11 @@
 # Mock Socket Changelog
 
-### v9.0.5 (Septembet 30th, 2021)
+### v9.0.6 (October 18th, 2021)
+
+- [#338](https://github.com/thoov/mock-socket/pull/338) [BUGFIX] Use default codes for close event
+- [#340](https://github.com/thoov/mock-socket/pull/340) Build optimisations
+
+### v9.0.5 (September 30th, 2021)
 
 - [#312](https://github.com/thoov/mock-socket/pull/312) [BUGFIX] Fix null pointer exceptions
 - [#296](https://github.com/thoov/mock-socket/pull/296) [BUGFIX] Add the hasListeners method to client socket
