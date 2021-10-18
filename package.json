@@ -32,7 +32,6 @@
   },
   "homepage": "https://github.com/thoov/mock-socket",
   "dependencies": {
-    "url-parse": "^1.4.4"
   },
   "devDependencies": {
     "ava": "^0.19.1",
@@ -54,7 +53,8 @@
     "rollup-plugin-node-resolve": "^3.0.0",
     "systemjs": "^0.20.12",
     "typescript": "^2.9.2",
-    "typescript-eslint-parser": "^16.0.1"
+    "typescript-eslint-parser": "^16.0.1",
+    "url-parse": "^1.5.2"
   },
   "ava": {
     "files": [
