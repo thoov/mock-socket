@@ -4,7 +4,6 @@ import resolve from 'rollup-plugin-node-resolve';
 
 export default {
   entry: 'src/index.js',
-  sourceMap: 'inline',
   plugins: [buble(), resolve({ jsnext: true, main: true }), commonjs()],
   targets: [
     { dest: 'dist/mock-socket.cjs.js', format: 'cjs' },
