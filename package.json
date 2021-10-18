@@ -1,7 +1,7 @@
 {
   "name": "mock-socket",
   "description": "Javascript mocking library for websockets and socket.io",
-  "version": "9.0.5",
+  "version": "9.0.6",
   "license": "MIT",
   "author": "Travis Hoover",
   "main": "./dist/mock-socket",
