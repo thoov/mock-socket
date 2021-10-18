@@ -1,6 +1,7 @@
 import Event from './event';
 import MessageEvent from './message';
 import CloseEvent from './close';
+import { CLOSE_CODES } from '../constants';
 
 /*
  * Creates an Event object and extends it to allow full modification of
@@ -54,7 +55,7 @@ function createCloseEvent(config) {
   let { wasClean } = config;
 
   if (!wasClean) {
-    wasClean = code === 1000;
+    wasClean = code === CLOSE_CODES.CLOSE_NORMAL || code === CLOSE_CODES.CLOSE_NO_STATUS;
   }
 
   const closeEvent = new CloseEvent(type, {

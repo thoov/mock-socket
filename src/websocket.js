@@ -172,9 +172,9 @@ class WebSocket extends EventTarget {
     }
 
     if (this.readyState === WebSocket.CONNECTING) {
-      failWebSocketConnection(this, code, reason);
+      failWebSocketConnection(this, code || CLOSE_CODES.CLOSE_ABNORMAL, reason);
     } else {
-      closeWebSocketConnection(this, code, reason);
+      closeWebSocketConnection(this, code || CLOSE_CODES.CLOSE_NO_STATUS, reason);
     }
   }
 }
