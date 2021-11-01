@@ -73,6 +73,40 @@ test.cb('that calling close will trigger the onclose of websockets', t => {
   };
 });
 
+test.cb('that calling close for each client will trigger the onclose of websockets', t => {
+  const myServer = new Server('ws://not-real/');
+  let counter = 0;
+
+  myServer.on('connection', () => {
+    counter += 1;
+    if (counter === 2) {
+      myServer.clients()[0].close({
+        code: 1000
+      });
+      myServer.clients()[1].close({
+        code: 1005,
+        reason: 'Some reason'
+      });
+    }
+  });
+
+  const socketFoo = new WebSocket('ws://not-real/');
+  const socketBar = new WebSocket('ws://not-real/');
+  socketFoo.onclose = event => {
+    t.true(true, 'socketFoo onclose was correctly called');
+    t.is(event.code, 1000, 'the correct code was recieved');
+    t.is(event.reason, '', 'there is no reason');
+  };
+
+  socketBar.onclose = event => {
+    t.pass(true, 'socketBar onclose was correctly called');
+    t.is(event.code, 1005, 'the correct code was recieved');
+    t.is(event.reason, 'Some reason', 'the correct reason was recieved');
+    myServer.close();
+    t.end();
+  };
+});
+
 test('a namespaced server is added to the network bridge', t => {
   const myServer = Server.of('/my-namespace');
   const urlMap = networkBridge.urlMap['/my-namespace'];

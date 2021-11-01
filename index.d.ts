@@ -3,6 +3,9 @@
 // Definitions by: Travis Hoover <https://github.com/thoov/mock-socket>
 
 declare module 'mock-socket' {
+  // support TS under 3.5
+  type _Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+
   class EventTarget {
     listeners: any;
     addEventListener(type: string, listener: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions): void;
@@ -47,6 +50,11 @@ declare module 'mock-socket' {
 
     binaryType: BinaryType;
     send(data: string | Blob | ArrayBuffer | ArrayBufferView): void;
+  }
+
+  interface Client extends _Omit<WebSocket, 'close'> {
+    target: WebSocket;
+    close(options?: CloseOptions): void;
     on<K extends keyof WebSocketCallbackMap>(type: K, callback: WebSocketCallbackMap[K]): void;
   }
 
@@ -58,11 +66,11 @@ declare module 'mock-socket' {
     start(): void;
     stop(callback?: () => void): void;
 
-    on(type: string, callback: (socket: WebSocket) => void): void;
+    on(type: string, callback: (socket: Client) => void): void;
     close(options?: CloseOptions): void;
     emit(event: string, data: any, options?: EmitOptions): void;
 
-    clients(): WebSocket[];
+    clients(): Client[];
     to(room: any, broadcaster: any, broadcastList?: object): ToReturnObject;
     in(any: any): ToReturnObject;
     simulate(event: string): void;
@@ -77,7 +85,7 @@ declare module 'mock-socket' {
   }
 
   interface EmitOptions {
-    websockets: WebSocket[];
+    websockets: Client[];
   }
 
   interface ToReturnObject {

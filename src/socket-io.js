@@ -28,6 +28,7 @@ class SocketIO extends EventTarget {
     this.url = urlRecord.toString();
     this.readyState = SocketIO.CONNECTING;
     this.protocol = '';
+    this.target = this;
 
     if (typeof protocol === 'string' || (typeof protocol === 'object' && protocol !== null)) {
       this.protocol = protocol;
