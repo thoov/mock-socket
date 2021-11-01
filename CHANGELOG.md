@@ -1,5 +1,9 @@
 # Mock Socket Changelog
 
+### v9.0.7 (November 1st, 2021)
+
+- [#342](https://github.com/thoov/mock-socket/pull/342) Accessing to websocket proxy via server clients
+
 ### v9.0.6 (October 18th, 2021)
 
 - [#338](https://github.com/thoov/mock-socket/pull/338) [BUGFIX] Use default codes for close event

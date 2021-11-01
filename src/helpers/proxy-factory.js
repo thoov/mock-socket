@@ -3,15 +3,21 @@ import { closeWebSocketConnection } from '../algorithms/close';
 import normalizeSendData from './normalize-send';
 import { createMessageEvent } from '../event/factory';
 
+const proxies = new WeakMap();
+
 export default function proxyFactory(target) {
-  const handler = {
+  if (proxies.has(target)) {
+    return proxies.get(target);
+  }
+
+  const proxy = new Proxy(target, {
     get(obj, prop) {
       if (prop === 'close') {
         return function close(options = {}) {
           const code = options.code || CLOSE_CODES.CLOSE_NORMAL;
           const reason = options.reason || '';
 
-          closeWebSocketConnection(target, code, reason);
+          closeWebSocketConnection(proxy, code, reason);
         };
       }
 
@@ -36,10 +42,14 @@ export default function proxyFactory(target) {
         };
       }
 
+      if (prop === 'target') {
+        return target;
+      }
+
       return obj[prop];
     }
-  };
+  });
+  proxies.set(target, proxy);
 
-  const proxy = new Proxy(target, handler);
   return proxy;
 }

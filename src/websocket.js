@@ -28,7 +28,8 @@ class WebSocket extends EventTarget {
     this.binaryType = 'blob';
     this.readyState = WebSocket.CONNECTING;
 
-    const server = networkBridge.attachWebSocket(this, this.url);
+    const client = proxyFactory(this);
+    const server = networkBridge.attachWebSocket(client, this.url);
 
     /*
      * This delay is needed so that we dont trigger an event before the callbacks have been
@@ -58,7 +59,7 @@ class WebSocket extends EventTarget {
             `WebSocket connection to '${this.url}' failed: HTTP Authentication failed; no valid credentials available`
           );
 
-          networkBridge.removeWebSocket(this, this.url);
+          networkBridge.removeWebSocket(client, this.url);
           this.dispatchEvent(createEvent({ type: 'error', target: this }));
           this.dispatchEvent(createCloseEvent({ type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL }));
         } else {
@@ -71,7 +72,7 @@ class WebSocket extends EventTarget {
 
               logger('error', `WebSocket connection to '${this.url}' failed: Invalid Sub-Protocol`);
 
-              networkBridge.removeWebSocket(this, this.url);
+              networkBridge.removeWebSocket(client, this.url);
               this.dispatchEvent(createEvent({ type: 'error', target: this }));
               this.dispatchEvent(createCloseEvent({ type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL }));
               return;
@@ -80,7 +81,7 @@ class WebSocket extends EventTarget {
           }
           this.readyState = WebSocket.OPEN;
           this.dispatchEvent(createEvent({ type: 'open', target: this }));
-          server.dispatchEvent(createEvent({ type: 'connection' }), proxyFactory(this));
+          server.dispatchEvent(createEvent({ type: 'connection' }), client);
         }
       } else {
         this.readyState = WebSocket.CLOSED;
@@ -171,10 +172,11 @@ class WebSocket extends EventTarget {
       return;
     }
 
+    const client = proxyFactory(this);
     if (this.readyState === WebSocket.CONNECTING) {
-      failWebSocketConnection(this, code || CLOSE_CODES.CLOSE_ABNORMAL, reason);
+      failWebSocketConnection(client, code || CLOSE_CODES.CLOSE_ABNORMAL, reason);
     } else {
-      closeWebSocketConnection(this, code || CLOSE_CODES.CLOSE_NO_STATUS, reason);
+      closeWebSocketConnection(client, code || CLOSE_CODES.CLOSE_NO_STATUS, reason);
     }
   }
 }

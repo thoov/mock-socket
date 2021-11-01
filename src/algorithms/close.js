@@ -9,7 +9,7 @@ export function closeWebSocketConnection(context, code, reason) {
   const server = networkBridge.serverLookup(context.url);
   const closeEvent = createCloseEvent({
     type: 'close',
-    target: context,
+    target: context.target,
     code,
     reason
   });
@@ -32,7 +32,7 @@ export function failWebSocketConnection(context, code, reason) {
   const server = networkBridge.serverLookup(context.url);
   const closeEvent = createCloseEvent({
     type: 'close',
-    target: context,
+    target: context.target,
     code,
     reason,
     wasClean: false
@@ -40,7 +40,7 @@ export function failWebSocketConnection(context, code, reason) {
 
   const errorEvent = createEvent({
     type: 'error',
-    target: context
+    target: context.target
   });
 
   delay(() => {

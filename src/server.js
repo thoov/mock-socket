@@ -105,7 +105,7 @@ class Server extends EventTarget {
       socket.dispatchEvent(
         createCloseEvent({
           type: 'close',
-          target: socket,
+          target: socket.target,
           code: code || CLOSE_CODES.CLOSE_NORMAL,
           reason: reason || '',
           wasClean
@@ -140,7 +140,7 @@ class Server extends EventTarget {
             type: event,
             data,
             origin: this.url,
-            target: socket
+            target: socket.target
           }),
           ...data
         );
@@ -150,7 +150,7 @@ class Server extends EventTarget {
             type: event,
             data,
             origin: this.url,
-            target: socket
+            target: socket.target
           })
         );
       }
