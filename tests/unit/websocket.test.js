@@ -8,13 +8,13 @@ test.skip('that not passing a url throws an error', t => {
   }, "Failed to construct 'WebSocket': 1 argument required, but only 0 present");
 });
 
-test('that websockets inherents EventTarget methods', t => {
+test('that websockets inherents EventTarget methods with string type url', t => {
   const mySocket = new WebSocket('ws://not-real');
   t.true(mySocket instanceof EventTarget);
 });
 
-test('that websockets inherents EventTarget methods', t => {
-  const mySocket = new WebSocket('ws://not-real');
+test('that websockets inherents EventTarget methods with URL type url', t => {
+  const mySocket = new WebSocket(new URL('ws://not-real'));
   t.true(mySocket instanceof EventTarget);
 });
 
