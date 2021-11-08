@@ -55,10 +55,11 @@ class NetworkBridge {
    * @param {string} url
    */
   attachServer(server, url) {
-    const connectionLookup = this.urlMap[url];
+    const serverUrl = trimQueryPartFromURL(url);
+    const connectionLookup = this.urlMap[serverUrl];
 
     if (!connectionLookup) {
-      this.urlMap[url] = {
+      this.urlMap[serverUrl] = {
         server,
         websockets: [],
         roomMemberships: {}
