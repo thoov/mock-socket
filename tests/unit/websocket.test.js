@@ -15,7 +15,9 @@ test('that websockets inherents EventTarget methods with string type url', t => 
 
 test('that websockets inherents EventTarget methods with URL type url', t => {
   const mySocket = new WebSocket(new URL('ws://not-real'));
+
   t.true(mySocket instanceof EventTarget);
+  t.is(mySocket.url, 'ws://not-real/');
 });
 
 test('that on(open, message, error, and close) can be set', t => {
