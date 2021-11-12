@@ -1,3 +1,4 @@
+import URL from 'url-parse';
 import test from 'ava';
 import WebSocket from '../../src/websocket';
 import EventTarget from '../../src/event/target';
