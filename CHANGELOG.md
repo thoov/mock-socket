@@ -1,5 +1,10 @@
 # Mock Socket Changelog
 
+### v9.0.8 (November 15th, 2021)
+
+- [#343](https://github.com/thoov/mock-socket/pull/343) trim query params for attachServer method lookup
+- [#335](https://github.com/thoov/mock-socket/pull/335) Update type of url parameter of websocket constructor
+
 ### v9.0.7 (November 1st, 2021)
 
 - [#342](https://github.com/thoov/mock-socket/pull/342) Accessing to websocket proxy via server clients
