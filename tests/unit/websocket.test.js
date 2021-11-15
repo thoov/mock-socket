@@ -1,3 +1,4 @@
+import URL from 'url-parse';
 import test from 'ava';
 import WebSocket from '../../src/websocket';
 import EventTarget from '../../src/event/target';
@@ -8,14 +9,16 @@ test.skip('that not passing a url throws an error', t => {
   }, "Failed to construct 'WebSocket': 1 argument required, but only 0 present");
 });
 
-test('that websockets inherents EventTarget methods', t => {
+test('that websockets inherents EventTarget methods with string type url', t => {
   const mySocket = new WebSocket('ws://not-real');
   t.true(mySocket instanceof EventTarget);
 });
 
-test('that websockets inherents EventTarget methods', t => {
-  const mySocket = new WebSocket('ws://not-real');
+test('that websockets inherents EventTarget methods with URL type url', t => {
+  const mySocket = new WebSocket(new URL('ws://not-real'));
+
   t.true(mySocket instanceof EventTarget);
+  t.is(mySocket.url, 'ws://not-real/');
 });
 
 test('that on(open, message, error, and close) can be set', t => {
