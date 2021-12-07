@@ -30,6 +30,7 @@ class WebSocket extends EventTarget {
 
     const client = proxyFactory(this);
     const server = networkBridge.attachWebSocket(client, this.url);
+    const connectionDelay = server && server.options && server.options.connectionDelay;
 
     /*
      * This delay is needed so that we dont trigger an event before the callbacks have been
@@ -90,7 +91,7 @@ class WebSocket extends EventTarget {
 
         logger('error', `WebSocket connection to '${this.url}' failed`);
       }
-    }, this);
+    }, this, connectionDelay);
   }
 
   get onopen() {

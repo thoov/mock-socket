@@ -37,6 +37,7 @@ class SocketIO extends EventTarget {
     }
 
     const server = networkBridge.attachWebSocket(this, this.url);
+    const connectionDelay = server && server.options && server.options.connectionDelay;
 
     /*
      * Delay triggering the connection events so they can be defined in time.
@@ -60,7 +61,7 @@ class SocketIO extends EventTarget {
 
         logger('error', `Socket.io connection to '${this.url}' failed`);
       }
-    }, this);
+    }, this, connectionDelay);
 
     /**
       Add an aliased event listener for close / disconnect
