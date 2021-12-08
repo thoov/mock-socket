@@ -1206,6 +1206,8 @@ function closeWebSocketConnection(context, code, reason) {
     reason: reason
   });
 
+  var connectionDelay = server && server.options && server.options.connectionDelay;
+
   delay(function () {
     networkBridge.removeWebSocket(context, context.url);
 
@@ -1215,7 +1217,7 @@ function closeWebSocketConnection(context, code, reason) {
     if (server) {
       server.dispatchEvent(closeEvent, server);
     }
-  }, context);
+  }, context, connectionDelay);
 }
 
 function failWebSocketConnection(context, code, reason) {
@@ -1235,6 +1237,8 @@ function failWebSocketConnection(context, code, reason) {
     target: context.target
   });
 
+  var connectionDelay = server && server.options && server.options.connectionDelay;
+
   delay(function () {
     networkBridge.removeWebSocket(context, context.url);
 
@@ -1245,7 +1249,7 @@ function failWebSocketConnection(context, code, reason) {
     if (server) {
       server.dispatchEvent(closeEvent, server);
     }
-  }, context);
+  }, context, connectionDelay);
 }
 
 function normalizeSendData(data) {
@@ -1518,11 +1522,12 @@ var WebSocket$1 = (function (EventTarget$$1) {
     });
 
     var server = networkBridge.serverLookup(this.url);
+    var connectionDelay = server && server.options && server.options.connectionDelay;
 
     if (server) {
       delay(function () {
         this$1.dispatchEvent(messageEvent, data);
-      }, server);
+      }, server, connectionDelay);
     }
   };
 

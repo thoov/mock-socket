@@ -144,11 +144,12 @@ class WebSocket extends EventTarget {
     });
 
     const server = networkBridge.serverLookup(this.url);
+    const connectionDelay = server && server.options && server.options.connectionDelay;
 
     if (server) {
       delay(() => {
         this.dispatchEvent(messageEvent, data);
-      }, server);
+      }, server, connectionDelay);
     }
   }
 
