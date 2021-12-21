@@ -25,7 +25,7 @@ export default class Event extends EventPrototype {
     this.defaultPrevented = false;
     this.currentTarget = null;
     this.cancelable = cancelable ? Boolean(cancelable) : false;
-    this.canncelBubble = false;
+    this.cancelBubble = false;
     this.bubbles = bubbles ? Boolean(bubbles) : false;
   }
 }
