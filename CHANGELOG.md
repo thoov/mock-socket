@@ -1,5 +1,10 @@
 # Mock Socket Changelog
 
+### v9.1.0 (January 13th, 2022)
+
+- [#348](https://github.com/thoov/mock-socket/pull/348) [BUGFIX] Address misspelling of cancelBuble
+- [#349](https://github.com/thoov/mock-socket/pull/349) add mock options param to prevent stubbing global
+
 ### v9.0.8 (November 15th, 2021)
 
 - [#343](https://github.com/thoov/mock-socket/pull/343) trim query params for attachServer method lookup
