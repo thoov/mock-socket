@@ -116,16 +116,34 @@ test('a namespaced server is added to the network bridge', t => {
   t.deepEqual(networkBridge.urlMap, {}, 'the urlMap was cleared after the close call');
 });
 
-test('that calling close will trigger the onclose of websockets', t => {
-  const myServer = new Server('ws://example.com');
+test('that properly mock the global Websocket object and restore when the server closes', t => {
   const globalObj = globalObject();
   const originalWebSocket = globalObj.WebSocket;
-
-  myServer.start();
+  const myServer = new Server('ws://example.com');
 
   t.deepEqual(globalObj.WebSocket, WebSocket, 'WebSocket class is defined on the globalObject');
   t.deepEqual(myServer.originalWebSocket, originalWebSocket, 'the original websocket is stored');
 
+  myServer.stop();
+
+  t.is(myServer.originalWebSocket, null, 'server forgets about the original websocket');
+  t.deepEqual(globalObj.WebSocket, originalWebSocket, 'the original websocket is returned to the global object');
+});
+
+test('that does not mock the global Websocket object with mock=false', t => {
+  const globalObj = globalObject();
+  const originalWebSocket = globalObj.WebSocket;
+  const myServer = new Server('ws://example.com', { mock: false });
+
+  t.deepEqual(globalObj.WebSocket, originalWebSocket, 'global websocket is not mocked');
+  t.deepEqual(myServer.originalWebSocket, null, 'server does not store original websocket');
+
+  myServer.mockWebsocket();
+
+  t.deepEqual(globalObj.WebSocket, WebSocket, 'WebSocket class is defined on the globalObject');
+  t.deepEqual(myServer.originalWebSocket, originalWebSocket, 'the original websocket is stored');
+
+  myServer.restoreWebsocket();
   myServer.stop();
 
   t.is(myServer.originalWebSocket, null, 'server forgets about the original websocket');

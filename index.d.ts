@@ -63,8 +63,9 @@ declare module 'mock-socket' {
 
     readonly options?: ServerOptions;
 
-    start(): void;
     stop(callback?: () => void): void;
+    mockWebsocket(): void;
+    restoreWebsocket(): void;
 
     on(type: string, callback: (socket: Client) => void): void;
     close(options?: CloseOptions): void;
@@ -94,6 +95,7 @@ declare module 'mock-socket' {
   }
 
   interface ServerOptions {
+    mock?: boolean;
     verifyClient?: () => boolean;
     selectProtocol?: (protocols: string[]) => string | null;
   }
