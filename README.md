@@ -84,8 +84,16 @@ test.cb('that chat app can be mocked', t => {
 import { WebSocket, Server } from 'mock-socket';
 
 /*
- * By default the global WebSocket object is stubbed out. However,
- * if you need to stub something else out you can like so:
+ * By default the global WebSocket object is stubbed out when 
+ * a new Server instance is created and is restored when you stop
+ * the server.
+ * However, you can disable this behavior by passing `mock: false`
+ * to the options and manually mock the socket when you need it.
+ */
+const server = new Server('ws://localhost:8080', { mock: false });
+
+/*
+ * If you need to stub something else out you can like so:
  */
 
 window.WebSocket = WebSocket; // Here we stub out the window object

@@ -8,8 +8,14 @@ import globalObject from './helpers/global-object';
 import normalizeSendData from './helpers/normalize-send';
 import { createEvent, createMessageEvent, createCloseEvent } from './event/factory';
 
+const defaultOptions = {
+  mock: true,
+  verifyClient: null,
+  selectProtocol: null
+};
+
 class Server extends EventTarget {
-  constructor(url, options = {}) {
+  constructor(url, options = defaultOptions) {
     super();
     const urlRecord = new URL(url);
 
@@ -27,44 +33,44 @@ class Server extends EventTarget {
       throw new Error('A mock server is already listening on this url');
     }
 
-    if (typeof options.verifyClient === 'undefined') {
-      options.verifyClient = null;
-    }
+    this.options = Object.assign({}, defaultOptions, options);
 
-    if (typeof options.selectProtocol === 'undefined') {
-      options.selectProtocol = null;
+    if (this.options.mock) {
+      this.mockWebsocket();
     }
-
-    this.options = options;
-    this.start();
   }
 
   /*
    * Attaches the mock websocket object to the global object
    */
-  start() {
+  mockWebsocket() {
     const globalObj = globalObject();
 
-    if (globalObj.WebSocket) {
-      this.originalWebSocket = globalObj.WebSocket;
-    }
-
+    this.originalWebSocket = globalObj.WebSocket;
     globalObj.WebSocket = WebSocket;
   }
 
   /*
    * Removes the mock websocket object from the global object
    */
-  stop(callback = () => {}) {
+  restoreWebsocket() {
     const globalObj = globalObject();
 
-    if (this.originalWebSocket) {
+    if (this.originalWebSocket !== null) {
       globalObj.WebSocket = this.originalWebSocket;
-    } else {
-      delete globalObj.WebSocket;
     }
 
     this.originalWebSocket = null;
+  }
+
+  /**
+   * Removes itself from the urlMap so another server could add itself to the url.
+   * @param {function} callback - The callback is called when the server is stopped
+   */
+  stop(callback = () => {}) {
+    if (this.options.mock) {
+      this.restoreWebsocket();
+    }
 
     networkBridge.removeServer(this.url);
 
