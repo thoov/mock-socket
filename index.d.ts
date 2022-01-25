@@ -112,8 +112,8 @@ declare module 'mock-socket' {
   }
 
   const SocketIO: {
-    (url: string, protocol: string | string[]): SocketIOClient;
-    connect(url: string, protocol: string | string[]): SocketIOClient;
+    (url: string, protocol?: string | string[]): SocketIOClient;
+    connect(url: string, protocol?: string | string[]): SocketIOClient;
   }
 
   interface CloseOptions {
