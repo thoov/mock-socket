@@ -1,5 +1,9 @@
 # Mock Socket Changelog
 
+### v9.1.1 (January 25th, 2022)
+
+- [#351](https://github.com/thoov/mock-socket/pull/351) add types for SocketIO
+
 ### v9.1.0 (January 13th, 2022)
 
 - [#348](https://github.com/thoov/mock-socket/pull/348) [BUGFIX] Address misspelling of cancelBuble
