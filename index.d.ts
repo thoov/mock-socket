@@ -76,7 +76,44 @@ declare module 'mock-socket' {
     in(any: any): ToReturnObject;
     simulate(event: string): void;
 
-    public of(url: string): Server;
+    static of(url: string): Server;
+  }
+
+  interface SocketIOClient extends EventTarget {
+    binaryType: BinaryType;
+
+    readonly CONNECTING: 0;
+    readonly OPEN: 1;
+    readonly CLOSING: 2;
+    readonly CLOSED: 3;
+
+    readonly url: string;
+    readonly readyState: number;
+    readonly protocol: string;
+    readonly target: this;
+
+    close(): this;
+    disconnect(): this;
+    emit(event: string, data: any): this;
+    send(data: any): this;
+    on(type: string, callback: (socket: SocketIOClient) => void): this;
+    off(type: string, callback: (socket: SocketIOClient) => void): void;
+    hasListeners(type: string): boolean;
+    join(room: string): void;
+    leave(room: string): void;
+    to(room: string): ToReturnObject;
+    in(room: string): ToReturnObject;
+
+    readonly broadcast: {
+      emit(event: string, data: any): SocketIOClient;
+      to(room: string): ToReturnObject;
+      in(room: string): ToReturnObject;
+    };
+  }
+
+  const SocketIO: {
+    (url: string, protocol: string | string[]): SocketIOClient;
+    connect(url: string, protocol: string | string[]): SocketIOClient;
   }
 
   interface CloseOptions {
