@@ -1,5 +1,9 @@
 # Mock Socket Changelog
 
+### v9.1.2 (January 25th, 2022)
+
+- [#352](https://github.com/thoov/mock-socket/pull/352) fix SocketIO types
+
 ### v9.1.1 (January 25th, 2022)
 
 - [#351](https://github.com/thoov/mock-socket/pull/351) add types for SocketIO
