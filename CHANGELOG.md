@@ -1,5 +1,9 @@
 # Mock Socket Changelog
 
+### v9.1.3 (April 20th, 2022)
+
+- [#355](https://github.com/thoov/mock-socket/pull/355) Bump url-parse from 1.5.2 to 1.5.9
+
 ### v9.1.2 (January 25th, 2022)
 
 - [#352](https://github.com/thoov/mock-socket/pull/352) fix SocketIO types
