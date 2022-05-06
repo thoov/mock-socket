@@ -97,6 +97,23 @@ test.cb('that onclose is called after the client closes the connection', t => {
   };
 });
 
+test.cb('that the server gets called when the client closes the connection', t => {
+  const testServer = new Server('ws://localhost:8080');
+
+  testServer.on('connection', socket => {
+    socket.onclose = function close(event) {
+      t.is(event.target.readyState, WebSocket.CLOSED, 'onclose fires as expected');
+      t.end();
+    };
+  });
+
+  const mockSocket = new WebSocket('ws://localhost:8080');
+
+  mockSocket.onopen = function open() {
+    mockSocket.close();
+  };
+});
+
 test.cb('that the server gets called when the client sends a message', t => {
   const testServer = new Server('ws://localhost:8080');
 

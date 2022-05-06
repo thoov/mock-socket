@@ -13,12 +13,19 @@ export function closeWebSocketConnection(context, code, reason) {
     code,
     reason
   });
+  const serverCloseEvent = createCloseEvent({
+    type: 'server::close',
+    target: context.target,
+    code,
+    reason
+  });
 
   delay(() => {
     networkBridge.removeWebSocket(context, context.url);
 
     context.readyState = WebSocket.CLOSED;
     context.dispatchEvent(closeEvent);
+    context.dispatchEvent(serverCloseEvent);
 
     if (server) {
       server.dispatchEvent(closeEvent, server);
