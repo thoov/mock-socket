@@ -1,5 +1,9 @@
 # Mock Socket Changelog
 
+### v9.1.4 (May 25th, 2022)
+
+- [#298](https://github.com/thoov/mock-socket/pull/298) close listener of the socket isn't called when client close
+
 ### v9.1.3 (April 20th, 2022)
 
 - [#355](https://github.com/thoov/mock-socket/pull/355) Bump url-parse from 1.5.2 to 1.5.9
