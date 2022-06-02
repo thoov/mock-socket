@@ -21,6 +21,11 @@ class WebSocket extends EventTarget {
   constructor(url, protocols) {
     super();
 
+    this.onopenCb = null;
+    this.onmessageCb = null;
+    this.onerrorCb = null;
+    this.oncloseCb = null;
+
     this.url = urlVerification(url);
     protocols = protocolVerification(protocols);
     this.protocol = protocols[0] || '';
@@ -94,39 +99,67 @@ class WebSocket extends EventTarget {
   }
 
   get onopen() {
-    return this.listeners.open;
+    return this.onopenCb;
   }
 
   get onmessage() {
-    return this.listeners.message;
+    return this.onmessageCb;
   }
 
   get onclose() {
-    return this.listeners.close;
+    return this.oncloseCb;
   }
 
   get onerror() {
-    return this.listeners.error;
+    return this.onerrorCb;
   }
 
   set onopen(listener) {
-    delete this.listeners.open;
-    this.addEventListener('open', listener);
+    if (listener === null) {
+      if (this.onopenCb !== null) {
+        this.removeEventListener('open', this.onopenCb);
+      }
+    } else {
+      this.onopen = null;
+      this.addEventListener('open', listener);
+    }
+    this.onopenCb = listener;
   }
 
   set onmessage(listener) {
-    delete this.listeners.message;
-    this.addEventListener('message', listener);
+    if (listener === null) {
+      if (this.onmessageCb !== null) {
+        this.removeEventListener('message', this.onmessageCb);
+      }
+    } else {
+      this.onmessage = null;
+      this.addEventListener('message', listener);
+    }
+    this.onmessageCb = listener;
   }
 
   set onclose(listener) {
-    delete this.listeners.close;
-    this.addEventListener('close', listener);
+    if (listener === null) {
+      if (this.oncloseCb !== null) {
+        this.removeEventListener('close', this.oncloseCb);
+      }
+    } else {
+      this.onclose = null;
+      this.addEventListener('close', listener);
+    }
+    this.oncloseCb = listener;
   }
 
   set onerror(listener) {
-    delete this.listeners.error;
-    this.addEventListener('error', listener);
+    if (listener === null) {
+      if (this.onerrorCb !== null) {
+        this.removeEventListener('error', this.onerrorCb);
+      }
+    } else {
+      this.onerror = null;
+      this.addEventListener('error', listener);
+    }
+    this.onerrorCb = listener;
   }
 
   send(data) {
