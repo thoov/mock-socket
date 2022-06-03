@@ -21,10 +21,10 @@ class WebSocket extends EventTarget {
   constructor(url, protocols) {
     super();
 
-    this.onopenCb = null;
-    this.onmessageCb = null;
-    this.onerrorCb = null;
-    this.oncloseCb = null;
+    this._onopen = null;
+    this._onmessage = null;
+    this._onerror = null;
+    this._onclose = null;
 
     this.url = urlVerification(url);
     protocols = protocolVerification(protocols);
@@ -99,67 +99,43 @@ class WebSocket extends EventTarget {
   }
 
   get onopen() {
-    return this.onopenCb;
+    return this._onopen;
   }
 
   get onmessage() {
-    return this.onmessageCb;
+    return this._onmessage;
   }
 
   get onclose() {
-    return this.oncloseCb;
+    return this._onclose;
   }
 
   get onerror() {
-    return this.onerrorCb;
+    return this._onerror;
   }
 
   set onopen(listener) {
-    if (listener === null) {
-      if (this.onopenCb !== null) {
-        this.removeEventListener('open', this.onopenCb);
-      }
-    } else {
-      this.onopen = null;
-      this.addEventListener('open', listener);
-    }
-    this.onopenCb = listener;
+    this.removeEventListener('open', this._onopen);
+    this._onopen = listener;
+    this.addEventListener('open', listener);
   }
 
   set onmessage(listener) {
-    if (listener === null) {
-      if (this.onmessageCb !== null) {
-        this.removeEventListener('message', this.onmessageCb);
-      }
-    } else {
-      this.onmessage = null;
-      this.addEventListener('message', listener);
-    }
-    this.onmessageCb = listener;
+    this.removeEventListener('message', this._onmessage);
+    this._onmessage = listener;
+    this.addEventListener('message', listener);
   }
 
   set onclose(listener) {
-    if (listener === null) {
-      if (this.oncloseCb !== null) {
-        this.removeEventListener('close', this.oncloseCb);
-      }
-    } else {
-      this.onclose = null;
-      this.addEventListener('close', listener);
-    }
-    this.oncloseCb = listener;
+    this.removeEventListener('close', this._onclose);
+    this._onclose = listener;
+    this.addEventListener('close', listener);
   }
 
   set onerror(listener) {
-    if (listener === null) {
-      if (this.onerrorCb !== null) {
-        this.removeEventListener('error', this.onerrorCb);
-      }
-    } else {
-      this.onerror = null;
-      this.addEventListener('error', listener);
-    }
-    this.onerrorCb = listener;
+    this.removeEventListener('error', this._onerror);
+    this._onerror = listener;
+    this.addEventListener('error', listener);
   }
 
   send(data) {

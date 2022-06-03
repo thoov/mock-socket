@@ -1,6 +1,7 @@
 import test from 'ava';
 import Server from '../../src/server';
 import WebSocket from '../../src/websocket';
+import Event from '../../src/event/event';
 
 test('websocket on* methods family returns a single listener', t => {
   const socketUrl = 'ws://localhost:8080';
