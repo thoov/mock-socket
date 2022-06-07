@@ -1,8 +1,12 @@
 # Mock Socket Changelog
 
+### v9.1.5 (June 5th, 2022)
+
+- [#362](https://github.com/thoov/mock-socket/pull/362) [BUGFIX] Event handler getters should return a single function
+
 ### v9.1.4 (May 25th, 2022)
 
-- [#298](https://github.com/thoov/mock-socket/pull/298) close listener of the socket isn't called when client close
+- [#298](https://github.com/thoov/mock-socket/pull/298) [BUGFIX] close listener of the socket isn't called when client close
 
 ### v9.1.3 (April 20th, 2022)
 
