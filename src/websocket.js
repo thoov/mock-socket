@@ -21,6 +21,11 @@ class WebSocket extends EventTarget {
   constructor(url, protocols) {
     super();
 
+    this._onopen = null;
+    this._onmessage = null;
+    this._onerror = null;
+    this._onclose = null;
+
     this.url = urlVerification(url);
     protocols = protocolVerification(protocols);
     this.protocol = protocols[0] || '';
@@ -94,38 +99,42 @@ class WebSocket extends EventTarget {
   }
 
   get onopen() {
-    return this.listeners.open;
+    return this._onopen;
   }
 
   get onmessage() {
-    return this.listeners.message;
+    return this._onmessage;
   }
 
   get onclose() {
-    return this.listeners.close;
+    return this._onclose;
   }
 
   get onerror() {
-    return this.listeners.error;
+    return this._onerror;
   }
 
   set onopen(listener) {
-    delete this.listeners.open;
+    this.removeEventListener('open', this._onopen);
+    this._onopen = listener;
     this.addEventListener('open', listener);
   }
 
   set onmessage(listener) {
-    delete this.listeners.message;
+    this.removeEventListener('message', this._onmessage);
+    this._onmessage = listener;
     this.addEventListener('message', listener);
   }
 
   set onclose(listener) {
-    delete this.listeners.close;
+    this.removeEventListener('close', this._onclose);
+    this._onclose = listener;
     this.addEventListener('close', listener);
   }
 
   set onerror(listener) {
-    delete this.listeners.error;
+    this.removeEventListener('error', this._onerror);
+    this._onerror = listener;
     this.addEventListener('error', listener);
   }
 
