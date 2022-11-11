@@ -70,7 +70,7 @@ test.cb('that chat app can be mocked', t => {
   // NOTE: this timeout is for creating another micro task that will happen after the above one
   setTimeout(() => {
     t.is(app.messages.length, 1);
-    t.is(app.messages[0], 'test message from mock server', 'we have subbed our websocket backend');
+    t.is(app.messages[0], 'test message from mock server', 'we have stubbed our websocket backend');
     mockServer.stop(t.done);
   }, 100);
 });
