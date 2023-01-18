@@ -117,6 +117,15 @@ class Server extends EventTarget {
           wasClean
         })
       );
+      socket.dispatchEvent(
+        createCloseEvent({
+          type: 'server::close',
+          target: socket.target,
+          code: code || CLOSE_CODES.CLOSE_NORMAL,
+          reason: reason || '',
+          wasClean
+        })
+      );
     });
 
     this.dispatchEvent(createCloseEvent({ type: 'close' }), this);
