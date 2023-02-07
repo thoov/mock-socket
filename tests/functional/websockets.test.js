@@ -3,7 +3,7 @@ import Server from '../../src/server';
 import WebSocket from '../../src/websocket';
 import networkBridge from '../../src/network-bridge';
 
-test.afterEach(() => {
+test.beforeEach(() => {
   networkBridge.urlMap = {};
 });
 

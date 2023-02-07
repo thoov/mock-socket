@@ -4,7 +4,7 @@ import networkBridge from '../../src/network-bridge';
 
 const fakeObject = { foo: 'bar' };
 
-test.afterEach(() => {
+test.beforeEach(() => {
   networkBridge.urlMap = {};
 });
 

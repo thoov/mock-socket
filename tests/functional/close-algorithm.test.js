@@ -4,7 +4,7 @@ import WebSocket from '../../src/websocket';
 import networkBridge from '../../src/network-bridge';
 import delay from '../../src/helpers/delay';
 
-test.afterEach(() => {
+test.beforeEach(() => {
   networkBridge.urlMap = {};
 });
 
