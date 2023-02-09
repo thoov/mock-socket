@@ -107,6 +107,7 @@ const mockServer = new Server('ws://localhost:8080');
 mockServer.on('connection', socket => {
   socket.on('message', () => {});
   socket.on('close', () => {});
+  socket.on('error', () => {});
 
   socket.send('message');
   socket.close();
