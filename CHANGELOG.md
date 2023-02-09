@@ -1,5 +1,16 @@
 # Mock Socket Changelog
 
+### v9.2.0 (Feb 9th, 2023)
+
+- [#373](https://github.com/thoov/mock-socket/pull/373) Handle proxy events properly
+- [#370](https://github.com/thoov/mock-socket/pull/370),
+[#368](https://github.com/thoov/mock-socket/pull/368),
+[#313](https://github.com/thoov/mock-socket/pull/313),
+[#333](https://github.com/thoov/mock-socket/pull/333),
+[#334](https://github.com/thoov/mock-socket/pull/334),
+[#369](https://github.com/thoov/mock-socket/pull/369),
+[#375](https://github.com/thoov/mock-socket/pull/375) Bump dependencies
+
 ### v9.1.5 (June 5th, 2022)
 
 - [#362](https://github.com/thoov/mock-socket/pull/362) [BUGFIX] Event handler getters should return a single function
