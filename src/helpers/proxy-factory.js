@@ -38,7 +38,8 @@ export default function proxyFactory(target) {
 
       if (prop === 'on') {
         return function onWrapper(type, cb) {
-          target.addEventListener(`server::${type}`, cb);
+          type = type === 'message' ? `server::${type}` : type;
+          target.addEventListener(type, cb);
         };
       }
 

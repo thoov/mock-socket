@@ -13,19 +13,12 @@ export function closeWebSocketConnection(context, code, reason) {
     code,
     reason
   });
-  const serverCloseEvent = createCloseEvent({
-    type: 'server::close',
-    target: context,
-    code,
-    reason
-  });
 
   delay(() => {
     networkBridge.removeWebSocket(context, context.url);
 
     context.readyState = WebSocket.CLOSED;
     context.dispatchEvent(closeEvent);
-    context.dispatchEvent(serverCloseEvent);
 
     if (server) {
       server.dispatchEvent(closeEvent, server);
@@ -44,13 +37,6 @@ export function failWebSocketConnection(context, code, reason) {
     reason,
     wasClean: false
   });
-  const serverCloseEvent = createCloseEvent({
-    type: 'server::close',
-    target: context,
-    code,
-    reason,
-    wasClean: false
-  });
 
   const errorEvent = createEvent({
     type: 'error',
@@ -63,7 +49,6 @@ export function failWebSocketConnection(context, code, reason) {
     context.readyState = WebSocket.CLOSED;
     context.dispatchEvent(errorEvent);
     context.dispatchEvent(closeEvent);
-    context.dispatchEvent(serverCloseEvent);
 
     if (server) {
       server.dispatchEvent(closeEvent, server);
