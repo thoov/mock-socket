@@ -17,7 +17,6 @@ declare module 'mock-socket' {
     close: () => void;
     error: (err: Error) => void;
     message: (message: string | Blob | ArrayBuffer | ArrayBufferView) => void;
-    open: () => void;
   }
 
   //
@@ -56,6 +55,7 @@ declare module 'mock-socket' {
     target: WebSocket;
     close(options?: CloseOptions): void;
     on<K extends keyof WebSocketCallbackMap>(type: K, callback: WebSocketCallbackMap[K]): void;
+    off<K extends keyof WebSocketCallbackMap>(type: K, callback: WebSocketCallbackMap[K]): void;
   }
 
   class Server extends EventTarget {
@@ -68,6 +68,7 @@ declare module 'mock-socket' {
     restoreWebsocket(): void;
 
     on(type: string, callback: (socket: Client) => void): void;
+    off(type: string, callback: (socket: Client) => void): void;
     close(options?: CloseOptions): void;
     emit(event: string, data: any, options?: EmitOptions): void;
 

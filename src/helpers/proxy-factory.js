@@ -36,9 +36,15 @@ export default function proxyFactory(target) {
         };
       }
 
+      const toSocketName = type => (type === 'message' ? `server::${type}` : type);
       if (prop === 'on') {
         return function onWrapper(type, cb) {
-          target.addEventListener(`server::${type}`, cb);
+          target.addEventListener(toSocketName(type), cb);
+        };
+      }
+      if (prop === 'off') {
+        return function offWrapper(type, cb) {
+          target.removeEventListener(toSocketName(type), cb);
         };
       }
 

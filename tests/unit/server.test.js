@@ -20,14 +20,22 @@ test('that after creating a server it is added to the network bridge', t => {
   t.deepEqual(networkBridge.urlMap, {}, 'the urlMap was cleared after the close call');
 });
 
-test('that callback functions can be added to the listeners object', t => {
+test('that callback functions can be added and removed from the listeners object', t => {
   const myServer = new Server('ws://not-real/');
 
-  myServer.on('message', () => {});
-  myServer.on('close', () => {});
+  const onMessage = () => {};
+  const onError = () => {};
+  myServer.on('message', onMessage);
+  myServer.on('close', onError);
 
   t.is(myServer.listeners.message.length, 1);
   t.is(myServer.listeners.close.length, 1);
+
+  myServer.off('message', onMessage);
+  myServer.off('close', onError);
+
+  t.is(myServer.listeners.message.length, 0);
+  t.is(myServer.listeners.close.length, 0);
 
   myServer.close();
 });

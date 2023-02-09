@@ -92,6 +92,13 @@ class Server extends EventTarget {
   }
 
   /*
+  * Remove event listener
+  */
+  off(type, callback) {
+    this.removeEventListener(type, callback);
+  }
+
+  /*
    * Closes the connection and triggers the onclose method of all listening
    * websockets. After that it removes itself from the urlMap so another server
    * could add itself to the url.
@@ -205,7 +212,7 @@ class Server extends EventTarget {
     if (event === 'error') {
       listeners.forEach(socket => {
         socket.readyState = WebSocket.CLOSED;
-        socket.dispatchEvent(createEvent({ type: 'error' }));
+        socket.dispatchEvent(createEvent({ type: 'error', target: socket.target }));
       });
     }
   }

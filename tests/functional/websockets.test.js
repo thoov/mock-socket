@@ -3,7 +3,7 @@ import Server from '../../src/server';
 import WebSocket from '../../src/websocket';
 import networkBridge from '../../src/network-bridge';
 
-test.afterEach(() => {
+test.beforeEach(() => {
   networkBridge.urlMap = {};
 });
 
@@ -145,6 +145,48 @@ test.cb('that the server gets called when the client sends a message using URL w
 
   mockSocket.onopen = function open() {
     this.send('Testing');
+  };
+});
+
+test.cb('that close event is handled both for the client and WebSocket when the server shuts down', t => {
+  t.plan(2);
+
+  const testServer = new Server('ws://localhost:8080');
+
+  testServer.on('connection', socket => {
+    socket.on('close', event => {
+      t.is(event.target.readyState, WebSocket.CLOSED, 'close event fires as expected in the client');
+      t.end();
+    });
+
+    testServer.close();
+  });
+
+  const mockSocket = new WebSocket('ws://localhost:8080');
+
+  mockSocket.onclose = event => {
+    t.is(event.target.readyState, WebSocket.CLOSED, 'close event fires as expected in the WebSocket');
+  };
+});
+
+test.cb('that error event is handled both for the client and WebSocket when the server emits error', t => {
+  t.plan(2);
+
+  const testServer = new Server('ws://localhost:8080');
+
+  testServer.on('connection', socket => {
+    socket.on('error', event => {
+      t.is(event.target.readyState, WebSocket.CLOSED, 'error event fires as expected on the client');
+      t.end();
+    });
+
+    testServer.simulate('error');
+  });
+
+  const mockSocket = new WebSocket('ws://localhost:8080');
+
+  mockSocket.onerror = event => {
+    t.is(event.target.readyState, WebSocket.CLOSED, 'error event fires as expected on the WebSocket');
   };
 });
 
