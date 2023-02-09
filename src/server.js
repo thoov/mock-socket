@@ -205,7 +205,7 @@ class Server extends EventTarget {
     if (event === 'error') {
       listeners.forEach(socket => {
         socket.readyState = WebSocket.CLOSED;
-        socket.dispatchEvent(createEvent({ type: 'error' }));
+        socket.dispatchEvent(createEvent({ type: 'error', target: socket.target }));
       });
     }
   }
