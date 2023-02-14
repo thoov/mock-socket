@@ -1,5 +1,9 @@
 # Mock Socket Changelog
 
+### v9.2.1 (Feb 14th, 2023)
+
+- [#376](https://github.com/thoov/mock-socket/pull/376) Do not normalize data when emitting to socket.io sockets
+
 ### v9.2.0 (Feb 9th, 2023)
 
 - [#373](https://github.com/thoov/mock-socket/pull/373) Handle proxy events properly
