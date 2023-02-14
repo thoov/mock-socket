@@ -93,8 +93,8 @@ class Server extends EventTarget {
   }
 
   /*
-  * Remove event listener
-  */
+   * Remove event listener
+   */
   off(type, callback) {
     this.removeEventListener(type, callback);
   }
@@ -140,37 +140,37 @@ class Server extends EventTarget {
       websockets = networkBridge.websocketsLookup(this.url);
     }
 
-    const nonNormalizedData = typeof options !== 'object' || arguments.length > 3
-      ? Array.prototype.slice.call(arguments, 1, arguments.length)
-      : data;
-    const normalizedData = typeof options !== 'object' || arguments.length > 3
-      ? Array.prototype.slice
-        .call(arguments, 1, arguments.length)
-        .map(item => normalizeSendData(item))
-      : normalizeSendData(data);
+    let normalizedData;
+    if (typeof options !== 'object' || arguments.length > 3) {
+      data = Array.prototype.slice.call(arguments, 1, arguments.length);
+      normalizedData = data.map(item => normalizeSendData(item));
+    } else {
+      normalizedData = normalizeSendData(data);
+    }
 
-    websockets.forEach(socket => (_data => {
-      if (Array.isArray(_data)) {
+    websockets.forEach(socket => {
+      const messageData = socket instanceof SocketIO ? data : normalizedData;
+      if (Array.isArray(messageData)) {
         socket.dispatchEvent(
           createMessageEvent({
             type: event,
-            data: _data,
+            data: messageData,
             origin: this.url,
             target: socket.target
           }),
-          ..._data
+          ...messageData
         );
       } else {
         socket.dispatchEvent(
           createMessageEvent({
             type: event,
-            data: _data,
+            data: messageData,
             origin: this.url,
             target: socket.target
           })
         );
       }
-    })(socket instanceof SocketIO ? nonNormalizedData : normalizedData));
+    });
   }
 
   /*
