@@ -1,5 +1,6 @@
 import URL from 'url-parse';
 import WebSocket from './websocket';
+import { SocketIO } from './socket-io';
 import dedupe from './helpers/dedupe';
 import EventTarget from './event/target';
 import { CLOSE_CODES } from './constants';
@@ -92,8 +93,8 @@ class Server extends EventTarget {
   }
 
   /*
-  * Remove event listener
-  */
+   * Remove event listener
+   */
   off(type, callback) {
     this.removeEventListener(type, callback);
   }
@@ -139,29 +140,31 @@ class Server extends EventTarget {
       websockets = networkBridge.websocketsLookup(this.url);
     }
 
+    let normalizedData;
     if (typeof options !== 'object' || arguments.length > 3) {
       data = Array.prototype.slice.call(arguments, 1, arguments.length);
-      data = data.map(item => normalizeSendData(item));
+      normalizedData = data.map(item => normalizeSendData(item));
     } else {
-      data = normalizeSendData(data);
+      normalizedData = normalizeSendData(data);
     }
 
     websockets.forEach(socket => {
-      if (Array.isArray(data)) {
+      const messageData = socket instanceof SocketIO ? data : normalizedData;
+      if (Array.isArray(messageData)) {
         socket.dispatchEvent(
           createMessageEvent({
             type: event,
-            data,
+            data: messageData,
             origin: this.url,
             target: socket.target
           }),
-          ...data
+          ...messageData
         );
       } else {
         socket.dispatchEvent(
           createMessageEvent({
             type: event,
-            data,
+            data: messageData,
             origin: this.url,
             target: socket.target
           })
