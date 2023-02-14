@@ -1,5 +1,6 @@
 import URL from 'url-parse';
 import WebSocket from './websocket';
+import { SocketIO } from './socket-io';
 import dedupe from './helpers/dedupe';
 import EventTarget from './event/target';
 import { CLOSE_CODES } from './constants';
@@ -139,35 +140,37 @@ class Server extends EventTarget {
       websockets = networkBridge.websocketsLookup(this.url);
     }
 
-    if (typeof options !== 'object' || arguments.length > 3) {
-      data = Array.prototype.slice.call(arguments, 1, arguments.length);
-      data = data.map(item => normalizeSendData(item));
-    } else {
-      data = normalizeSendData(data);
-    }
+    const nonNormalizedData = typeof options !== 'object' || arguments.length > 3
+      ? Array.prototype.slice.call(arguments, 1, arguments.length)
+      : data;
+    const normalizedData = typeof options !== 'object' || arguments.length > 3
+      ? Array.prototype.slice
+        .call(arguments, 1, arguments.length)
+        .map(item => normalizeSendData(item))
+      : normalizeSendData(data);
 
-    websockets.forEach(socket => {
-      if (Array.isArray(data)) {
+    websockets.forEach(socket => (_data => {
+      if (Array.isArray(_data)) {
         socket.dispatchEvent(
           createMessageEvent({
             type: event,
-            data,
+            data: _data,
             origin: this.url,
             target: socket.target
           }),
-          ...data
+          ..._data
         );
       } else {
         socket.dispatchEvent(
           createMessageEvent({
             type: event,
-            data,
+            data: _data,
             origin: this.url,
             target: socket.target
           })
         );
       }
-    });
+    })(socket instanceof SocketIO ? nonNormalizedData : normalizedData));
   }
 
   /*

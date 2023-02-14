@@ -11,7 +11,7 @@ import { createEvent, createMessageEvent, createCloseEvent } from './event/facto
  *
  * http://socket.io/docs/
  */
-class SocketIO extends EventTarget {
+export class SocketIO extends EventTarget {
   /*
    * @param {string} url
    */
