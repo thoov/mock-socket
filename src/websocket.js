@@ -91,7 +91,7 @@ class WebSocket extends EventTarget {
       } else {
         this.readyState = WebSocket.CLOSED;
         this.dispatchEvent(createEvent({ type: 'error', target: this }));
-        this.dispatchEvent(createCloseEvent({ type: 'close', target: this, code: CLOSE_CODES.CLOSE_NORMAL }));
+        this.dispatchEvent(createCloseEvent({ type: 'close', target: this, code: CLOSE_CODES.CLOSE_ABNORMAL }));
 
         logger('error', `WebSocket connection to '${this.url}' failed`);
       }
