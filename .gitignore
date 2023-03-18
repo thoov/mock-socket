@@ -1,5 +1,5 @@
 # Folders to exclude
-dist
+# dist
 node_modules
 
 # Individual files to exclude
