@@ -45,14 +45,44 @@ test('that passing protocols into the constructor works', t => {
   t.is(myOtherSocket.protocol, 'bar', 'the correct protocol is set when it was passed in as an array');
 });
 
-test('that sending when the socket is closed throws an expection', t => {
+test('that sending when the socket is in the `CONNECTING` state throws an exception', t => {
   const mySocket = new WebSocket('ws://not-real', 'foo');
-  mySocket.readyState = WebSocket.CLOSED;
+  mySocket.readyState = WebSocket.CONNECTING;
   t.throws(
     () => {
       mySocket.send('testing');
     },
-    'WebSocket is already in CLOSING or CLOSED state',
-    'an expection is thrown when sending while closed'
+    "Failed to execute 'send' on 'WebSocket': Still in CONNECTING state",
+    'an exception is thrown when sending while in the `CONNECTING` state'
+  );
+});
+
+test('that sending when the socket is in the `CLOSING` state does not throw an exception', t => {
+  const mySocket = new WebSocket('ws://not-real', 'foo');
+  mySocket.readyState = WebSocket.CLOSED;
+  t.notThrows(
+    () => {
+      mySocket.send('testing');
+    },
+  );
+});
+
+test('that sending when the socket is in the `CLOSED` state does not throw an exception', t => {
+  const mySocket = new WebSocket('ws://not-real', 'foo');
+  mySocket.readyState = WebSocket.CLOSED;
+  t.notThrows(
+    () => {
+      mySocket.send('testing');
+    },
+  );
+});
+
+test('that sending when the socket is in the `OPEN` state does not throw an exception', t => {
+  const mySocket = new WebSocket('ws://not-real', 'foo');
+  mySocket.readyState = WebSocket.OPEN;
+  t.notThrows(
+    () => {
+      mySocket.send('testing');
+    },
   );
 });

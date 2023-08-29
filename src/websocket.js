@@ -139,8 +139,8 @@ class WebSocket extends EventTarget {
   }
 
   send(data) {
-    if (this.readyState === WebSocket.CLOSING || this.readyState === WebSocket.CLOSED) {
-      throw new Error('WebSocket is already in CLOSING or CLOSED state');
+    if (this.readyState === WebSocket.CONNECTING) {
+      throw new DOMException("Failed to execute 'send' on 'WebSocket': Still in CONNECTING state");
     }
 
     // TODO: handle bufferedAmount
