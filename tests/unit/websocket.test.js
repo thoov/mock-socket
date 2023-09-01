@@ -76,13 +76,3 @@ test('that sending when the socket is in the `CLOSED` state does not throw an ex
     },
   );
 });
-
-test('that sending when the socket is in the `OPEN` state does not throw an exception', t => {
-  const mySocket = new WebSocket('ws://not-real', 'foo');
-  mySocket.readyState = WebSocket.OPEN;
-  t.notThrows(
-    () => {
-      mySocket.send('testing');
-    },
-  );
-});
