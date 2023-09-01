@@ -59,7 +59,7 @@ test('that sending when the socket is in the `CONNECTING` state throws an except
 
 test('that sending when the socket is in the `CLOSING` state does not throw an exception', t => {
   const mySocket = new WebSocket('ws://not-real', 'foo');
-  mySocket.readyState = WebSocket.CLOSED;
+  mySocket.close();
   t.notThrows(
     () => {
       mySocket.send('testing');
@@ -67,12 +67,15 @@ test('that sending when the socket is in the `CLOSING` state does not throw an e
   );
 });
 
-test('that sending when the socket is in the `CLOSED` state does not throw an exception', t => {
+test.cb('that sending when the socket is in the `CLOSED` state does not throw an exception', t => {
   const mySocket = new WebSocket('ws://not-real', 'foo');
-  mySocket.readyState = WebSocket.CLOSED;
-  t.notThrows(
-    () => {
-      mySocket.send('testing');
-    },
-  );
+  mySocket.close();
+  mySocket.addEventListener('close', () => {
+    t.notThrows(
+      () => {
+        mySocket.send('testing');
+        t.end();
+      },
+    );
+  }, { once: true });
 });
