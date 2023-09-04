@@ -47,7 +47,7 @@ test('that passing protocols into the constructor works', t => {
 
 test('that sending when the socket is in the `CONNECTING` state throws an exception', t => {
   const mySocket = new WebSocket('ws://not-real', 'foo');
-  mySocket.readyState = WebSocket.CONNECTING;
+  t.is(mySocket.readyState, WebSocket.CONNECTING);
   t.throws(
     () => {
       mySocket.send('testing');
@@ -60,6 +60,7 @@ test('that sending when the socket is in the `CONNECTING` state throws an except
 test('that sending when the socket is in the `CLOSING` state does not throw an exception', t => {
   const mySocket = new WebSocket('ws://not-real', 'foo');
   mySocket.close();
+  t.is(mySocket.readyState, WebSocket.CLOSING);
   t.notThrows(
     () => {
       mySocket.send('testing');
@@ -71,6 +72,7 @@ test.cb('that sending when the socket is in the `CLOSED` state does not throw an
   const mySocket = new WebSocket('ws://not-real', 'foo');
   mySocket.close();
   mySocket.addEventListener('close', () => {
+    t.is(mySocket.readyState, WebSocket.CLOSED);
     t.notThrows(
       () => {
         mySocket.send('testing');
