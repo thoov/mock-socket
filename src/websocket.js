@@ -140,7 +140,8 @@ class WebSocket extends EventTarget {
 
   send(data) {
     if (this.readyState === WebSocket.CONNECTING) {
-      throw new DOMException("Failed to execute 'send' on 'WebSocket': Still in CONNECTING state");
+      // TODO: node>=17 replace with DOMException
+      throw new Error("Failed to execute 'send' on 'WebSocket': Still in CONNECTING state");
     }
 
     // TODO: handle bufferedAmount
