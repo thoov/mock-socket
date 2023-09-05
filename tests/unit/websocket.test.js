@@ -76,8 +76,8 @@ test.cb('that sending when the socket is in the `CLOSED` state does not throw an
     t.notThrows(
       () => {
         mySocket.send('testing');
-        t.end();
       },
     );
+    t.end();
   }, { once: true });
 });
