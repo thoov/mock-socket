@@ -213,9 +213,13 @@ test.cb('that the server socket callback argument is correctly scoped: on method
   });
 
   const socket1 = new WebSocket('ws://not-real/');
+  socket1.addEventListener('open', () => {
+    socket1.send('hello1');
+  });
   const socket2 = new WebSocket('ws://not-real/');
-  socket1.send('hello1');
-  socket2.send('hello2');
+  socket2.addEventListener('open', () => {
+    socket2.send('hello2');
+  });
 });
 
 test.cb('that the server socket callback argument is correctly scoped: close method', t => {
@@ -228,9 +232,13 @@ test.cb('that the server socket callback argument is correctly scoped: close met
   });
 
   const socket1 = new WebSocket('ws://not-real/');
+  socket1.addEventListener('open', () => {
+    socket1.send('1001');
+  });
   const socket2 = new WebSocket('ws://not-real/');
-  socket1.send('1001');
-  socket2.send('1002');
+  socket2.addEventListener('open', () => {
+    socket2.send('1002');
+  });
 
   socket1.onclose = event => {
     t.is(event.code, 1001);
