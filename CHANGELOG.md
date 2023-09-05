@@ -1,5 +1,9 @@
 # Mock Socket Changelog
 
+### v9.3.0 (Sep 5th, 2023)
+
+- [#382](https://github.com/thoov/mock-socket/pull/382) The send() method now only throws when the socket is in the CONNECTING state
+
 ### v9.2.1 (Feb 14th, 2023)
 
 - [#376](https://github.com/thoov/mock-socket/pull/376) Do not normalize data when emitting to socket.io sockets
