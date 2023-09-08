@@ -88,6 +88,10 @@ test.cb('that if the readyState is CONNECTING we fail the connection and close',
 
   mockSocket.readyState = WebSocket.CONNECTING;
 
+  mockSocket.onopen = () => {
+    t.fail('open should not have been called');
+  };
+
   mockSocket.onerror = () => {
     t.is(mockSocket.readyState, WebSocket.CLOSED);
   };
