@@ -1,5 +1,9 @@
 # Mock Socket Changelog
 
+### v9.3.1 (Sep 11th, 2023)
+
+- [#383](https://github.com/thoov/mock-socket/pull/383) [BUGFIX] Calling close in the CONNECTING state should not cause onopen to be called #383
+
 ### v9.3.0 (Sep 5th, 2023)
 
 - [#382](https://github.com/thoov/mock-socket/pull/382) The send() method now only throws when the socket is in the CONNECTING state
