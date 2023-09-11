@@ -51,6 +51,9 @@ class WebSocket extends EventTarget {
      * registered :-)
      */
     delay(function delayCallback() {
+      if (this.readyState !== WebSocket.CONNECTING) {
+        return;
+      }
       if (server) {
         if (
           server.options.verifyClient &&
