@@ -2,7 +2,7 @@
 // Project: Mock Socket
 // Definitions by: Travis Hoover <https://github.com/thoov/mock-socket>
 
-declare module 'mock-socket' {
+declare module '@opensumi/mock-socket' {
   // support TS under 3.5
   type _Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
