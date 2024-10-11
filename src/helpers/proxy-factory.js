@@ -14,7 +14,7 @@ export default function proxyFactory(target) {
     get(obj, prop) {
       if (prop === 'close') {
         return function close(options = {}) {
-          const code = options.code || CLOSE_CODES.CLOSE_NORMAL;
+          const code = options.code == null ? CLOSE_CODES.CLOSE_NORMAL : options.code;
           const reason = options.reason || '';
 
           closeWebSocketConnection(proxy, code, reason);

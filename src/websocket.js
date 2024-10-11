@@ -187,9 +187,9 @@ class WebSocket extends EventTarget {
 
     const client = proxyFactory(this);
     if (this.readyState === WebSocket.CONNECTING) {
-      failWebSocketConnection(client, code || CLOSE_CODES.CLOSE_ABNORMAL, reason);
+      failWebSocketConnection(client, code == null ? CLOSE_CODES.CLOSE_ABNORMAL : code, reason);
     } else {
-      closeWebSocketConnection(client, code || CLOSE_CODES.CLOSE_NO_STATUS, reason);
+      closeWebSocketConnection(client, code == null ? CLOSE_CODES.CLOSE_NO_STATUS : code, reason);
     }
   }
 }
