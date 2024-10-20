@@ -81,6 +81,74 @@ test.cb('that calling close will trigger the onclose of websockets', t => {
   };
 });
 
+test.cb('that calling close on the server without a `code` will result in a default code of `1000`', t => {
+  const myServer = new Server('ws://not-real/');
+
+  myServer.on('connection', () => {
+    myServer.close({
+      reason: 'Some reason'
+    });
+  });
+
+  const client = new WebSocket('ws://not-real/');
+  client.onclose = event => {
+    t.is(event.code, 1000, 'the default code `1000` was recieved');
+    t.end();
+  };
+});
+
+// https://github.com/thoov/mock-socket/pull/391
+test.cb('that calling close on the server with `code` set to `0` will result in a code of `0`', t => {
+  const myServer = new Server('ws://not-real/');
+
+  myServer.on('connection', () => {
+    myServer.close({
+      code: 0
+    });
+  });
+
+  const client = new WebSocket('ws://not-real/');
+  client.onclose = event => {
+    t.is(event.code, 0, 'the code `0` was received');
+    t.end();
+  };
+});
+
+test.cb('that calling close on a socket proxy without a `code` will result in a default code of `1000`', t => {
+  const myServer = new Server('ws://not-real/');
+
+  myServer.on('connection', socket => {
+    socket.close({
+      reason: 'Some reason'
+    });
+  });
+
+  const client = new WebSocket('ws://not-real/');
+  client.onclose = event => {
+    t.is(event.code, 1000, 'the default code `1000` was recieved');
+    myServer.close();
+    t.end();
+  };
+});
+
+// https://github.com/thoov/mock-socket/pull/391
+test.cb('that calling close on a socket proxy with `code` set to `0` will result in a code of `0`', t => {
+  const myServer = new Server('ws://not-real/');
+
+  myServer.on('connection', socket => {
+    socket.close({
+      code: 0
+    });
+  });
+
+  const client = new WebSocket('ws://not-real/');
+  client.onclose = event => {
+    t.is(event.code, 0, 'the code `0` was received');
+    myServer.close();
+    t.end();
+  };
+});
+
 test.cb('that calling close for each client will trigger the onclose of websockets', t => {
   const myServer = new Server('ws://not-real/');
   let counter = 0;
