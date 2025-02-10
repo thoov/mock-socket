@@ -39,10 +39,10 @@ declare module 'mock-socket' {
     readonly readyState: number;
     readonly bufferedAmount: number;
 
-    onopen: (event: Event) => void;
-    onerror: (event: Event) => void;
-    onclose: (event: CloseEvent) => void;
-    onmessage: (event: MessageEvent) => void;
+    onopen: ((event: Event) => void) | null;
+    onerror: ((event: Event) => void) | null;
+    onclose: ((event: CloseEvent) => void) | null;
+    onmessage: ((event: MessageEvent) => void) | null;
     readonly extensions: string;
     readonly protocol: string;
     close(code?: number, reason?: string): void;
