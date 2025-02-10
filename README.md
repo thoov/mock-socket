@@ -37,23 +37,35 @@ import { WebSocket, Server } from 'mock-socket';
 ```js
 import test from 'ava';
 import { Server } from 'mock-socket';
+import {AsyncQueue} from '@borewit/async-queue';
 
 class ChatApp {
-  constructor(url) {
-    this.messages = [];
-    this.connection = new WebSocket(url);
 
-    this.connection.onmessage = event => {
-      this.messages.push(event.data);
-    };
+  constructor(url) {
+    this.messageQueue = new AsyncQueue();
+
+    this.connection = new WebSocket(url);
+    this.connection.onmessage = event => this.messageQueue.push(event.data);
   }
 
   sendMessage(message) {
     this.connection.send(message);
   }
+
+  static connect(url) {
+    const chatApp = new ChatApp(url);
+    return new Promise((resolve, reject) => {
+      chatApp.connection.addEventListener('open', () => {
+        resolve(chatApp);
+      });
+      chatApp.connection.addEventListener('error', err => {
+        reject(err);
+      });
+    });
+  }
 }
 
-test.cb('that chat app can be mocked', t => {
+test('that chat app can be mocked', async t => {
   const fakeURL = 'ws://localhost:8080';
   const mockServer = new Server(fakeURL);
 
@@ -64,15 +76,11 @@ test.cb('that chat app can be mocked', t => {
     });
   });
 
-  const app = new ChatApp(fakeURL);
+  const app = await ChatApp.connect(fakeURL);
   app.sendMessage('test message from app'); // NOTE: this line creates a micro task
 
-  // NOTE: this timeout is for creating another micro task that will happen after the above one
-  setTimeout(() => {
-    t.is(app.messages.length, 1);
-    t.is(app.messages[0], 'test message from mock server', 'we have stubbed our websocket backend');
-    mockServer.stop(t.done);
-  }, 100);
+  const message = await app.messageQueue.next();
+  t.is(message, 'test message from mock server', 'we have stubbed our websocket backend');
 });
 ```
 
