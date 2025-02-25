@@ -61,6 +61,7 @@ declare module 'mock-socket' {
   class Server extends EventTarget {
     constructor(url: string, options?: ServerOptions);
 
+    readonly url: string;
     readonly options?: ServerOptions;
 
     stop(callback?: () => void): void;
